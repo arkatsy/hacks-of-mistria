@@ -1,13 +1,13 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.ico?asset'
+import icon from '../../resources/icon.png?asset'
+// import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer'
 
-function createWindow(): void {
-  // Create the browser window.
+function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1050,
-    minWidth: 1050,
+    maxWidth: 1050,
     height: 750,
     resizable: true,
     show: false,
@@ -40,9 +40,12 @@ function createWindow(): void {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // await installExtension(REACT_DEVELOPER_TOOLS)
+  //   .then((name) => console.log(`Added Extension: ${name}`))
+  //   .catch((err) => console.log('Error loading React DevTools: ', err))
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('moths-cheats')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -51,26 +54,5 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
   createWindow()
-
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
 })
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.

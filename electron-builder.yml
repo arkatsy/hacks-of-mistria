@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: electron-app
+appId: com.moths-cheats.app
+productName: moths-cheats
 directories:
   buildResources: build
 files:
@@ -12,7 +12,8 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: electron-app
+  icon: build/icon.ico
+  executableName: moths-cheats
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

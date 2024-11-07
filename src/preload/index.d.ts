@@ -1,8 +1,11 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
+import { ParsedHeader } from '../main/index'
 
 declare global {
   interface Window {
     electron: ElectronAPI
-    api: unknown
+    api: {
+      getSaves: () => Array<ParsedHeader>
+    }
   }
 }

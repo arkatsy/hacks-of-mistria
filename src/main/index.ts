@@ -149,7 +149,7 @@ function parseHeader(unpackedPath: string) {
     calendar_time: calendarTime,
     name,
     stats: { gold, essence, renown }
-  } = readJsonFile<HeaderJson>(path.join(unpackedPath))
+  } = readJsonFile<HeaderJson>(unpackedPath)
 
   return {
     farmName,

@@ -25,7 +25,7 @@ export function translateCalendarTime(time: number) {
   // Spring = 0, Summer = 1, Fall = 2, Winter = 3
   // 2419200 seconds = 1 day because 28 days per month
   const month = Math.floor(time / 2419200) // convert seconds to months
-  const days = ((time % 2419200) / 86400) + 1 // days start at 0
+  const days = Math.trunc(((time % 2419200) / 86400)) + 1 // days start at 0
   const seasons = {
     0 : "Spring",
     1 : "Summer",

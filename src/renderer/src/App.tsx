@@ -1,8 +1,10 @@
 import './globals.css'
 import fomBackground from './assets/fom-background.webp'
+import characterSprite from './assets/spr_character_mask.png'
+import droopyEyes from './assets/spr_ui_item_wearable_eyes_droopy_asset.png'
 import { Image, Box, Text, Card, Button, Flex } from '@chakra-ui/react'
 import { useState } from 'react'
-import { translatePlaytime } from './utils'
+import { translatePlaytime, translateClockTime, translateCalendarTime } from './utils'
 
 export function App() {
   return (
@@ -60,8 +62,8 @@ function ChooseSave({
       <Box as="ul" display="flex" flexDir="column" gap={24}>
         {saves.map((save, idx) => {
           const data = {
-            'Clock Time': save.clockTime,
-            'Calendar Time': save.calendarTime,
+            'Clock Time': translateClockTime(save.clockTime),
+            'Calendar Time': translateCalendarTime(save.calendarTime),
             Gold: Intl.NumberFormat().format(save.gold),
             Essence: Intl.NumberFormat().format(save.essence),
             Renown: Intl.NumberFormat().format(save.renown)
@@ -81,6 +83,14 @@ function ChooseSave({
                   <Text textStyle="xl" fontFamily="cursive" textAlign="end" opacity={0.9}>
                     {translatePlaytime(save.playtime)}
                   </Text>
+                  <Image
+                    border="1px solid red"
+                    rounded="md"
+                    fit="contain"
+                    height="80px"
+                    width="80px"
+                    src={characterSprite}
+                  />
                 </Box>
               </Card.Header>
               <Card.Body>

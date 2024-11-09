@@ -16,3 +16,7 @@ export const vaultc = {
     execFileSync(vaultcPath, ['unpack', savefilePath, unpackDirPath])
   }
 }
+
+export function getSaveIdFromPath(savePath: string) {
+  return path.basename(savePath).replace('.sav', '')
+}

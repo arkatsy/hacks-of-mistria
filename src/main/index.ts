@@ -5,7 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 import path from 'path'
 import { HeaderJson } from './json-types'
-import { readJsonFile, vaultc } from './utils'
+import { getSaveIdFromPath, readJsonFile, vaultc } from './utils'
 
 // Electron runs first and then, when is ready it runs the callback we passed.
 app.whenReady().then(async () => {
@@ -18,7 +18,6 @@ app.whenReady().then(async () => {
   const mainWindow = new BrowserWindow({
     width: 1050,
     minWidth: 800,
-    maxWidth: 1050,
     height: 750,
     minHeight: 600,
     resizable: true,
@@ -57,6 +56,8 @@ app.whenReady().then(async () => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+
+  mainWindow.webContents.openDevTools()
 })
 
 // https://www.electronjs.org/docs/latest/api/ipc-main
@@ -68,12 +69,32 @@ app.whenReady().then(async () => {
 // ipcRenderer.invoke('get-saves')
 // ipcRenderer.sendSync('get-saves')
 // https://www.electronjs.org/docs/latest/api/ipc-renderer
-ipcMain.on('get-saves', (e) => {
+ipcMain.on('get-saves', handleGetSaves)
+
+function handleGetSaves(e: Electron.IpcMainEvent) {
   const allSaves = Array.from(savesCache.values())
-  const parsedSaves = allSaves.map((saveInfo) => parseHeader(saveInfo.paths.header))
+  const parsedSaves = allSaves.map((saveInfo) => {
+    const headerData = parseHeader(saveInfo.paths.header)
+    return {
+      ...headerData,
+      isAutosave: saveInfo.saveId.includes('autosave'),
+      saveId: saveInfo.saveId,
+      originalSavePath: saveInfo.originalSavePath
+    }
+  })
 
   e.returnValue = parsedSaves
-})
+}
+
+type ParsedHeader = ReturnType<typeof parseHeader>
+
+type BaseSave = {
+  saveId: string
+  originalSavePath: string
+  isAutosave: boolean
+}
+
+export type ParsedSave = BaseSave & ParsedHeader
 
 type UnpackedSaveInfo = {
   unpackPath: string
@@ -101,10 +122,6 @@ const appDataPath = path.join(homePath, 'AppData', 'Local')
 const tempPath = app.getPath('temp')
 const fomSavesPath = path.join(appDataPath, 'FieldsOfMistria', 'saves')
 const tempSavesPath = path.join(tempPath, 'moths-cheats-temp')
-
-function getSaveIdFromPath(savePath: string) {
-  return path.basename(savePath).replace('.sav', '')
-}
 
 function flushSavesToTemp() {
   if (fs.existsSync(tempSavesPath)) {
@@ -162,6 +179,3 @@ function parseHeader(unpackedPath: string) {
     renown
   }
 }
-
-// exporting the return type of the parseHeader so i can use it on the renderer process
-export type ParsedHeader = ReturnType<typeof parseHeader>

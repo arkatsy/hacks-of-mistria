@@ -2,3 +2,7 @@
   background-color: #f4e1d2;
   color: #000;
 }
+
+*, *::before, *::after {
+  font-family: cursive, system-ui;
+}

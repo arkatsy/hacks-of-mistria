@@ -78,7 +78,7 @@ function handleGetSaves(e: Electron.IpcMainEvent) {
     return {
       ...headerData,
       isAutosave: saveInfo.saveId.includes('autosave'),
-      saveId: saveInfo.saveId,
+      saveFileName: `${saveInfo.saveId}.sav`,
       originalSavePath: saveInfo.originalSavePath
     }
   })
@@ -89,7 +89,7 @@ function handleGetSaves(e: Electron.IpcMainEvent) {
 type ParsedHeader = ReturnType<typeof parseHeader>
 
 type BaseSave = {
-  saveId: string
+  saveFileName: string
   originalSavePath: string
   isAutosave: boolean
 }

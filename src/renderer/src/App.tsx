@@ -1,9 +1,15 @@
 import './globals.css'
 import fomClouds from './assets/fom-clouds.png'
 import fomLogo from './assets/fom-logo.webp'
-import { Image, Box, Text, Card, Flex } from '@chakra-ui/react'
+import { Image, Box, Text, Card, Flex, HStack, VStack } from '@chakra-ui/react'
 import { useState } from 'react'
 import { translatePlaytime, translateClockTime, translateCalendarTime } from './utils'
+import {
+  PaginationRoot,
+  PaginationPrevTrigger,
+  PaginationNextTrigger,
+  PaginationPageText
+} from './pagination'
 
 export function App() {
   return (
@@ -19,31 +25,47 @@ export function App() {
           draggable={false}
           pos="absolute"
         />
-        <Image src={fomLogo} zIndex={1} />
+        <Image src={fomLogo} zIndex={1} draggable={false} />
       </Box>
-      <Main />
+      <SaveSelection />
     </Box>
   )
 }
 
 type Save = ReturnType<(typeof window)['api']['getSaves']>[0]
 
-function Main() {
-  const [step, setStep] = useState(0)
+function SaveSelection() {
   const saves = window.api.getSaves()
+  const pageSize = 5
 
-  return <Box mx={20}>{step === 0 ? <SaveSelection saves={saves} /> : <SaveEditor />}</Box>
-}
+  const [page, setPage] = useState(1)
 
-function SaveSelection({ saves }: { saves: Save[] }) {
+  const startIndex = (page - 1) * pageSize
+  const endIndex = startIndex + pageSize
+
+  const visibleSaves = saves.slice(startIndex, endIndex)
+
   return (
-    <Box textAlign="center">
+    <VStack textAlign="center" py={10}>
       <Flex flexDir="column" gap={6}>
-        {saves.map((save) => (
-          <SaveCard key={save.saveId} save={save} />
+        {visibleSaves.map((save) => (
+          <SaveCard key={save.saveFileName} save={save} />
         ))}
       </Flex>
-    </Box>
+      <PaginationRoot
+        count={saves.length}
+        pageSize={5}
+        defaultPage={1}
+        pt={5}
+        onPageChange={(e) => setPage(e.page)}
+      >
+        <HStack gap={4}>
+          <PaginationPrevTrigger />
+          <PaginationPageText />
+          <PaginationNextTrigger />
+        </HStack>
+      </PaginationRoot>
+    </VStack>
   )
 }
 
@@ -55,8 +77,16 @@ function SaveCard({ save }: { save: Save }) {
   }
 
   return (
-    <Card.Root as="button" display="inline" bg="gray.900" w="660px" mx="auto" cursor="pointer">
-      <Card.Header display="flex" flexDir="row" justifyContent="space-between">
+    <Card.Root
+      as="button"
+      display="inline"
+      bg="gray.900"
+      w={{ base: '100%', md: '660px' }}
+      maxW="660px"
+      mx="auto"
+      cursor="pointer"
+    >
+      <Card.Header display="flex" flexDir="row" justifyContent="space-between" pos="relative">
         <Text textStyle="xl">
           {save.name} | {translateCalendarTime(save.calendarTime)} -&nbsp;
           {translateClockTime(save.clockTime)} &nbsp;
@@ -64,7 +94,7 @@ function SaveCard({ save }: { save: Save }) {
         </Text>
 
         <Box pos="relative">
-          <Text textStyle="xl" ml={2}>
+          <Text textStyle="xl" textAlign="end" ml={2}>
             {save.farmName}
           </Text>
           <Text pos="absolute" textStyle="xl" opacity={0.9} right="0">
@@ -83,15 +113,12 @@ function SaveCard({ save }: { save: Save }) {
             </Text>
           ))}
         </Flex>
+        <Box pos="absolute" right={6} bottom={7}>
+          <Text fontSize="sm" opacity="0.8">
+            {save.saveFileName}
+          </Text>
+        </Box>
       </Card.Body>
     </Card.Root>
-  )
-}
-
-function SaveEditor() {
-  return (
-    <Box>
-      <Text>Save Editor</Text>
-    </Box>
   )
 }

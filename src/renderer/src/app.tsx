@@ -6,7 +6,7 @@ import {
   PaginationRoot,
   PaginationPrevTrigger,
   PaginationNextTrigger,
-  PaginationPageText
+  PaginationItems
 } from './components/chakra/pagination'
 import { SaveCard } from './components/save-card'
 
@@ -33,7 +33,7 @@ export function App() {
 
 function SaveSelection() {
   const saveIds = window.api.getSortedLoadingSavesIds()
-  const pageSize = 10
+  const pageSize = 12
 
   const [page, setPage] = useState(1)
 
@@ -62,7 +62,7 @@ function SaveSelection() {
       >
         <HStack gap={4}>
           <PaginationPrevTrigger />
-          <PaginationPageText />
+          <PaginationItems />
           <PaginationNextTrigger />
         </HStack>
       </PaginationRoot>

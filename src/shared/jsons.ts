@@ -24,7 +24,7 @@ export type HeaderJson = {
     free_baths: number
   }
   weather: {
-    forecast: ('calm' | 'heavy_inclement' | 'special' | string)[]
+    forecast: ('calm' | 'inclement' | 'heavy_inclement' | 'special' | string)[]
   }
   name: string
 }

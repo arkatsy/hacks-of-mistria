@@ -13,8 +13,9 @@ export function translateClockTime(time: number) {
   // 22032 -> 6:00 AM
   // 59152 -> 4:20 PM
   var hours = Math.floor(time / 3600)
-  const meridiem = hours >= 12 ? 'PM' : 'AM'
-  hours = hours > 12 ? hours % 12 : hours
+  const meridiem = (hours >= 12 && hours < 24) ? 'PM' : 'AM'
+  hours = hours > 12 ? hours % 12 : hours // change from military time
+  hours = hours == 0 ? 12 : hours // hard code 24:00 to 12:00
   var minutes = Math.floor((time % 3600) / 60)
   minutes -= minutes % 10
   const pad = (num: number) => String(num).padStart(2, '0')
@@ -33,4 +34,10 @@ export function translateCalendarTime(time: number) {
     3: 'Winter'
   }
   return `${seasons[month]} ${days}`
+}
+
+export function getWeather(time: number, forecast: Array<string>) {
+  // Weather is stored in forecast array for the entire month
+  const current_day = Math.trunc((time % 2419200) / 86400) // days start at 0
+  return `${forecast[current_day]}`
 }

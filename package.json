@@ -1,9 +1,9 @@
 {
   "name": "moths-cheats",
   "version": "0.0.1",
-  "description": "An Electron application with React and TypeScript",
+  "description": "Moth's Cheats for Fields of Mistria",
   "main": "./out/main/index.js",
-  "author": "arkatsy",
+  "author": "arkatsy, dwlim12",
   "scripts": {
     "start": "electron-vite preview",
     "dev": "electron-vite dev",

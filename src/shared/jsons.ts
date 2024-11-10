@@ -160,6 +160,7 @@ export type PlayerJson = {
       gold_to_gain: null
       inner_item: null
       infusion: null
+      auto_use: boolean
       cosmetic: null
       animal_cosmetic: null
       item_id: string

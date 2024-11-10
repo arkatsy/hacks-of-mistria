@@ -1,3 +1,7 @@
+// Util types for the json types
+export type Weather = 'calm' | 'inclement' | 'heavy_inclement' | 'special' | string
+
+// Types for the json files
 export type HeaderJson = {
   farm_name: string
   preset: {
@@ -24,7 +28,7 @@ export type HeaderJson = {
     free_baths: number
   }
   weather: {
-    forecast: ('calm' | 'inclement' | 'heavy_inclement' | 'special' | string)[]
+    forecast: Weather[]
   }
   name: string
 }

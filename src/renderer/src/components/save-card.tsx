@@ -1,8 +1,14 @@
 import { Box, Card, Flex, Text } from '@chakra-ui/react'
 
-import { translateCalendarTime, translateClockTime, translatePlaytime, getWeather } from '@renderer/utils'
+import {
+  translateCalendarTime,
+  translateClockTime,
+  translatePlaytime,
+  getWeather
+} from '@renderer/utils'
 
-export function SaveCard({ saveId }: { saveId: string }) {3
+export function SaveCard({ saveId }: { saveId: string }) {
+  3
   const save = window.api.getLoadingSaveInfo(saveId)
 
   const data = {
@@ -22,12 +28,16 @@ export function SaveCard({ saveId }: { saveId: string }) {3
       cursor="pointer"
     >
       <Card.Header display="flex" flexDir="row" justifyContent="space-between" pos="relative">
-        <Text textStyle="xl">
-          {save.name} | {translateCalendarTime(save.calendar_time)}&nbsp;
-          ({getWeather(save.calendar_time, save.weather.forecast)}) -&nbsp;
-          {translateClockTime(save.clock_time)} &nbsp;
-          <Box as="span">{save.isAutosave && '(autosave)'}</Box>
-        </Text>
+        <Flex flexDir="column">
+          <Text textStyle="xl">
+            {save.name} | {translateCalendarTime(save.calendar_time)} -&nbsp;
+            {translateClockTime(save.clock_time)} &nbsp;
+            <Box as="span">{save.isAutosave && '(autosave)'}</Box>
+          </Text>
+          <Text textStyle="sm" opacity={0.8}>
+            weather: {getWeather(save.calendar_time, save.weather.forecast)}
+          </Text>
+        </Flex>
 
         <Box pos="relative">
           <Text textStyle="xl" textAlign="end" ml={2}>

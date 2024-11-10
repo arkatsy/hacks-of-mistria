@@ -1,11 +1,17 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import { ChannelNames } from '../main/ipc-channels'
+import { LoadingSaveInfo, SortedLoadingSaveIds } from '../shared'
+
+// NOTE: Don't forget to add the types to the shared `src/shared/index.ts` file
 
 const api = {
-  getSaves: () => {
-    return ipcRenderer.sendSync('get-saves')
+  getSortedLoadingSavesIds: (): SortedLoadingSaveIds => {
+    return ipcRenderer.sendSync(ChannelNames['get/sorted-loading-saves-ids'])
+  },
+  getLoadingSaveInfo(saveId: string): LoadingSaveInfo {
+    return ipcRenderer.sendSync(ChannelNames['get/loading-save-info'], saveId)
   }
 }
 
-// we expose the api to the `window` object
-// example usage: `window.api.getSaves()`
+export type Api = typeof api
 contextBridge.exposeInMainWorld('api', api)

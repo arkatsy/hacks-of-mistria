@@ -1,9 +1,9 @@
 import { Box, Card, Flex, Text } from '@chakra-ui/react'
 
 import {
-  translateCalendarTime,
-  translateClockTime,
-  translatePlaytime,
+  displayCalendarTime,
+  displayClockTime,
+  displayPlaytime,
   getWeather
 } from '@renderer/utils'
 
@@ -30,8 +30,8 @@ export function SaveCard({ saveId }: { saveId: string }) {
       <Card.Header display="flex" flexDir="row" justifyContent="space-between" pos="relative">
         <Flex flexDir="column">
           <Text textStyle="xl">
-            {save.name} | {translateCalendarTime(save.calendar_time)} -&nbsp;
-            {translateClockTime(save.clock_time)} &nbsp;
+            {save.name} | {displayCalendarTime(save.calendar_time)} -&nbsp;
+            {displayClockTime(save.clock_time)} &nbsp;
             <Box as="span">{save.isAutosave && '(autosave)'}</Box>
           </Text>
           <Text textStyle="sm" opacity={0.8}>
@@ -44,7 +44,7 @@ export function SaveCard({ saveId }: { saveId: string }) {
             {save.farm_name}
           </Text>
           <Text pos="absolute" textStyle="xl" opacity={0.9} right="0">
-            {translatePlaytime(save.playtime)}
+            {displayPlaytime(save.playtime)}
           </Text>
         </Box>
       </Card.Header>

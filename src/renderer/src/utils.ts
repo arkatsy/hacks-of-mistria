@@ -1,12 +1,6 @@
 import { HiOutlineSparkles } from 'react-icons/hi2'
 import type { Weather } from 'src/shared/jsons'
 
-interface NestedDictionary {
-  [season: number]: {
-    [weather: string]: string;
-  };
-}
-
 export function translatePlaytime(time: number) {
   // 22229.607 -> 6:10:29
   // 1 -> 0:00:01
@@ -36,55 +30,35 @@ export function translateClockTime(time: number) {
 }
 
 export function displayClockTime(time: number) {
-  const clock_time = translateClockTime(time)
+  const clockTime = translateClockTime(time)
   const pad = (num: number) => String(num).padStart(2, '0')
-  return `${clock_time[0]}:${pad(clock_time[1])} ${clock_time[2]}`
+  return `${clockTime[0]}:${pad(clockTime[1])} ${clockTime[2]}`
 }
 
 export function translateCalendarTime(time: number) {
   // Spring = 0, Summer = 1, Fall = 2, Winter = 3
   // 2419200 seconds = 1 day because 28 days per month
-  const month = Math.floor(time / 2419200) // convert seconds to months
+  const season = Math.floor(time / 2419200) // convert seconds to months
   const day = Math.trunc((time % 2419200) / 86400)
-  return [month, day]
+  return [season, day]
 }
 
 export function displayCalendarTime(time: number) {
-  const calendar_time = translateCalendarTime(time)
-  calendar_time[1] += 1 // days start at 0
-  const seasons = {
-    0: 'Spring',
-    1: 'Summer',
-    2: 'Fall',
-    3: 'Winter'
-  }
-  return `${seasons[calendar_time[0]]} ${calendar_time[1]}`
+  const calendarTime = translateCalendarTime(time)
+  calendarTime[1] += 1 // days start at 0
+  const seasons = ['Spring', 'Summer', 'Fall', 'Winter']
+  return `${seasons[calendarTime[0]]} ${calendarTime[1]}`
 }
 
 export function getWeather(time: number, forecast: Array<Weather>) {
   // Weather is stored in forecast array for the entire month
-  const calendar_time = translateCalendarTime(time)
-  const weather_icons: NestedDictionary = {
-    0 : {
-      'calm': "../assets/sprites/weather_icons/spr_ui_hud_info_backplate_weather_icon_sunny.png",
-      'inclement': "inclement",
-      'heavy_inclement': "heavy_inclement",
-      'special': "special"
-    },
-    1 : {
-      'calm': "../assets/sprites/weather_icons/spr_ui_hud_info_backplate_weather_icon_sunny.png",
-      'inclement': "inclement",
-      'heavy_inclement': "heavy_inclement",
-      'special': "special"
-    }
-}
-if (calendar_time[0] in Object.keys(weather_icons)) {
-  console.log(weather_icons[calendar_time[0]['calm']]);
-}
-return forecast[calendar_time[1]]
+  const calendarTime = translateCalendarTime(time)
+  return forecast[calendarTime[1]]
 }
 
 export function displayWeather(time: number, forecast: Array<Weather>) {
+  const calendarTime = translateCalendarTime(time)
   const weather = getWeather(time, forecast)
-  return `${weather.replaceAll('_', ' ')}`
+  console.log([calendarTime[0], weather])
+  return [calendarTime[0], weather]
 }

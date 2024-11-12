@@ -13,6 +13,9 @@
     "paths": {
       "@renderer/*": [
         "src/renderer/src/*"
+      ],
+      "@sprites/*": [
+        "src/renderer/src/assets/sprites/*"
       ]
     }
   }

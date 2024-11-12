@@ -9,6 +9,7 @@ import {
   PaginationItems
 } from './components/chakra/pagination'
 import SaveCard from './components/save-card'
+import { getSeason } from './utils'
 
 const pageSize = 5
 
@@ -41,9 +42,11 @@ function SaveSelection() {
 
   const filteredSaves = saves.filter((save) => {
     const query = search.toLowerCase()
+    const season = getSeason(save.header.calendar_time);
     return (
       save.header.name.toLowerCase().includes(query) ||
-      save.header.farm_name.toLowerCase().includes(query)
+      save.header.farm_name.toLowerCase().includes(query) ||
+      season.toLowerCase().includes(query)
     )
   })
 
@@ -69,7 +72,7 @@ function SaveSelection() {
           w="full"
           value={search}
           onChange={handleSearchChange}
-          placeholder="Search for character or farm name"
+          placeholder="Search for a save by character name, farm name or season"
         />
         {visibleSaves.length === 0 ? (
           <Box>No saves found</Box>

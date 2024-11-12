@@ -1,5 +1,6 @@
-import { HiOutlineSparkles } from 'react-icons/hi2'
 import type { Weather } from 'src/shared/jsons'
+
+type Meridiem = 'AM' | 'PM'
 
 export function translatePlaytime(time: number) {
   // 22229.607 -> 6:10:29
@@ -20,13 +21,13 @@ export function displayPlaytime(time: number) {
 export function translateClockTime(time: number) {
   // 22032 -> 6:00 AM
   // 59152 -> 4:20 PM
-  var hours = Math.floor(time / 3600)
-  const meridiem = hours >= 12 && hours < 24 ? 'PM' : 'AM'
+  let hours = Math.floor(time / 3600)
+  const meridiem: Meridiem = hours >= 12 && hours < 24 ? 'PM' : 'AM'
   hours = hours > 12 ? hours % 12 : hours // change from military time
   hours = hours == 0 ? 12 : hours // hard code 24:00 to 12:00
-  var minutes = Math.floor((time % 3600) / 60)
+  let minutes = Math.floor((time % 3600) / 60)
   minutes -= minutes % 10
-  return [hours, minutes, meridiem]
+  return [hours, minutes, meridiem] as const
 }
 
 export function displayClockTime(time: number) {
@@ -48,6 +49,12 @@ export function displayCalendarTime(time: number) {
   calendarTime[1] += 1 // days start at 0
   const seasons = ['Spring', 'Summer', 'Fall', 'Winter']
   return `${seasons[calendarTime[0]]} ${calendarTime[1]}`
+}
+
+export function getSeason(time: number) {
+  const calendarTime = translateCalendarTime(time)
+  const seasons = ['Spring', 'Summer', 'Fall', 'Winter']
+  return seasons[calendarTime[0]]
 }
 
 export function getWeather(time: number, forecast: Array<Weather>) {

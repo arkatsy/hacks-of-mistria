@@ -1,14 +1,18 @@
 import fomClouds from './assets/fom-clouds.png'
 import fomLogo from './assets/fom-logo.webp'
-import { Image, Box, Flex, HStack, VStack } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { Image, Box, Flex, HStack, VStack, Input } from '@chakra-ui/react'
+import { useState } from 'react'
 import {
   PaginationRoot,
   PaginationPrevTrigger,
   PaginationNextTrigger,
   PaginationItems
 } from './components/chakra/pagination'
-import { SaveCard } from './components/save-card'
+import SaveCard from './components/save-card'
+
+const pageSize = 5
+
+const saves = window.api.getSortedLoadingSaves()
 
 export function App() {
   return (
@@ -32,40 +36,65 @@ export function App() {
 }
 
 function SaveSelection() {
-  const saveIds = window.api.getSortedLoadingSavesIds()
-  const pageSize = 12
-
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState('')
+
+  const filteredSaves = saves.filter((save) => {
+    const query = search.toLowerCase()
+    return (
+      save.header.name.toLowerCase().includes(query) ||
+      save.header.farm_name.toLowerCase().includes(query)
+    )
+  })
 
   const startIndex = (page - 1) * pageSize
   const endIndex = startIndex + pageSize
 
-  const visibleSaveIds = saveIds.slice(startIndex, endIndex)
+  const visibleSaves = filteredSaves.slice(startIndex, endIndex)
 
-  useEffect(() => {
+  function handlePageChange(e: { page: number }) {
+    setPage(e.page)
     window.scrollTo(0, 100)
-  }, [page])
+  }
+
+  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value)
+    setPage(1)
+  }
 
   return (
     <VStack textAlign="center" py={10}>
-      <Flex flexDir="column" gap={6}>
-        {visibleSaveIds.map((id) => (
-          <SaveCard key={id} saveId={id} />
-        ))}
+      <Flex flexDir="column" gap={6} maxW="660px" w="full" justifyContent="center">
+        <Input
+          w="full"
+          value={search}
+          onChange={handleSearchChange}
+          placeholder="Search for character or farm name"
+        />
+        {visibleSaves.length === 0 ? (
+          <Box>No saves found</Box>
+        ) : (
+          <>
+            {visibleSaves.map((save) => (
+              <SaveCard key={save.id} save={save} />
+            ))}
+            <PaginationRoot
+              count={filteredSaves.length}
+              pageSize={pageSize}
+              defaultPage={1}
+              pt={5}
+              onPageChange={handlePageChange}
+              display="flex"
+              justifyContent="center"
+              gap={2}
+            >
+              <PaginationPrevTrigger />
+              <PaginationItems />
+              <PaginationNextTrigger />
+            </PaginationRoot>
+          </>
+        )}
       </Flex>
-      <PaginationRoot
-        count={saveIds.length}
-        pageSize={pageSize}
-        defaultPage={1}
-        pt={5}
-        onPageChange={(e) => setPage(e.page)}
-      >
-        <HStack gap={4}>
-          <PaginationPrevTrigger />
-          <PaginationItems />
-          <PaginationNextTrigger />
-        </HStack>
-      </PaginationRoot>
     </VStack>
   )
 }

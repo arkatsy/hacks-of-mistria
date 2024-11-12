@@ -6,3 +6,15 @@
 *, *::before, *::after {
   font-family: cursive, system-ui;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+body {
+  -ms-overflow-style:none;
+}

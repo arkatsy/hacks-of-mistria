@@ -7,7 +7,7 @@ import {
   PaginationPrevTrigger,
   PaginationNextTrigger,
   PaginationItems
-} from "./components/chakra/pagination"
+} from "./components/ui/pagination"
 import SaveCard from "./components/save-card"
 import { translateCalendarTime } from "./utils"
 

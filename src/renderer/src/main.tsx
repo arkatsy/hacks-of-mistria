@@ -2,7 +2,7 @@ import "./styles/globals.css"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { App } from "./app"
-import { Provider } from "./components/chakra/provider"
+import { Provider } from "./components/ui/provider"
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>

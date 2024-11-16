@@ -1,42 +1,42 @@
-import os from 'os'
-import fs from 'fs'
-import { execFileSync } from 'child_process'
-import path from 'path'
-import { HeaderJson, InfoJson, PlayerJson } from '../shared/jsons'
+import os from "os"
+import fs from "fs"
+import { execFileSync } from "child_process"
+import path from "path"
+import { HeaderJson, InfoJson, PlayerJson } from "../shared/jsons"
 
-export const isDev = process.env['NODE_ENV'] === 'development'
-export const isProd = process.env['NODE_ENV'] === 'production'
+export const isDev = process.env["NODE_ENV"] === "development"
+export const isProd = process.env["NODE_ENV"] === "production"
 
-export const rootPath = path.join(__dirname, '..', '..')
-export const vaultcPath = path.join(rootPath, 'vaultc.exe')
+export const rootPath = path.join(__dirname, "..", "..")
+export const vaultcPath = path.join(rootPath, "vaultc.exe")
 export const homePath = os.homedir()
-export const appDataPath = path.join(homePath, 'AppData')
-export const tempPath = path.join(appDataPath, 'Local', 'Temp')
-export const fomSavesPath = path.join(appDataPath, 'Local', 'FieldsOfMistria', 'saves')
-export const tempSavesPath = path.join(tempPath, 'moths-cheats')
+export const appDataPath = path.join(homePath, "AppData")
+export const tempPath = path.join(appDataPath, "Local", "Temp")
+export const fomSavesPath = path.join(appDataPath, "Local", "FieldsOfMistria", "saves")
+export const tempSavesPath = path.join(tempPath, "moths-cheats")
 
 export const jsonFileNames = [
-  'beach',
-  'checksums',
-  'deep_woods',
-  'earth_seal',
-  'eastern_road',
-  'farm',
-  'fire_seal',
-  'game_stats',
-  'gamedata',
-  'haydens_farm',
-  'header',
-  'info',
-  'narrows',
-  'npcs',
-  'player',
-  'player_home',
-  'quests',
-  'summit',
-  'town',
-  'water_seal',
-  'western_ruins'
+  "beach",
+  "checksums",
+  "deep_woods",
+  "earth_seal",
+  "eastern_road",
+  "farm",
+  "fire_seal",
+  "game_stats",
+  "gamedata",
+  "haydens_farm",
+  "header",
+  "info",
+  "narrows",
+  "npcs",
+  "player",
+  "player_home",
+  "quests",
+  "summit",
+  "town",
+  "water_seal",
+  "western_ruins"
 ] as const
 
 /**
@@ -45,7 +45,7 @@ export const jsonFileNames = [
  * @returns The parsed JSON object
  */
 export function readJsonFile<T>(filePath: string) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as T
+  return JSON.parse(fs.readFileSync(filePath, "utf-8")) as T
 }
 
 /**
@@ -54,7 +54,7 @@ export function readJsonFile<T>(filePath: string) {
  * @param data The data to be written to the file
  */
 export function writeJsonFile(filePath: string, data: any) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8')
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8")
 }
 
 /**
@@ -101,7 +101,7 @@ export function deleteDirIfExists(dirPath: string) {
 export function readFomSaves() {
   return fs
     .readdirSync(fomSavesPath)
-    .filter((file) => file.endsWith('.sav'))
+    .filter((file) => file.endsWith(".sav"))
     .map((file) => path.join(fomSavesPath, file))
 }
 
@@ -116,7 +116,7 @@ export const vaultc = {
    * @param unpackDirPath The path to the directory containing the unpacked json files
    */
   packSave: (savefilePath: string, unpackDirPath: string) => {
-    execFileSync(vaultcPath, ['pack', savefilePath, unpackDirPath])
+    execFileSync(vaultcPath, ["pack", savefilePath, unpackDirPath])
   },
   /**
    * @desc Unpacks a save file (a `.sav` file) into a directory with the unpacked json files
@@ -124,7 +124,7 @@ export const vaultc = {
    * @param unpackDirPath The path to the directory where the unpacked json files will be saved
    */
   unpackSave: (savefilePath: string, unpackDirPath: string) => {
-    execFileSync(vaultcPath, ['unpack', savefilePath, unpackDirPath])
+    execFileSync(vaultcPath, ["unpack", savefilePath, unpackDirPath])
   }
 }
 
@@ -136,7 +136,7 @@ export const vaultc = {
  * // returns 'game-1292331906-835634871'
  */
 export function getSaveIdFromPath(savePath: string) {
-  return path.basename(savePath).replace('.sav', '')
+  return path.basename(savePath).replace(".sav", "")
 }
 
 /**
@@ -187,27 +187,27 @@ export function unpackSavesToTemp() {
       fomSavePath: fomSavePath,
       saveId,
       jsonPaths: {
-        beach: path.join(unpackDirPath, 'beach.json'),
-        checksums: path.join(unpackDirPath, 'checksums.json'),
-        deep_woods: path.join(unpackDirPath, 'deep_woods.json'),
-        earth_seal: path.join(unpackDirPath, 'earth_seal.json'),
-        eastern_road: path.join(unpackDirPath, 'eastern_road.json'),
-        farm: path.join(unpackDirPath, 'farm.json'),
-        fire_seal: path.join(unpackDirPath, 'fire_seal.json'),
-        game_stats: path.join(unpackDirPath, 'game_stats.json'),
-        gamedata: path.join(unpackDirPath, 'gamedata.json'),
-        haydens_farm: path.join(unpackDirPath, 'haydens_farm.json'),
-        header: path.join(unpackDirPath, 'header.json'),
-        info: path.join(unpackDirPath, 'info.json'),
-        narrows: path.join(unpackDirPath, 'narrows.json'),
-        npcs: path.join(unpackDirPath, 'npcs.json'),
-        player: path.join(unpackDirPath, 'player.json'),
-        player_home: path.join(unpackDirPath, 'player_home.json'),
-        quests: path.join(unpackDirPath, 'quests.json'),
-        summit: path.join(unpackDirPath, 'summit.json'),
-        town: path.join(unpackDirPath, 'town.json'),
-        water_seal: path.join(unpackDirPath, 'water_seal.json'),
-        western_ruins: path.join(unpackDirPath, 'western_ruins.json')
+        beach: path.join(unpackDirPath, "beach.json"),
+        checksums: path.join(unpackDirPath, "checksums.json"),
+        deep_woods: path.join(unpackDirPath, "deep_woods.json"),
+        earth_seal: path.join(unpackDirPath, "earth_seal.json"),
+        eastern_road: path.join(unpackDirPath, "eastern_road.json"),
+        farm: path.join(unpackDirPath, "farm.json"),
+        fire_seal: path.join(unpackDirPath, "fire_seal.json"),
+        game_stats: path.join(unpackDirPath, "game_stats.json"),
+        gamedata: path.join(unpackDirPath, "gamedata.json"),
+        haydens_farm: path.join(unpackDirPath, "haydens_farm.json"),
+        header: path.join(unpackDirPath, "header.json"),
+        info: path.join(unpackDirPath, "info.json"),
+        narrows: path.join(unpackDirPath, "narrows.json"),
+        npcs: path.join(unpackDirPath, "npcs.json"),
+        player: path.join(unpackDirPath, "player.json"),
+        player_home: path.join(unpackDirPath, "player_home.json"),
+        quests: path.join(unpackDirPath, "quests.json"),
+        summit: path.join(unpackDirPath, "summit.json"),
+        town: path.join(unpackDirPath, "town.json"),
+        water_seal: path.join(unpackDirPath, "water_seal.json"),
+        western_ruins: path.join(unpackDirPath, "western_ruins.json")
       }
     }
 
@@ -222,8 +222,8 @@ export function unpackSavesToTemp() {
  * @param value The new value to be set
  */
 export function updateJsonValue(filePath: string, key: string, value: string | number) {
-  const file = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-  const keys = key.split('.')
+  const file = JSON.parse(fs.readFileSync(filePath, "utf-8"))
+  const keys = key.split(".")
 
   let current = file
 

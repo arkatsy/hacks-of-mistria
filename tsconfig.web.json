@@ -12,14 +12,9 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@renderer/*": [
-        "src/renderer/src/*"
-      ],
-      "@sprites/*": [
-        "src/renderer/src/assets/sprites/*"
-      ]
+      "@renderer/*": ["src/renderer/src/*"]
     },
     "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noUnusedParameters": false
   }
 }

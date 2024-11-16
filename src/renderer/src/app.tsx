@@ -1,15 +1,15 @@
-import fomClouds from './assets/fom-clouds.png'
-import fomLogo from './assets/fom-logo.webp'
-import { Image, Box, Flex, VStack, Input, Button, Text } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import fomClouds from "./assets/fom-clouds.png"
+import fomLogo from "./assets/fom-logo.webp"
+import { Image, Box, Flex, VStack, Input, Button, Text } from "@chakra-ui/react"
+import React, { useState } from "react"
 import {
   PaginationRoot,
   PaginationPrevTrigger,
   PaginationNextTrigger,
   PaginationItems
-} from './components/chakra/pagination'
-import SaveCard from './components/save-card'
-import { translateCalendarTime } from './utils'
+} from "./components/chakra/pagination"
+import SaveCard from "./components/save-card"
+import { translateCalendarTime } from "./utils"
 
 const pageSize = 5
 
@@ -75,11 +75,11 @@ function EditSave({ saveId, onBack }: { saveId: string; onBack: () => void }) {
 
 function SaveSelection({ onSaveSelected }: { onSaveSelected: (saveId: string) => void }) {
   const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState("")
 
   const filteredSaves = saves.filter((save) => {
     const query = search.toLowerCase()
-    const seasons = ['spring', 'summer', 'fall', 'winter']
+    const seasons = ["spring", "summer", "fall", "winter"]
     const season = seasons[translateCalendarTime(save.header.calendar_time)[1]]
     return (
       save.header.name.toLowerCase().includes(query) ||

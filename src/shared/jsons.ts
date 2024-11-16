@@ -1,5 +1,5 @@
 // Util types for the json types
-export type Weather = 'calm' | 'inclement' | 'heavy_inclement' | 'special' | string
+export type Weather = "calm" | "inclement" | "heavy_inclement" | "special" | string
 
 // Types for the json files
 export type HeaderJson = {
@@ -14,7 +14,7 @@ export type HeaderJson = {
   clock_time: number
   stats: {
     status_effects: (null | unknown)[]
-    end_of_day_status: 'normal' | string
+    end_of_day_status: "normal" | string
     base_health: number
     gold: number
     base_stamina: number
@@ -114,7 +114,7 @@ export type PlayerJson = {
     base_health: number
     status_effects: Array<null>
   }
-  pronoun_choice: 'they_them' | 'she_her' | 'he_him' | 'she_they' | 'he_they' | 'all' | 'none'
+  pronoun_choice: "they_them" | "she_her" | "he_him" | "she_they" | "he_they" | "all" | "none"
   birthday: number
   animal_cosmetic_unlocks: {
     alpaca: unknown[]

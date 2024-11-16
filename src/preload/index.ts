@@ -1,5 +1,5 @@
-import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type SortedLoadingSaves } from '../main/ipc'
+import { contextBridge, ipcRenderer } from "electron"
+import { IPC, type SortedLoadingSaves } from "../main/ipc"
 
 const api = {
   getSortedLoadingSaves: (): SortedLoadingSaves => {
@@ -23,4 +23,4 @@ const api = {
 }
 
 export type Api = typeof api
-contextBridge.exposeInMainWorld('api', api)
+contextBridge.exposeInMainWorld("api", api)

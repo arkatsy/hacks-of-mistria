@@ -3,7 +3,9 @@
   color: #000;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   font-family: cursive, system-ui;
 }
 
@@ -16,5 +18,5 @@
 }
 
 body {
-  -ms-overflow-style:none;
+  -ms-overflow-style: none;
 }

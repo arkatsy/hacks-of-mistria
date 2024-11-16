@@ -1,5 +1,4 @@
-import { HiOutlineSparkles } from 'react-icons/hi2'
-import type { Weather } from 'src/shared/jsons'
+import type { Weather } from "src/shared/jsons"
 
 /**
  * @desc Translates the playtime variable in header.json into a more accessible format
@@ -26,7 +25,7 @@ export function translatePlaytime(time: number) {
  */
 export function displayPlaytime(time: number) {
   const playtime = translatePlaytime(time)
-  const pad = (num: number) => String(num).padStart(2, '0')
+  const pad = (num: number) => String(num).padStart(2, "0")
   return `${playtime[0]}:${pad(playtime[1])}:${pad(playtime[2])}`
 }
 
@@ -41,11 +40,11 @@ export function displayPlaytime(time: number) {
 export function translateClockTime(time: number) {
   // 22032 -> 6:00 AM
   // 59152 -> 4:20 PM
-  var hours = Math.floor(time / 3600)
-  const meridiem = hours >= 12 && hours < 24 ? 'PM' : 'AM'
+  let hours = Math.floor(time / 3600)
+  const meridiem = hours >= 12 && hours < 24 ? "PM" : "AM"
   hours = hours > 12 ? hours % 12 : hours // change from military time
   hours = hours == 0 ? 12 : hours // hard code 24:00 to 12:00
-  var minutes = Math.floor((time % 3600) / 60)
+  let minutes = Math.floor((time % 3600) / 60)
   minutes -= minutes % 10
   return [hours, minutes, meridiem] as const
 }
@@ -57,7 +56,7 @@ export function translateClockTime(time: number) {
  */
 export function displayClockTime(time: number) {
   const clockTime = translateClockTime(time)
-  const pad = (num: number) => String(num).padStart(2, '0')
+  const pad = (num: number) => String(num).padStart(2, "0")
   return `${clockTime[0]}:${pad(clockTime[1])} ${clockTime[2]}`
 }
 
@@ -87,7 +86,7 @@ export function translateCalendarTime(time: number) {
 export function displayCalendarTime(time: number) {
   const calendarTime = translateCalendarTime(time)
   calendarTime[2] += 1 // days start at 0
-  const seasons = ['Spring', 'Summer', 'Fall', 'Winter']
+  const seasons = ["Spring", "Summer", "Fall", "Winter"]
   return `Year ${calendarTime[0]} ${seasons[calendarTime[1]]} ${calendarTime[2]}`
 }
 

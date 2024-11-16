@@ -2,6 +2,10 @@ import os from 'os'
 import fs from 'fs'
 import { execFileSync } from 'child_process'
 import path from 'path'
+import { HeaderJson, InfoJson, PlayerJson } from '../shared/jsons'
+
+export const isDev = process.env['NODE_ENV'] === 'development'
+export const isProd = process.env['NODE_ENV'] === 'production'
 
 export const rootPath = path.join(__dirname, '..', '..')
 export const vaultcPath = path.join(rootPath, 'vaultc.exe')
@@ -42,6 +46,42 @@ export const jsonFileNames = [
  */
 export function readJsonFile<T>(filePath: string) {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as T
+}
+
+/**
+ * @desc Serializes and writes data to a JSON file synchronously
+ * @param filePath The path to the file
+ * @param data The data to be written to the file
+ */
+export function writeJsonFile(filePath: string, data: any) {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8')
+}
+
+/**
+ * @desc Parses the `info.json` file from an unpacked save directory
+ * @param unpackedPath The path to the unpacked save directory
+ * @returns The parsed `info.json` object
+ */
+export function parseInfoJson(unpackedPath: string) {
+  return readJsonFile<InfoJson>(unpackedPath)
+}
+
+/**
+ * @desc Parses the `header.json` file from an unpacked save directory
+ * @param unpackedPath The path to the unpacked save directory
+ * @returns The parsed `header.json` object
+ */
+export function parseHeaderJson(unpackedPath: string) {
+  return readJsonFile<HeaderJson>(unpackedPath)
+}
+
+/**
+ * @desc Parses the `player.json` file from an unpacked save directory
+ * @param unpackedPath The path to the unpacked save directory
+ * @returns The parsed `player.json` object
+ */
+export function parsePlayerJson(unpackedPath: string) {
+  return readJsonFile<PlayerJson>(unpackedPath)
 }
 
 /**
@@ -173,4 +213,31 @@ export function unpackSavesToTemp() {
 
     unpackedSavesPathsCache.set(saveId, unpackedSaveInfo)
   }
+}
+
+/**
+ * @desc Updates a value in a JSON file (Needs to be tested for arrays. It should work I think?!)
+ * @param filePath The path to the JSON file
+ * @param key The key to be updated in the JSON file. It can also be a nested key separated by dots (e.g. 't2_world_facts.ari_name')
+ * @param value The new value to be set
+ */
+export function updateJsonValue(filePath: string, key: string, value: string | number) {
+  const file = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+  const keys = key.split('.')
+
+  let current = file
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    let key = keys[i]
+
+    if (!current[key]) {
+      current[key] = {}
+    }
+
+    current = current[key]
+  }
+
+  current[keys[keys.length - 1]] = value
+
+  writeJsonFile(filePath, file)
 }

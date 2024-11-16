@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { unpackSavesToTemp } from './utils'
-import { channels } from './ipc-channels'
+import { channels } from './ipc'
 
 // Electron runs first and then, when is ready it runs the callback we passed.
 app.whenReady().then(async () => {

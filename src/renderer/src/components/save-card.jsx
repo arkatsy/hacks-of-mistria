@@ -88,7 +88,9 @@ function SaveCard({ save, onClick }) {
             />
             -&nbsp;
             {displayClockTime(header.clock_time)} &nbsp;
-            <Box as="span">{autosave && "(autosave)"}</Box>
+          </Text>
+          <Text opacity={0.8} as="span">
+            {autosave && "autosave"}
           </Text>
         </Flex>
 

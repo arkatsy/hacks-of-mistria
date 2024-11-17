@@ -81,10 +81,12 @@ function SaveSelection({ onSaveSelected }) {
     const query = search.toLowerCase()
     const seasons = ["spring", "summer", "fall", "winter"]
     const season = seasons[translateCalendarTime(save.header.calendar_time)[1]]
+    const autosave = save.autosave ? "autosave" : ""
     return (
       save.header.name.toLowerCase().includes(query) ||
       save.header.farm_name.toLowerCase().includes(query) ||
-      season.toLowerCase().includes(query)
+      season.toLowerCase().includes(query) ||
+      autosave.toLowerCase().includes(query)
     )
   })
 
@@ -115,7 +117,7 @@ function SaveSelection({ onSaveSelected }) {
           w="full"
           value={search}
           onChange={handleSearchChange}
-          placeholder="Search for a save by character name, farm name or season"
+          placeholder="Search for a save by character name, farm name, season or autosave"
         />
         {visibleSaves.length === 0 ? (
           <Box>No saves found</Box>

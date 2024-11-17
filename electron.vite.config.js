@@ -13,7 +13,9 @@ export default defineConfig({
     resolve: {
       alias: {
         "@renderer": resolve("src/renderer/src"),
-        "@sprites": resolve("src/renderer/src/assets/sprites")
+        "@components": resolve("src/renderer/src/components"),
+        "@assets": resolve("src/renderer/src/assets"),
+        "@utils": resolve("src/renderer/src/utils")
       }
     },
     plugins: [react()]

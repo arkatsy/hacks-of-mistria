@@ -1,3 +1,5 @@
+export const saves = window.api.getSortedLoadingSaves()
+
 /**
  * @desc Translates the playtime variable in header.json into a more accessible format
  * @param time The playtime variable from header.json in seconds

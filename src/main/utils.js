@@ -164,7 +164,7 @@ export const unpackedSavesPathsCache = new Map()
  * @desc Unpacks all the save files from the game's save directory (`fomSavesPath`) to a temporary directory (`tempSavesPath`)
  * It also updates the `unpackedSavesPathsCache` with the new unpacked save info.
  */
-export async function unpackSavesToTemp() {
+export function unpackSavesToTemp() {
   deleteDirIfExists(tempSavesPath)
 
   const fomSaves = readFomSaves()
@@ -175,7 +175,7 @@ export async function unpackSavesToTemp() {
 
     deleteDirIfExists(unpackDirPath)
 
-    await vaultc.unpackSave(fomSavePath, unpackDirPath)
+    vaultc.unpackSave(fomSavePath, unpackDirPath)
 
     const unpackedSaveInfo = {
       unpackPath: unpackDirPath,

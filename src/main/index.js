@@ -3,7 +3,7 @@ import { join } from "path"
 import { electronApp } from "@electron-toolkit/utils"
 import icon from "../../resources/icon.png?asset"
 import { isDev, unpackSavesToTemp } from "./utils"
-import { channels } from "./ipc"
+import { channels, IPC } from "./ipc"
 
 // Electron runs first and then, when is ready it runs the callback we passed.
 app.whenReady().then(async () => {
@@ -51,6 +51,10 @@ app.whenReady().then(async () => {
   mainWindow.webContents.openDevTools()
 })
 
-Object.keys(channels).forEach((channelName) => {
-  ipcMain.on(channelName, channels[channelName])
-})
+ipcMain.on(IPC.GET_SORTED_LOADING_SAVES, channels[IPC.GET_SORTED_LOADING_SAVES])
+
+Object.keys(channels)
+  .filter((channel) => channel !== IPC.GET_SORTED_LOADING_SAVES)
+  .forEach((channelName) => {
+    ipcMain.handle(channelName, channels[channelName])
+  })

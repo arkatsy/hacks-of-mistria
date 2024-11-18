@@ -38,6 +38,10 @@ export const jsonFileNames = [
   "western_ruins"
 ]
 
+export function isNumber(value) {
+  return typeof value === "number" && !Number.isNaN(value)
+}
+
 /**
  * @desc Reads and parses a JSON file from a given path synchronously
  * @param filePath The path to the JSON file
@@ -160,7 +164,7 @@ export const unpackedSavesPathsCache = new Map()
  * @desc Unpacks all the save files from the game's save directory (`fomSavesPath`) to a temporary directory (`tempSavesPath`)
  * It also updates the `unpackedSavesPathsCache` with the new unpacked save info.
  */
-export function unpackSavesToTemp() {
+export async function unpackSavesToTemp() {
   deleteDirIfExists(tempSavesPath)
 
   const fomSaves = readFomSaves()
@@ -171,7 +175,7 @@ export function unpackSavesToTemp() {
 
     deleteDirIfExists(unpackDirPath)
 
-    vaultc.unpackSave(fomSavePath, unpackDirPath)
+    await vaultc.unpackSave(fomSavePath, unpackDirPath)
 
     const unpackedSaveInfo = {
       unpackPath: unpackDirPath,

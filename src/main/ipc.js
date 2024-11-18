@@ -1,24 +1,50 @@
-import { unpackedSavesPathsCache, updateJsonValue, parseInfoJson, parseHeaderJson } from "./utils"
+import {
+  unpackedSavesPathsCache,
+  updateJsonValue,
+  parseInfoJson,
+  parseHeaderJson,
+  vaultc,
+  unpackSavesToTemp,
+  isNumber
+} from "./utils"
 
 export const IPC = {
+  UPDATE_SAVE: "update/save",
   GET_SORTED_LOADING_SAVES: "get/sorted-loading-saves",
+  GET_SAVE_DATA: "get/save-data",
   SET_GOLD: "set/gold",
-  SET_ESSENCE: "set/essence",
-  SET_HEALTH: "set/health",
-  SET_STAMINA: "set/stamina",
-  SET_MANA: "set/mana"
+  SET_ESSENCE: "set/essence"
 }
 
 export const channels = {
+  [IPC.UPDATE_SAVE]: handleUpdateSave,
   [IPC.GET_SORTED_LOADING_SAVES]: handleGetSortedLoadingSaves,
+  [IPC.GET_SAVE_DATA]: handleGetSaveData,
   [IPC.SET_GOLD]: handleSetGold,
-  [IPC.SET_ESSENCE]: handleSetEssence,
-  [IPC.SET_HEALTH]: handleSetHealth,
-  [IPC.SET_STAMINA]: handleSetStamina,
-  [IPC.SET_MANA]: handleSetMana
+  [IPC.SET_ESSENCE]: handleSetEssence
+}
+
+function handleUpdateSave(e, saveId) {
+  console.log(`[handleUpdateSave:${saveId}]`)
+
+  const saveInfo = unpackedSavesPathsCache.get(saveId)
+  if (!saveInfo) {
+    console.log(`[handleUpdateSave:${saveId}]: Couldn't find save in cache`)
+    return false
+  }
+
+  const { jsonPaths } = saveInfo
+  const infoData = parseInfoJson(jsonPaths.info)
+  updateJsonValue(jsonPaths.info, "last_played", infoData.last_played + 0.00000000001)
+
+  vaultc.packSave(saveInfo.unpackPath, saveInfo.fomSavePath)
+
+  unpackSavesToTemp()
+  return true
 }
 
 function handleGetSortedLoadingSaves(e) {
+  console.log(`[handleGetSortedLoadingSaves]`)
   const unpackedSavesInfo = Array.from(unpackedSavesPathsCache.values())
 
   const sortedSavesByLastPlayed = unpackedSavesInfo
@@ -37,9 +63,36 @@ function handleGetSortedLoadingSaves(e) {
   e.returnValue = sortedSavesByLastPlayed
 }
 
-function handleSetGold(e, saveId, gold) {
+function handleGetSaveData(e, saveId) {
+  console.log(`[handleGetSaveData:${saveId}]`)
   const saveInfo = unpackedSavesPathsCache.get(saveId)
   if (!saveInfo) {
+    console.log(`[handleGetSaveData:${saveId}]: Couldn't find save in cache`)
+    return null
+  }
+
+  const headerData = parseHeaderJson(saveInfo.jsonPaths.header)
+  // const playerData = parseHeaderJson(saveInfo.jsonPaths.player)
+
+  return {
+    name: headerData.name,
+    farmName: headerData.farm_name,
+    gold: headerData.stats.gold,
+    essence: headerData.stats.essence
+  }
+}
+
+function handleSetGold(e, saveId, gold) {
+  console.log(`[handleSetGold:${saveId}]: Updating gold to ${gold}`)
+
+  if (!isNumber(gold)) {
+    console.log(`[handleSetGold:${saveId}]: Gold is not a number ${gold}, won't update`)
+    return false
+  }
+
+  const saveInfo = unpackedSavesPathsCache.get(saveId)
+  if (!saveInfo) {
+    console.log(`couldn't find save with id ${saveId} in cache`)
     return false
   }
 
@@ -52,8 +105,16 @@ function handleSetGold(e, saveId, gold) {
 }
 
 function handleSetEssence(e, saveId, essence) {
+  console.log(`[handleSetEssence:${saveId}]: Updating essence to ${essence}`)
+
+  if (!isNumber(essence)) {
+    console.log(`[handleSetEssence:${saveId}]: Essence is not a number ${essence}, won't update`)
+    return false
+  }
+
   const saveInfo = unpackedSavesPathsCache.get(saveId)
   if (!saveInfo) {
+    console.log(`couldn't find save with id ${saveId} in cache`)
     return false
   }
 
@@ -61,57 +122,6 @@ function handleSetEssence(e, saveId, essence) {
 
   updateJsonValue(jsonPaths.header, "stats.essence", essence)
   updateJsonValue(jsonPaths.player, "stats.essence", essence)
-
-  return true
-}
-
-function handleSetHealth(e, saveId, health) {
-  const saveInfo = unpackedSavesPathsCache.get(saveId)
-  if (!saveInfo) {
-    return false
-  }
-
-  const { jsonPaths } = saveInfo
-
-  updateJsonValue(jsonPaths.header, "stats.base_health", health)
-  updateJsonValue(jsonPaths.header, "stats.health_current", health)
-
-  updateJsonValue(jsonPaths.player, "stats.base_health", health)
-  updateJsonValue(jsonPaths.player, "stats.health_current", health)
-
-  return true
-}
-
-function handleSetStamina(e, saveId, stamina) {
-  const saveInfo = unpackedSavesPathsCache.get(saveId)
-  if (!saveInfo) {
-    return false
-  }
-
-  const { jsonPaths } = saveInfo
-
-  updateJsonValue(jsonPaths.header, "stats.base_stamina", stamina)
-  updateJsonValue(jsonPaths.header, "stats.stamina_current", stamina)
-
-  updateJsonValue(jsonPaths.player, "stats.base_stamina", stamina)
-  updateJsonValue(jsonPaths.player, "stats.stamina_current", stamina)
-
-  return true
-}
-
-function handleSetMana(e, saveId, mana) {
-  const saveInfo = unpackedSavesPathsCache.get(saveId)
-  if (!saveInfo) {
-    return false
-  }
-
-  const { jsonPaths } = saveInfo
-
-  updateJsonValue(jsonPaths.header, "stats.mana_max", mana)
-  updateJsonValue(jsonPaths.header, "stats.mana_current", mana)
-
-  updateJsonValue(jsonPaths.player, "stats.mana_max", mana)
-  updateJsonValue(jsonPaths.player, "stats.mana_current", mana)
 
   return true
 }

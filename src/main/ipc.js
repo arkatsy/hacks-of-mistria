@@ -13,7 +13,8 @@ export const IPC = {
   GET_SORTED_LOADING_SAVES: "get/sorted-loading-saves",
   GET_SAVE_DATA: "get/save-data",
   SET_GOLD: "set/gold",
-  SET_ESSENCE: "set/essence"
+  SET_ESSENCE: "set/essence",
+  SET_CALENDAR_TIME: "set/calendar-time"
 }
 
 export const channels = {
@@ -21,7 +22,8 @@ export const channels = {
   [IPC.GET_SORTED_LOADING_SAVES]: handleGetSortedLoadingSaves,
   [IPC.GET_SAVE_DATA]: handleGetSaveData,
   [IPC.SET_GOLD]: handleSetGold,
-  [IPC.SET_ESSENCE]: handleSetEssence
+  [IPC.SET_ESSENCE]: handleSetEssence,
+  [IPC.SET_CALENDAR_TIME]: handleSetCalendarTime
 }
 
 function handleUpdateSave(e, saveId) {
@@ -78,7 +80,8 @@ function handleGetSaveData(e, saveId) {
     name: headerData.name,
     farmName: headerData.farm_name,
     gold: headerData.stats.gold,
-    essence: headerData.stats.essence
+    essence: headerData.stats.essence,
+    calendarTime: headerData.calendar_time
   }
 }
 
@@ -122,6 +125,35 @@ function handleSetEssence(e, saveId, essence) {
 
   updateJsonValue(jsonPaths.header, "stats.essence", essence)
   updateJsonValue(jsonPaths.player, "stats.essence", essence)
+
+  return true
+}
+
+function handleSetCalendarTime(e, saveId, calendarTime) {
+  console.log(`[handleSetCalendarTime:${saveId}]: Updating calendar time to ${calendarTime}`)
+
+  if (!isNumber(calendarTime)) {
+    console.log(`[handleSetCalendarTime:${saveId}]: Calendar time is not a number ${calendarTime}, won't update`)
+    return false
+  }
+
+  if (calendarTime % 86400 != 0) {
+    console.log(`[handleSetCalendarTime:${saveId}]: Calendar time ${calendarTime} is not a multiple of 86400, won't update`)
+    return false
+  }
+
+  const saveInfo = unpackedSavesPathsCache.get(saveId)
+  if (!saveInfo) {
+    console.log(`couldn't find save with id ${saveId} in cache`)
+    return false
+  }
+
+  const { jsonPaths } = saveInfo
+
+  updateJsonValue(jsonPaths.header, "calendar_time", calendarTime)
+  updateJsonValue(jsonPaths.gamedata, "date", calendarTime)
+  //TODO: IMPLEMENT DAY OF THE WEEK
+  //TODO: RENAME TO DATE
 
   return true
 }

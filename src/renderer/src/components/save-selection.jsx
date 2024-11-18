@@ -24,7 +24,8 @@ export default function SaveSelection({ onSaveSelected }) {
       save.header.name.toLowerCase().includes(query) ||
       save.header.farm_name.toLowerCase().includes(query) ||
       season.toLowerCase().includes(query) ||
-      autosave.toLowerCase().includes(query)
+      autosave.toLowerCase().includes(query) ||
+      save.id.includes(query)
     )
   })
 

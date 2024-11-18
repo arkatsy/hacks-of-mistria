@@ -88,6 +88,15 @@ export function parsePlayerJson(unpackedPath) {
 }
 
 /**
+ * @desc Parses the `gamedata.json` file from an unpacked save directory
+ * @param unpackedPath The path to the unpacked save directory
+ * @returns The parsed `player.json` object
+ */
+export function parseGamedataJson(unpackedPath) {
+  return readJsonFile(unpackedPath)
+}
+
+/**
  * @desc Deletes a directory if exists
  * @param dirPath The path to the directory to be deleted
  */

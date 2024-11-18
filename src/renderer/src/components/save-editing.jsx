@@ -25,6 +25,7 @@ export default function SaveEditing({ saveId, onBack }) {
     setIsApplyingEdits(true)
     await window.api.setGold(saveId, edits.gold)
     await window.api.setEssence(saveId, edits.essence)
+    await window.api.setCalendarTime(saveId, edits.calendarTime)
 
     const success = await window.api.updateSave(saveId)
     setIsApplyingEdits(false)
@@ -46,6 +47,7 @@ export default function SaveEditing({ saveId, onBack }) {
 
   const setGold = (newGold) => setEdits((edits) => ({ ...edits, gold: newGold }))
   const setEssence = (newEssence) => setEdits((edits) => ({ ...edits, essence: newEssence }))
+  const setCalendarTime = (newCalendarTime) => setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
 
   const shouldDisable = isLoadingSaveData || isApplyingEdits
 
@@ -82,12 +84,22 @@ export default function SaveEditing({ saveId, onBack }) {
           </Box>
         ) : (
           <Grid templateColumns="repeat(3, 1fr)" gap="6">
-            <NumberInput value={edits.gold} onValueChange={setGold} label="Gold" step={10} />
+            <NumberInput
+              value={edits.gold}
+              onValueChange={setGold}
+              label="Gold"
+              step={10} />
             <NumberInput
               value={edits.essence}
               onValueChange={setEssence}
               label="Essence"
               step={10}
+            />
+            <NumberInput
+              value={edits.calendarTime}
+              onValueChange={setCalendarTime}
+              label="Calendar Time"
+              step={86400}
             />
           </Grid>
         )}

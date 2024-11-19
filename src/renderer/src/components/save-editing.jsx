@@ -1,6 +1,6 @@
-import { Box, Flex, Grid, Spinner, Text } from "@chakra-ui/react"
+import { Box, Center, Flex, Grid, Spinner, Text } from "@chakra-ui/react"
 import { Button } from "@components/ui/button"
-import { saves } from "@utils"
+import { saves, displayCalendarTime } from "@utils"
 import { useEffect, useState } from "react"
 import { NumberInputRoot, NumberInputField } from "@components/ui/number-input"
 
@@ -47,14 +47,20 @@ export default function SaveEditing({ saveId, onBack }) {
 
   const setGold = (newGold) => setEdits((edits) => ({ ...edits, gold: newGold }))
   const setEssence = (newEssence) => setEdits((edits) => ({ ...edits, essence: newEssence }))
-  const setCalendarTime = (newCalendarTime) => setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
+  const setCalendarTime = (newCalendarTime) =>
+    setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
 
-  const shouldDisable = isLoadingSaveData || isApplyingEdits
+  const shouldPreventUserInteraction = isLoadingSaveData || isApplyingEdits
+  const loadingMessage = isLoadingSaveData
+    ? "Reloading Save..."
+    : isApplyingEdits
+      ? "Applying edits..."
+      : ""
 
   return (
     <Box px={6} w="full">
       <Flex justifyContent="space-between" pos="relative">
-        <Button variant="outline" onClick={onBack} disabled={shouldDisable}>
+        <Button variant="outline" onClick={onBack} disabled={shouldPreventUserInteraction}>
           Back
         </Button>
         <Flex flexDir="column" gap={2}>
@@ -62,12 +68,11 @@ export default function SaveEditing({ saveId, onBack }) {
             <Button
               variant="subtle"
               onClick={refreshSaveData}
-              loading={isLoadingSaveData}
-              disabled={shouldDisable}
+              disabled={shouldPreventUserInteraction}
             >
               Reload Save
             </Button>
-            <Button onClick={applyEdits} loading={isApplyingEdits}>
+            <Button onClick={applyEdits} disabled={shouldPreventUserInteraction}>
               Apply Edits
             </Button>
           </Flex>
@@ -77,25 +82,23 @@ export default function SaveEditing({ saveId, onBack }) {
         </Flex>
       </Flex>
       <Box my={10}>
-        {isLoadingSaveData || isApplyingEdits ? (
-          <Box>
-            Refreshing
-            <Spinner />
-          </Box>
+        {shouldPreventUserInteraction ? (
+          <Center>
+            <Flex flexDir="column" gap={4} alignItems="center">
+              <Text>{loadingMessage}</Text>
+              <Spinner />
+            </Flex>
+          </Center>
         ) : (
           <Grid templateColumns="repeat(3, 1fr)" gap="6">
-            <NumberInput
-              value={edits.gold}
-              onValueChange={setGold}
-              label="Gold"
-              step={10} />
+            <NumberInput value={edits.gold} onValueChange={setGold} label="Gold" step={10} />
             <NumberInput
               value={edits.essence}
               onValueChange={setEssence}
               label="Essence"
               step={10}
             />
-            <NumberInput
+            <CalendarInput
               value={edits.calendarTime}
               onValueChange={setCalendarTime}
               label="Calendar Time"
@@ -105,6 +108,28 @@ export default function SaveEditing({ saveId, onBack }) {
         )}
       </Box>
     </Box>
+  )
+}
+
+function CalendarInput({ value, onValueChange, step, min, label }) {
+  min ??= 0
+  step ??= 1
+
+  const handleValueChange = (e) => {
+    onValueChange(+e.value)
+  }
+
+  return (
+    <Flex flexDir="column" gap={2}>
+      <Flex justifyContent="space-between">
+        <Box as="label">{label}</Box>
+        <Box opacity={0.8}>{displayCalendarTime(value)}</Box>
+      </Flex>
+
+      <NumberInputRoot min={0} step={step} value={+value || 0} onValueChange={handleValueChange}>
+        <NumberInputField />
+      </NumberInputRoot>
+    </Flex>
   )
 }
 

@@ -7,6 +7,7 @@ const api = {
   getSaveData: async (saveId) => ipcRenderer.invoke(IPC.GET_SAVE_DATA, saveId),
   setGold: async (saveId, gold) => ipcRenderer.invoke(IPC.SET_GOLD, saveId, gold),
   setEssence: async (saveId, essence) => ipcRenderer.invoke(IPC.SET_ESSENCE, saveId, essence),
+  setRenown: async (saveId, renown) => ipcRenderer.invoke(IPC.SET_RENOWN, saveId, renown),
   setCalendarTime: async (saveId, calendarTime) => ipcRenderer.invoke(IPC.SET_CALENDAR_TIME, saveId, calendarTime)
 }
 

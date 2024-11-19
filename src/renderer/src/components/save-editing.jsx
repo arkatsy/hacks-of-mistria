@@ -25,6 +25,7 @@ export default function SaveEditing({ saveId, onBack }) {
     setIsApplyingEdits(true)
     await window.api.setGold(saveId, edits.gold)
     await window.api.setEssence(saveId, edits.essence)
+    await window.api.setRenown(saveId, edits.renown)
     await window.api.setCalendarTime(saveId, edits.calendarTime)
 
     const success = await window.api.updateSave(saveId)
@@ -47,6 +48,7 @@ export default function SaveEditing({ saveId, onBack }) {
 
   const setGold = (newGold) => setEdits((edits) => ({ ...edits, gold: newGold }))
   const setEssence = (newEssence) => setEdits((edits) => ({ ...edits, essence: newEssence }))
+  const setRenown = (newRenown) => setEdits((edits) => ({ ...edits, renown: newRenown }))
   const setCalendarTime = (newCalendarTime) =>
     setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
 
@@ -98,13 +100,19 @@ export default function SaveEditing({ saveId, onBack }) {
               label="Essence"
               step={10}
             />
-            {/* <CalendarInput
+            <NumberInput
+              value={edits.renown}
+              onValueChange={setRenown}
+              label="Renown"
+              step={10}
+            />
+            <CalendarInput
               value={edits.calendarTime}
               onValueChange={setCalendarTime}
               label="Calendar Time"
               step={86400}
-            /> */}
-            <DateInput
+            />
+            {/* <DateInput
               value={edits.calendarTime}
               onValueChange={setCalendarTime}
               yearLabel="Year"
@@ -112,7 +120,7 @@ export default function SaveEditing({ saveId, onBack }) {
               dayLabel="Day"
               yearStep={9676800}
               dayStep={86400}
-            />
+            /> */}
           </Grid>
         )}
       </Box>
@@ -125,6 +133,7 @@ function CalendarInput({ value, onValueChange, step, min, label }) {
   step ??= 1
 
   const handleValueChange = (e) => {
+    console.log(e)
     onValueChange(+e.value)
   }
 
@@ -147,9 +156,14 @@ function DateInput({ value, onValueChange, yearStep, dayStep, min, yearLabel, se
 
   let [year, season, day] = translateCalendarTime(value)
 
-  const handleValueChange = (e) => {
+  const handleYearValueChange = (e) => {
     console.log(e)
-    onValueChange(+e.value)
+    onValueChange(+translateCalendarTime(e.value)[0])
+  }
+
+  const handleDayValueChange = (e) => {
+    console.log(+translateCalendarTime(e.value)[2])
+    onValueChange(+translateCalendarTime(e.value)[2])
   }
 
   return (
@@ -158,13 +172,13 @@ function DateInput({ value, onValueChange, yearStep, dayStep, min, yearLabel, se
       <Flex flexDir="row" gap={1}>
         <Flex flexDir="column" gap={2}>
           <Box>{yearLabel}</Box>
-          <NumberInputRoot min={0} step={yearStep} value={+year || 0} onValueChange={handleValueChange}>
+          <NumberInputRoot min={0} step={yearStep} value={+year || 0} onValueChange={handleYearValueChange} allowOverflow>
             <NumberInputField />
           </NumberInputRoot>
         </Flex>
         <Flex flexDir="column" gap={2}>
           <Box>{dayLabel}</Box>
-          <NumberInputRoot min={0} step={dayStep} value={+day || 0} onValueChange={handleValueChange}>
+          <NumberInputRoot min={0} step={dayStep} value={+day || 0} onValueChange={handleDayValueChange} allowOverflow>
             <NumberInputField />
           </NumberInputRoot>
         </Flex>

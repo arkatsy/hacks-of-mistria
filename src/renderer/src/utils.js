@@ -74,7 +74,7 @@ export function translateCalendarTime(time) {
   // 2419200 * 4 = 9676800 seconds = 1 year
   const year = Math.floor(time / 9676800) + 1
   const season = Math.floor((time % 9676800) / 2419200) // convert seconds to months
-  const day = Math.trunc((time % 2419200) / 86400)
+  const day = Math.trunc((time % 2419200) / 86400) + 1 // days start at 0
   return [year, season, day]
 }
 
@@ -85,7 +85,6 @@ export function translateCalendarTime(time) {
  */
 export function displayCalendarTime(time) {
   const calendarTime = translateCalendarTime(time)
-  calendarTime[2] += 1 // days start at 0
   const seasons = ["Spring", "Summer", "Fall", "Winter"]
   return `Year ${calendarTime[0]} ${seasons[calendarTime[1]]} ${calendarTime[2]}`
 }
@@ -99,7 +98,7 @@ export function displayCalendarTime(time) {
 export function getWeather(time, forecast) {
   // Weather is stored in forecast array for the entire month
   const calendarTime = translateCalendarTime(time)
-  return forecast[calendarTime[2]]
+  return forecast[calendarTime[2] - 1]
 }
 
 /**

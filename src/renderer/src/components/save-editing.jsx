@@ -1,6 +1,6 @@
 import { Box, Center, Flex, Grid, Spinner, Text } from "@chakra-ui/react"
 import { Button } from "@components/ui/button"
-import { saves, displayCalendarTime } from "@utils"
+import { saves, translateCalendarTime, displayCalendarTime } from "@utils"
 import { useEffect, useState } from "react"
 import { NumberInputRoot, NumberInputField } from "@components/ui/number-input"
 
@@ -98,11 +98,20 @@ export default function SaveEditing({ saveId, onBack }) {
               label="Essence"
               step={10}
             />
-            <CalendarInput
+            {/* <CalendarInput
               value={edits.calendarTime}
               onValueChange={setCalendarTime}
               label="Calendar Time"
               step={86400}
+            /> */}
+            <DateInput
+              value={edits.calendarTime}
+              onValueChange={setCalendarTime}
+              yearLabel="Year"
+              seasonLabel="Season"
+              dayLabel="Day"
+              yearStep={9676800}
+              dayStep={86400}
             />
           </Grid>
         )}
@@ -129,6 +138,37 @@ function CalendarInput({ value, onValueChange, step, min, label }) {
       <NumberInputRoot min={0} step={step} value={+value || 0} onValueChange={handleValueChange}>
         <NumberInputField />
       </NumberInputRoot>
+    </Flex>
+  )
+}
+
+function DateInput({ value, onValueChange, yearStep, dayStep, min, yearLabel, seasonLabel, dayLabel }) {
+  min ??= 0
+
+  let [year, season, day] = translateCalendarTime(value)
+
+  const handleValueChange = (e) => {
+    console.log(e)
+    onValueChange(+e.value)
+  }
+
+  return (
+    <Flex flexDir="column" gap={2}>
+      <Box opacity={0.8}>{displayCalendarTime(value)}</Box>
+      <Flex flexDir="row" gap={1}>
+        <Flex flexDir="column" gap={2}>
+          <Box>{yearLabel}</Box>
+          <NumberInputRoot min={0} step={yearStep} value={+year || 0} onValueChange={handleValueChange}>
+            <NumberInputField />
+          </NumberInputRoot>
+        </Flex>
+        <Flex flexDir="column" gap={2}>
+          <Box>{dayLabel}</Box>
+          <NumberInputRoot min={0} step={dayStep} value={+day || 0} onValueChange={handleValueChange}>
+            <NumberInputField />
+          </NumberInputRoot>
+        </Flex>
+      </Flex>
     </Flex>
   )
 }

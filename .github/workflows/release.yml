@@ -1,9 +1,15 @@
 name: Build/release Moth's Cheats app
 
 on:
-  push:
-    tags:
-      - v*.*.*
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number"
+        required: true
+        default: "1.0.0"
+  # push:
+  #   tags:
+  #     - v*.*.*
 
 jobs:
   release:

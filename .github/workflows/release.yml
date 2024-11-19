@@ -6,10 +6,10 @@ on:
       version:
         description: "Version number"
         required: true
-        default: "1.0.0"
-  # push:
-  #   tags:
-  #     - v*.*.*
+        default: "0.0.1"
+  push:
+    tags:
+      - v*.*.*
 
 jobs:
   release:
@@ -34,7 +34,6 @@ jobs:
         run: npm install
 
       - name: build
-        # if: matrix.os == 'windows-latest'
         run: npm run build
 
       - name: release

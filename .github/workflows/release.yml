@@ -53,4 +53,4 @@ jobs:
             dist/*.exe
         tag_name: v${{ steps.get_version.outputs.VERSION }}
         env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

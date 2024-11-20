@@ -8,8 +8,8 @@ on:
         required: true
         default: "0.0.1"
   push:
-    tags:
-      - v*.*.*
+    paths:
+      - "package.json"
 
 jobs:
   release:
@@ -33,14 +33,24 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Check version change
+        run: node check_version_change.js
+
+      - name: Extract version from package.json
+        id: get_version
+        run: echo "::set-output name=VERSION::$(node -p \"require('./package.json').version\")"
+
       - name: build
+        if: success() || (failure() && steps.check_version_change.outcome == 'success')
         run: npm run build
 
       - name: release
+        if: success() || (failure() && steps.check_version_change.outcome == 'success')
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           files: |
             dist/*.exe
+        tag_name: v${{ steps.get_version.outputs.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}

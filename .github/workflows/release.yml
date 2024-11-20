@@ -54,5 +54,6 @@ jobs:
           files: |
             dist/*.exe
           tag_name: Release v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

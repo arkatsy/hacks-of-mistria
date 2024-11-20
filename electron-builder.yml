@@ -14,11 +14,16 @@ asarUnpack:
 win:
   icon: build/icon.ico
   executableName: moths-cheats
+  target:
+    - nsis
+    - portable
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+portable:
+  artifactName: ${name}-${version}-portable.${ext}
 npmRebuild: false
 publish:
   provider: generic

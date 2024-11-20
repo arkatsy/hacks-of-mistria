@@ -42,6 +42,14 @@ export function isNumber(value) {
   return typeof value === "number" && !Number.isNaN(value)
 }
 
+/**
+ * @desc Translates the calendar_time variable in header.json into a more accessible format
+ * @param time The calendar_time variable from header.json in seconds
+ * @returns A tuple containing the clock time where
+ * - calendarTime[0] = year
+ * - calendarTime[1] = season
+ * - calendarTime[2] = day
+ */
 export function translateCalendarTime(time) {
   // Spring = 0, Summer = 1, Fall = 2, Winter = 3
   // 86400 * 28 = 2419200 seconds = 1 month because 28 days per month

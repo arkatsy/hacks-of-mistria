@@ -1,4 +1,5 @@
 export const saves = window.api.getSortedLoadingSaves()
+export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
 
 /**
  * @desc Translates the playtime variable in header.json into a more accessible format
@@ -85,8 +86,24 @@ export function translateCalendarTime(time) {
  */
 export function displayCalendarTime(time) {
   const calendarTime = translateCalendarTime(time)
-  const seasons = ["Spring", "Summer", "Fall", "Winter"]
-  return `Year ${calendarTime[0]} ${seasons[calendarTime[1]]} ${calendarTime[2]}`
+  return `Year ${calendarTime[0]} ${seasonsList[calendarTime[1]]} ${calendarTime[2]}`
+}
+
+/**
+ * @desc Translates the year, season, and day variables back into a calendar_time variable
+ * @param year The year # that we are wanting to translate
+ * @param season The season # that we are wanting to translate (0-3)
+ * @param day The day # that we are wanting to translate
+ * @returns A calendar_time value that is the sum of all the inputs translated to seconds
+ */
+export function getCalendarTime(year, season, day) {
+  // Spring = 0, Summer = 1, Fall = 2, Winter = 3
+  // 86400 * 28 = 2419200 seconds = 1 month because 28 days per month
+  // 2419200 * 4 = 9676800 seconds = 1 year
+  year = (year - 1) * 9676800
+  season = season * 2419200
+  day = (day - 1) * 86400
+  return year + season + day
 }
 
 /**

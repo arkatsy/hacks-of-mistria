@@ -183,7 +183,6 @@ function handleSetCalendarTime(e, saveId, calendarTime) {
   updateJsonValue(jsonPaths.header, "calendar_time", calendarTime)
   updateJsonValue(jsonPaths.gamedata, "date", calendarTime)
   //TODO: IMPLEMENT DAY OF THE WEEK
-  //TODO: RENAME TO DATE
 
   return true
 }

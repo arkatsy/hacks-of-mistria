@@ -167,8 +167,9 @@ function SelectInput({ collection, textLabel, currentValue, onValueChange }) {
   return (
     <SelectRoot 
       collection={collection} 
-      size="sm" 
+      size="md" 
       width="320px"
+      positioning={{ placement: "bottom", flip: false }}
       onValueChange={(e) => onValueChange(e.value[0])}
     >
       <SelectLabel>{textLabel}</SelectLabel>

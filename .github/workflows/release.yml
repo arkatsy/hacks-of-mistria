@@ -40,7 +40,7 @@ jobs:
 
       - name: Extract version from package.json
         id: get_version
-        run: echo "::set-output name=VERSION::$(jq -r .version package.json)"
+        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
       - name: build
         if: success() || (failure() && steps.check_version_change.outcome == 'success')
@@ -53,5 +53,6 @@ jobs:
           draft: true
           files: |
             dist/*.exe
+        tag_name: v${{ env.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

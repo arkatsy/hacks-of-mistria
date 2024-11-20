@@ -8,6 +8,8 @@ import {
   isNumber
 } from "./utils"
 
+import { translateCalendarTime } from "./utils"
+
 export const IPC = {
   UPDATE_SAVE: "update/save",
   GET_SORTED_LOADING_SAVES: "get/sorted-loading-saves",
@@ -84,7 +86,10 @@ function handleGetSaveData(e, saveId) {
     gold: headerData.stats.gold,
     essence: headerData.stats.essence,
     renown: headerData.stats.renown,
-    calendarTime: headerData.calendar_time
+    calendarTime: headerData.calendar_time,
+    year: translateCalendarTime(headerData.calendar_time)[0],
+    season: translateCalendarTime(headerData.calendar_time)[1],
+    day: translateCalendarTime(headerData.calendar_time)[2]
   }
 }
 

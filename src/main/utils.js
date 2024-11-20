@@ -42,6 +42,16 @@ export function isNumber(value) {
   return typeof value === "number" && !Number.isNaN(value)
 }
 
+export function translateCalendarTime(time) {
+  // Spring = 0, Summer = 1, Fall = 2, Winter = 3
+  // 86400 * 28 = 2419200 seconds = 1 month because 28 days per month
+  // 2419200 * 4 = 9676800 seconds = 1 year
+  const year = Math.floor(time / 9676800) + 1
+  const season = Math.floor((time % 9676800) / 2419200) // convert seconds to months
+  const day = Math.trunc((time % 2419200) / 86400) + 1 // days start at 0
+  return [year, season, day]
+}
+
 /**
  * @desc Reads and parses a JSON file from a given path synchronously
  * @param filePath The path to the JSON file

@@ -1,8 +1,16 @@
-import { Box, Center, Flex, Grid, Spinner, Text } from "@chakra-ui/react"
+import { Box, Center, Flex, Grid, Spinner, Text, createListCollection } from "@chakra-ui/react"
 import { Button } from "@components/ui/button"
 import { saves, translateCalendarTime, displayCalendarTime } from "@utils"
 import { useEffect, useState } from "react"
 import { NumberInputRoot, NumberInputField } from "@components/ui/number-input"
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@components/ui/select"
 
 export default function SaveEditing({ saveId, onBack }) {
   const save = saves.find((save) => save.id === saveId)
@@ -26,7 +34,8 @@ export default function SaveEditing({ saveId, onBack }) {
     await window.api.setGold(saveId, edits.gold)
     await window.api.setEssence(saveId, edits.essence)
     await window.api.setRenown(saveId, edits.renown)
-    await window.api.setCalendarTime(saveId, edits.calendarTime)
+    console.log(edits.year)
+    // await window.api.setCalendarTime(saveId, edits.calendarTime)
 
     const success = await window.api.updateSave(saveId)
     setIsApplyingEdits(false)
@@ -49,6 +58,7 @@ export default function SaveEditing({ saveId, onBack }) {
   const setGold = (newGold) => setEdits((edits) => ({ ...edits, gold: newGold }))
   const setEssence = (newEssence) => setEdits((edits) => ({ ...edits, essence: newEssence }))
   const setRenown = (newRenown) => setEdits((edits) => ({ ...edits, renown: newRenown }))
+  const setYear = (newYear) => setEdits((edits) => ({ ...edits, year: newYear }))
   const setCalendarTime = (newCalendarTime) =>
     setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
 
@@ -106,21 +116,26 @@ export default function SaveEditing({ saveId, onBack }) {
               label="Renown"
               step={10}
             />
-            <CalendarInput
+            {/* <CalendarInput
               value={edits.calendarTime}
               onValueChange={setCalendarTime}
               label="Calendar Time"
               step={86400}
-            />
-            {/* <DateInput
-              value={edits.calendarTime}
-              onValueChange={setCalendarTime}
-              yearLabel="Year"
-              seasonLabel="Season"
-              dayLabel="Day"
-              yearStep={9676800}
-              dayStep={86400}
             /> */}
+            <Flex flexDir="row" gap={4} alignItems="center">
+              <NumberInput
+                value={edits.year}
+                onValueChange={setYear}
+                label="Year"
+                step={1}
+              />
+              <SelectInput
+                currentValue={edits.year}
+                // onValueChange={setYear}
+                textLabel="Year"
+                collection={seasons}
+              />
+            </Flex>
           </Grid>
         )}
       </Box>
@@ -151,41 +166,6 @@ function CalendarInput({ value, onValueChange, step, min, label }) {
   )
 }
 
-function DateInput({ value, onValueChange, yearStep, dayStep, min, yearLabel, seasonLabel, dayLabel }) {
-  min ??= 0
-
-  let [year, season, day] = translateCalendarTime(value)
-
-  const handleYearValueChange = (e) => {
-    console.log(e)
-    onValueChange(+translateCalendarTime(e.value)[0])
-  }
-
-  const handleDayValueChange = (e) => {
-    console.log(+translateCalendarTime(e.value)[2])
-    onValueChange(+translateCalendarTime(e.value)[2])
-  }
-
-  return (
-    <Flex flexDir="column" gap={2}>
-      <Box opacity={0.8}>{displayCalendarTime(value)}</Box>
-      <Flex flexDir="row" gap={1}>
-        <Flex flexDir="column" gap={2}>
-          <Box>{yearLabel}</Box>
-          <NumberInputRoot min={0} step={yearStep} value={+year || 0} onValueChange={handleYearValueChange} allowOverflow>
-            <NumberInputField />
-          </NumberInputRoot>
-        </Flex>
-        <Flex flexDir="column" gap={2}>
-          <Box>{dayLabel}</Box>
-          <NumberInputRoot min={0} step={dayStep} value={+day || 0} onValueChange={handleDayValueChange} allowOverflow>
-            <NumberInputField />
-          </NumberInputRoot>
-        </Flex>
-      </Flex>
-    </Flex>
-  )
-}
 
 function NumberInput({ value, onValueChange, step, min, label }) {
   step ??= 1
@@ -206,3 +186,31 @@ function NumberInput({ value, onValueChange, step, min, label }) {
     </Flex>
   )
 }
+
+function SelectInput({ collection, textLabel, currentValue }) {
+  // const [value, setValue] = useState<string[]>([])
+  return (
+    <SelectRoot collection={collection} size="sm" width="320px">
+      <SelectLabel>{textLabel}</SelectLabel>
+      <SelectTrigger>
+        <SelectValueText placeholder="Select season" />
+      </SelectTrigger>
+      <SelectContent>
+        {collection.items.map((item) => (
+          <SelectItem item={item} key={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </SelectRoot>
+  )
+}
+
+const seasons = createListCollection({
+  items: [
+    {label: "Spring", value: "spring"},
+    {label: "Summer", value: "summer"},
+    {label: "Fall", value: "fall"},
+    {label: "Winter", value: "winter"},
+  ]
+})

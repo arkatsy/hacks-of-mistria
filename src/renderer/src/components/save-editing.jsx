@@ -9,7 +9,7 @@ import {
   SelectLabel,
   SelectRoot,
   SelectTrigger,
-  SelectValueText,
+  SelectValueText
 } from "@components/ui/select"
 
 export default function SaveEditing({ saveId, onBack }) {

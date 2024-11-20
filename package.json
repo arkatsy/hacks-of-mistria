@@ -1,6 +1,6 @@
 {
   "name": "moths-cheats",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Moth's Cheats for Fields of Mistria",
   "main": "./out/main/index.js",
   "author": "arkatsy, dwlim12",

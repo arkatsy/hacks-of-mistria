@@ -40,7 +40,8 @@ jobs:
 
       - name: Extract version from package.json
         id: get_version
-        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+        shell: pwsh
+        run: echo "VERSION=$(jq -r .version package.json)" >> $env:GITHUB_ENV
 
       - name: build
         if: success() || (failure() && steps.check_version_change.outcome == 'success')

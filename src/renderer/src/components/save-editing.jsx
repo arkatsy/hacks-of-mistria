@@ -127,10 +127,10 @@ export default function SaveEditing({ saveId, onBack }) {
           </Center>
         ) : (
           <Stack gap="5">
-            {/* ===== Stats ===== */}
+            {/* ===== General ===== */}
             <Stack gap="4">
               <Text textStyle="xl" fontWeight="bold">
-                Stats
+                General
               </Text>
               <Flex gap="3">
                 <NumberInput

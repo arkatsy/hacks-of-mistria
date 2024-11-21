@@ -147,7 +147,7 @@ function handleSetEssence(e, saveId, essence) {
 }
 
 function handleSetRenown(e, saveId, renown) {
-  console.log(`[handleSetRenown:${saveId}]: Updating essence to ${renown}`)
+  console.log(`[handleSetRenown:${saveId}]: Updating renown to ${renown}`)
 
   if (!isNumber(renown)) {
     console.log(`[handleSetRenown:${saveId}]: Renown is not a number ${renown}, won't update`)

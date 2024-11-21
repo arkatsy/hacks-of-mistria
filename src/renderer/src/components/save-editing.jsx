@@ -34,7 +34,10 @@ export default function SaveEditing({ saveId, onBack }) {
     await window.api.setGold(saveId, edits.gold)
     await window.api.setEssence(saveId, edits.essence)
     await window.api.setRenown(saveId, edits.renown)
-    await window.api.setCalendarTime(saveId, getCalendarTime(edits.year, edits.season, edits.day))
+    await window.api.setCalendarTime(saveId, getCalendarTime(edits.year, edits.season, edits.day)),
+    await window.api.setHealth(saveId, edits.health)
+    await window.api.setStamina(saveId, edits.stamina)
+    await window.api.setMana(saveId, edits.mana)
     // await window.api.setCalendarTime(saveId, edits.calendarTime)
 
     const success = await window.api.updateSave(saveId)
@@ -61,8 +64,9 @@ export default function SaveEditing({ saveId, onBack }) {
   const setYear = (newYear) => setEdits((edits) => ({ ...edits, year: newYear }))
   const setSeason = (newSeason) => setEdits((edits) => ({ ...edits, season: newSeason }))
   const setDay = (newDay) => setEdits((edits) => ({ ...edits, day: newDay }))
-  const setCalendarTime = (newCalendarTime) =>
-    setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
+  const setHealth = (newHealth) => setEdits((edits) => ({ ...edits, health: newHealth }))
+  const setStamina = (newStamina) => setEdits((edits) => ({ ...edits, stamina: newStamina }))
+  const setMana = (newMana) => setEdits((edits) => ({ ...edits, mana: newMana }))
 
   const shouldPreventUserInteraction = isLoadingSaveData || isApplyingEdits
   const loadingMessage = isLoadingSaveData
@@ -118,24 +122,42 @@ export default function SaveEditing({ saveId, onBack }) {
               label="Renown"
               step={10}
             />
-              <NumberInput
-                value={edits.year}
-                onValueChange={setYear}
-                label="Year"
-                step={1}
-              />
-              <SelectInput
-                currentValue={seasonsList[edits.season]}
-                onValueChange={setSeason}
-                textLabel="Season"
-                collection={seasons}
-              />
-              <SelectInput
-                currentValue={edits.day}
-                onValueChange={setDay}
-                textLabel="Day"
-                collection={days}
-              />
+            <NumberInput
+              value={edits.year}
+              onValueChange={setYear}
+              label="Year"
+              step={1}
+            />
+            <SelectInput
+              currentValue={seasonsList[edits.season]}
+              onValueChange={setSeason}
+              textLabel="Season"
+              collection={seasons}
+            />
+            <SelectInput
+              currentValue={edits.day}
+              onValueChange={setDay}
+              textLabel="Day"
+              collection={days}
+            />
+            <NumberInput
+              value={edits.health}
+              onValueChange={setHealth}
+              label="Health"
+              step={10}
+            />
+            <NumberInput
+              value={edits.stamina}
+              onValueChange={setStamina}
+              label="Stamina"
+              step={10}
+            />
+            <NumberInput
+              value={edits.mana}
+              onValueChange={setMana}
+              label="Mana"
+              step={4}
+            />
           </Grid>
         )}
       </Box>

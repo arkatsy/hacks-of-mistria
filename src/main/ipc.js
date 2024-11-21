@@ -17,7 +17,10 @@ export const IPC = {
   SET_GOLD: "set/gold",
   SET_ESSENCE: "set/essence",
   SET_RENOWN: "set/renown",
-  SET_CALENDAR_TIME: "set/calendar-time"
+  SET_CALENDAR_TIME: "set/calendar-time",
+  SET_HEALTH: "set/health",
+  SET_STAMINA: "set/stamina",
+  SET_MANA: "set/mana"
 }
 
 export const channels = {
@@ -27,7 +30,10 @@ export const channels = {
   [IPC.SET_GOLD]: handleSetGold,
   [IPC.SET_ESSENCE]: handleSetEssence,
   [IPC.SET_RENOWN]: handleSetRenown,
-  [IPC.SET_CALENDAR_TIME]: handleSetCalendarTime
+  [IPC.SET_CALENDAR_TIME]: handleSetCalendarTime,
+  [IPC.SET_HEALTH]: handleSetHealth,
+  [IPC.SET_STAMINA]: handleSetStamina,
+  [IPC.SET_MANA]: handleSetMana
 }
 
 function handleUpdateSave(e, saveId) {
@@ -89,7 +95,10 @@ function handleGetSaveData(e, saveId) {
     calendarTime: headerData.calendar_time,
     year: translateCalendarTime(headerData.calendar_time)[0],
     season: translateCalendarTime(headerData.calendar_time)[1],
-    day: translateCalendarTime(headerData.calendar_time)[2]
+    day: translateCalendarTime(headerData.calendar_time)[2],
+    health: headerData.stats.base_health,
+    stamina: headerData.stats.base_stamina,
+    mana: headerData.stats.mana_max
   }
 }
 
@@ -183,6 +192,78 @@ function handleSetCalendarTime(e, saveId, calendarTime) {
   updateJsonValue(jsonPaths.header, "calendar_time", calendarTime)
   updateJsonValue(jsonPaths.gamedata, "date", calendarTime)
   //TODO: IMPLEMENT DAY OF THE WEEK
+
+  return true
+}
+
+function handleSetHealth(e, saveId, health) {
+  console.log(`[handleSetHealth:${saveId}]: Updating health to ${health}`)
+
+  if (!isNumber(health)) {
+    console.log(`[handleSetHealth:${saveId}]: Health is not a number ${health}, won't update`)
+    return false
+  }
+
+  const saveInfo = unpackedSavesPathsCache.get(saveId)
+  if (!saveInfo) {
+    console.log(`couldn't find save with id ${saveId} in cache`)
+    return false
+  }
+
+  const { jsonPaths } = saveInfo
+
+  updateJsonValue(jsonPaths.header, "stats.base_health", health)
+  updateJsonValue(jsonPaths.header, "stats.health_current", health)
+  updateJsonValue(jsonPaths.player, "stats.base_health", health)
+  updateJsonValue(jsonPaths.player, "stats.health_current", health)
+
+  return true
+}
+
+function handleSetStamina(e, saveId, stamina) {
+  console.log(`[handleSetStamina:${saveId}]: Updating stamina to ${stamina}`)
+
+  if (!isNumber(stamina)) {
+    console.log(`[handleSetStamina:${saveId}]: Stamina is not a number ${stamina}, won't update`)
+    return false
+  }
+
+  const saveInfo = unpackedSavesPathsCache.get(saveId)
+  if (!saveInfo) {
+    console.log(`couldn't find save with id ${saveId} in cache`)
+    return false
+  }
+
+  const { jsonPaths } = saveInfo
+
+  updateJsonValue(jsonPaths.header, "stats.base_stamina", stamina)
+  updateJsonValue(jsonPaths.header, "stats.stamina_current", stamina)
+  updateJsonValue(jsonPaths.player, "stats.base_stamina", stamina)
+  updateJsonValue(jsonPaths.player, "stats.stamina_current", stamina)
+
+  return true
+}
+
+function handleSetMana(e, saveId, mana) {
+  console.log(`[handleSetMana:${saveId}]: Updating mana to ${mana}`)
+
+  if (!isNumber(mana)) {
+    console.log(`[handleSetMana:${saveId}]: Mana is not a number ${mana}, won't update`)
+    return false
+  }
+
+  const saveInfo = unpackedSavesPathsCache.get(saveId)
+  if (!saveInfo) {
+    console.log(`couldn't find save with id ${saveId} in cache`)
+    return false
+  }
+
+  const { jsonPaths } = saveInfo
+
+  updateJsonValue(jsonPaths.header, "stats.mana_max", mana)
+  updateJsonValue(jsonPaths.header, "stats.mana_current", mana)
+  updateJsonValue(jsonPaths.player, "stats.mana_max", mana)
+  updateJsonValue(jsonPaths.player, "stats.mana_current", mana)
 
   return true
 }

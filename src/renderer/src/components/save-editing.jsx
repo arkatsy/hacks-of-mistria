@@ -67,7 +67,7 @@ export default function SaveEditing({ saveId, onBack }) {
   const applyEdits = async () => {
     setIsApplyingEdits(true)
     await window.api.setName(saveId, edits.name)
-    await window.api.setPronouns(saveId, edits.pronouns)
+    await window.api.setPronouns(saveId, formatPronouns(edits.pronouns, true))
     await window.api.setFarmName(saveId, edits.farmName)
     await window.api.setGold(saveId, edits.gold)
     await window.api.setEssence(saveId, edits.essence)
@@ -148,7 +148,7 @@ export default function SaveEditing({ saveId, onBack }) {
             </Flex>
           </Center>
         ) : (
-          <Stack gap="5">
+          <Stack gap="8">
             {/* ===== General ===== */}
             <Stack gap="4">
               <HStack gap="2">
@@ -168,7 +168,7 @@ export default function SaveEditing({ saveId, onBack }) {
                 </GridItem>
                 <GridItem>
                   <SelectInput
-                    currentValue={edits.pronouns}
+                    currentValue={formatPronouns(edits.pronouns)}
                     onValueChange={setPronouns}
                     textLabel="Pronouns"
                     collection={pronouns}
@@ -310,23 +310,15 @@ function TextInput({ currentValue, textLabel, onChange, icon }) {
   return (
     <Field label={textLabel}>
       <InputGroup flex="" w="full" startElement={icon || null}>
-        <Input 
-          value={currentValue}
-          onChange={(e) => onChange(e.target.value)}
-        />
+        <Input value={currentValue} onChange={(e) => onChange(e.target.value)} />
       </InputGroup>
-      
     </Field>
   )
 }
 
 function SelectInput({ collection, textLabel, currentValue, onValueChange }) {
   return (
-    <SelectRoot
-      collection={collection}
-      size="md"
-      onValueChange={(e) => onValueChange(e.value[0])}
-    >
+    <SelectRoot collection={collection} size="md" onValueChange={(e) => onValueChange(e.value[0])}>
       <SelectLabel>{textLabel}</SelectLabel>
       <SelectTrigger>
         <SelectValueText placeholder={currentValue} />
@@ -343,11 +335,14 @@ function SelectInput({ collection, textLabel, currentValue, onValueChange }) {
 }
 
 const pronouns = createListCollection({
-  items: Object.keys(PronounsList).map((p) => ({ label: formatPronouns(p), value: p }))
+  items: Object.keys(PronounsList).map((p) => ({
+    label: formatPronouns(p),
+    value: formatPronouns(p)
+  }))
 })
 
 const seasons = createListCollection({
-  items: seasonsList.map((season, index) => ({ label: season, value: index}))
+  items: seasonsList.map((season, index) => ({ label: season, value: index }))
 })
 
 const days = createListCollection({

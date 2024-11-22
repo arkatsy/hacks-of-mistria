@@ -16,12 +16,26 @@ export const PronounsList = {
   none: "none"
 }
 
-export function formatPronouns(pronouns) {
-  // they_them -> They/Them
+/**
+ * @desc Transforms the pronouns string
+ * @param {string} pronouns the pronouns string to format (either "they_them" or "They/Them")
+ * @param {boolean} inverse by default is false and transforms "they_them" to "They/Them", if set to true it does the opposite
+ * @returns The transformed pronouns string
+ */
+export function formatPronouns(pronouns, inverse = false) {
+  const transformFn = inverse ? "toLowerCase" : "toUpperCase"
+
+  if (!(pronouns.includes("/") || pronouns.includes("_"))) {
+    return pronouns.charAt(0)[transformFn]() + pronouns.slice(1)
+  }
+
+  const fromSymbol = inverse ? "/" : "_"
+  const toSymbol = inverse ? "_" : "/"
+
   return pronouns
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join("/")
+    .split(fromSymbol)
+    .map((word) => word.charAt(0)[transformFn]() + word.slice(1))
+    .join(toSymbol)
 }
 
 /**

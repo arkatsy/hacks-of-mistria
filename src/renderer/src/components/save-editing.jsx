@@ -27,7 +27,6 @@ import {
 import tesseraeIcon from "@assets/tessarae.webp"
 import essenceIcon from "@assets/essence.png"
 import renownIcon from "@assets/renown.png"
-import pronounsIcon from "@assets/pronouns.png"
 import editIcon from "@assets/edit.png"
 import { saves, seasonsList, getCalendarTime, PronounsList, formatPronouns } from "@utils"
 
@@ -35,7 +34,6 @@ const TesseraeIcon = () => <Image src={tesseraeIcon} w="20px" h="20px" />
 const EssenceIcon = () => <Image src={essenceIcon} w="20px" h="20px" />
 const RenownIcon = () => <Image src={renownIcon} w="20px" h="20px" />
 const EditIcon = () => <Image src={editIcon} w="20px" h="20px" />
-const PronounsIcon = () => <Image src={pronounsIcon} w="20px" h="20px" />
 
 export default function SaveEditing({ saveId, onBack }) {
   const save = saves.find((save) => save.id === saveId)
@@ -62,6 +60,9 @@ export default function SaveEditing({ saveId, onBack }) {
     await window.api.setRenown(saveId, edits.renown)
     await window.api.setCalendarTime(saveId, getCalendarTime(edits.year, edits.season, edits.day))
     await window.api.setPronouns(saveId, edits.pronouns)
+    await window.api.setHealth(saveId, edits.health)
+    await window.api.setStamina(saveId, edits.stamina)
+    await window.api.setMana(saveId, edits.mana)
 
     const success = await window.api.updateSave(saveId)
     setIsApplyingEdits(false)
@@ -88,8 +89,9 @@ export default function SaveEditing({ saveId, onBack }) {
   const setSeason = (newSeason) => setEdits((edits) => ({ ...edits, season: newSeason }))
   const setDay = (newDay) => setEdits((edits) => ({ ...edits, day: newDay }))
   const setPronouns = (pronouns) => setEdits((edits) => ({ ...edits, pronouns: pronouns }))
-  // const setCalendarTime = (newCalendarTime) =>
-  //   setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
+  const setHealth = (newHealth) => setEdits((edits) => ({ ...edits, health: newHealth }))
+  const setStamina = (newStamina) => setEdits((edits) => ({ ...edits, stamina: newStamina }))
+  const setMana = (newMana) => setEdits((edits) => ({ ...edits, mana: newMana }))
 
   const shouldPreventUserInteraction = isLoadingSaveData || isApplyingEdits
   const loadingMessage = isLoadingSaveData
@@ -176,6 +178,30 @@ export default function SaveEditing({ saveId, onBack }) {
                     collection={pronouns}
                   />
                 </GridItem>
+                <GridItem>
+                  <NumberInput
+                    value={edits.health}
+                    onValueChange={setHealth}
+                    label="Health"
+                    step={10}
+                  />
+                </GridItem>
+                <GridItem>
+                  <NumberInput
+                    value={edits.stamina}
+                    onValueChange={setStamina}
+                    label="Stamina"
+                    step={10}
+                  />
+                </GridItem>
+                <GridItem>
+                  <NumberInput
+                    value={edits.mana}
+                    onValueChange={setMana}
+                    label="Mana"
+                    step={4}
+                  />
+                </GridItem>
               </Grid>
             </Stack>
             {/* ===== Calendar ===== */}
@@ -240,7 +266,6 @@ function SelectInput({ collection, textLabel, currentValue, onValueChange }) {
     <SelectRoot
       collection={collection}
       size="md"
-      positioning={{ placement: "bottom", flip: false }}
       onValueChange={(e) => onValueChange(e.value[0])}
     >
       <SelectLabel>{textLabel}</SelectLabel>

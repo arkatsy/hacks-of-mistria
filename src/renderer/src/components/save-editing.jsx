@@ -258,11 +258,12 @@ export default function SaveEditing({ saveId, onBack }) {
                 </Text>
               </HStack>
               <Flex gap="2" w="full">
-                <SelectInput
-                  currentValue={edits.day}
-                  onValueChange={setDay}
-                  textLabel="Day"
-                  collection={days}
+                <NumberInput
+                  value={edits.year}
+                  onValueChange={setYear}
+                  label="Year"
+                  step={1}
+                  min={1}
                 />
                 <SelectInput
                   currentValue={seasonsList[edits.season]}
@@ -270,12 +271,11 @@ export default function SaveEditing({ saveId, onBack }) {
                   textLabel="Season"
                   collection={seasons}
                 />
-                <NumberInput
-                  value={edits.year}
-                  onValueChange={setYear}
-                  label="Year"
-                  step={1}
-                  min={1}
+                <SelectInput
+                  currentValue={edits.day}
+                  onValueChange={setDay}
+                  textLabel="Day"
+                  collection={days}
                 />
               </Flex>
             </Stack>

@@ -288,12 +288,7 @@ const pronouns = createListCollection({
 })
 
 const seasons = createListCollection({
-  items: [
-    { label: "Spring", value: 0 },
-    { label: "Summer", value: 1 },
-    { label: "Fall", value: 2 },
-    { label: "Winter", value: 3 }
-  ]
+  items: seasonsList.map((season, index) => ({ label: season, value: index}))
 })
 
 const days = createListCollection({

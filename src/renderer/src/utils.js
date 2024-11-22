@@ -1,6 +1,29 @@
 export const saves = window.api.getSortedLoadingSaves()
 export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
 
+export const PronounsList = {
+  they_them: "they_them",
+  she_her: "she_her",
+  he_him: "he_him",
+  she_they: "she_they",
+  they_she: "they_she",
+  he_they: "he_they",
+  they_he: "they_he",
+  he_she: "he_she",
+  she_he: "she_he",
+  it_its: "it_its",
+  all: "all",
+  none: "none"
+}
+
+export function formatPronouns(pronouns) {
+  // they_them -> They/Them
+  return pronouns
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("/")
+}
+
 /**
  * @desc Translates the playtime variable in header.json into a more accessible format
  * @param time The playtime variable from header.json in seconds

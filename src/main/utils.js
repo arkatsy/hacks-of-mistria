@@ -38,6 +38,21 @@ export const jsonFileNames = [
   "western_ruins"
 ]
 
+export const PronounsList = {
+  they_them: "they_them",
+  she_her: "she_her",
+  he_him: "he_him",
+  she_they: "she_they",
+  they_she: "they_she",
+  he_they: "he_they",
+  they_he: "they_he",
+  he_she: "he_she",
+  she_he: "she_he",
+  it_its: "it_its",
+  all: "all",
+  none: "none"
+}
+
 export function isNumber(value) {
   return typeof value === "number" && !Number.isNaN(value)
 }

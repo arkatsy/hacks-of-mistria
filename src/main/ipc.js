@@ -5,7 +5,8 @@ import {
   parseHeaderJson,
   vaultc,
   unpackSavesToTemp,
-  isNumber
+  isNumber,
+  PronounsList
 } from "./utils"
 
 import { translateCalendarTime } from "./utils"
@@ -18,9 +19,7 @@ export const IPC = {
   SET_ESSENCE: "set/essence",
   SET_RENOWN: "set/renown",
   SET_CALENDAR_TIME: "set/calendar-time",
-  SET_HEALTH: "set/health",
-  SET_STAMINA: "set/stamina",
-  SET_MANA: "set/mana"
+  SET_PRONOUNS: "set/pronouns"
 }
 
 export const channels = {
@@ -31,9 +30,7 @@ export const channels = {
   [IPC.SET_ESSENCE]: handleSetEssence,
   [IPC.SET_RENOWN]: handleSetRenown,
   [IPC.SET_CALENDAR_TIME]: handleSetCalendarTime,
-  [IPC.SET_HEALTH]: handleSetHealth,
-  [IPC.SET_STAMINA]: handleSetStamina,
-  [IPC.SET_MANA]: handleSetMana
+  [IPC.SET_PRONOUNS]: handleSetPronouns
 }
 
 function handleUpdateSave(e, saveId) {
@@ -84,21 +81,19 @@ function handleGetSaveData(e, saveId) {
   }
 
   const headerData = parseHeaderJson(saveInfo.jsonPaths.header)
-  // const playerData = parseHeaderJson(saveInfo.jsonPaths.player)
+  const playerData = parseHeaderJson(saveInfo.jsonPaths.player)
 
   return {
     name: headerData.name,
     farmName: headerData.farm_name,
+    pronouns: playerData.pronoun_choice,
     gold: headerData.stats.gold,
     essence: headerData.stats.essence,
     renown: headerData.stats.renown,
     calendarTime: headerData.calendar_time,
     year: translateCalendarTime(headerData.calendar_time)[0],
     season: translateCalendarTime(headerData.calendar_time)[1],
-    day: translateCalendarTime(headerData.calendar_time)[2],
-    health: headerData.stats.base_health,
-    stamina: headerData.stats.base_stamina,
-    mana: headerData.stats.mana_max
+    day: translateCalendarTime(headerData.calendar_time)[2]
   }
 }
 
@@ -147,7 +142,7 @@ function handleSetEssence(e, saveId, essence) {
 }
 
 function handleSetRenown(e, saveId, renown) {
-  console.log(`[handleSetRenown:${saveId}]: Updating renown to ${renown}`)
+  console.log(`[handleSetRenown:${saveId}]: Updating essence to ${renown}`)
 
   if (!isNumber(renown)) {
     console.log(`[handleSetRenown:${saveId}]: Renown is not a number ${renown}, won't update`)
@@ -172,12 +167,16 @@ function handleSetCalendarTime(e, saveId, calendarTime) {
   console.log(`[handleSetCalendarTime:${saveId}]: Updating calendar time to ${calendarTime}`)
 
   if (!isNumber(calendarTime)) {
-    console.log(`[handleSetCalendarTime:${saveId}]: Calendar time is not a number ${calendarTime}, won't update`)
+    console.log(
+      `[handleSetCalendarTime:${saveId}]: Calendar time is not a number ${calendarTime}, won't update`
+    )
     return false
   }
 
   if (calendarTime % 86400 != 0) {
-    console.log(`[handleSetCalendarTime:${saveId}]: Calendar time ${calendarTime} is not a multiple of 86400, won't update`)
+    console.log(
+      `[handleSetCalendarTime:${saveId}]: Calendar time ${calendarTime} is not a multiple of 86400, won't update`
+    )
     return false
   }
 
@@ -196,74 +195,22 @@ function handleSetCalendarTime(e, saveId, calendarTime) {
   return true
 }
 
-function handleSetHealth(e, saveId, health) {
-  console.log(`[handleSetHealth:${saveId}]: Updating health to ${health}`)
+function handleSetPronouns(e, saveId, pronouns) {
+  console.log(`[handleSetPronouns:${saveId}]: Updating pronouns to ${pronouns}`)
 
-  if (!isNumber(health)) {
-    console.log(`[handleSetHealth:${saveId}]: Health is not a number ${health}, won't update`)
+  if (!(pronouns in PronounsList)) {
+    console.log(`[handleSetPronouns:${saveId}]: invalid pronouns, won't update`)
     return false
   }
 
   const saveInfo = unpackedSavesPathsCache.get(saveId)
   if (!saveInfo) {
-    console.log(`couldn't find save with id ${saveId} in cache`)
-    return false
+    console.log(`couldn't find save with id ${saveId}`)
   }
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "stats.base_health", health)
-  updateJsonValue(jsonPaths.header, "stats.health_current", health)
-  updateJsonValue(jsonPaths.player, "stats.base_health", health)
-  updateJsonValue(jsonPaths.player, "stats.health_current", health)
-
-  return true
-}
-
-function handleSetStamina(e, saveId, stamina) {
-  console.log(`[handleSetStamina:${saveId}]: Updating stamina to ${stamina}`)
-
-  if (!isNumber(stamina)) {
-    console.log(`[handleSetStamina:${saveId}]: Stamina is not a number ${stamina}, won't update`)
-    return false
-  }
-
-  const saveInfo = unpackedSavesPathsCache.get(saveId)
-  if (!saveInfo) {
-    console.log(`couldn't find save with id ${saveId} in cache`)
-    return false
-  }
-
-  const { jsonPaths } = saveInfo
-
-  updateJsonValue(jsonPaths.header, "stats.base_stamina", stamina)
-  updateJsonValue(jsonPaths.header, "stats.stamina_current", stamina)
-  updateJsonValue(jsonPaths.player, "stats.base_stamina", stamina)
-  updateJsonValue(jsonPaths.player, "stats.stamina_current", stamina)
-
-  return true
-}
-
-function handleSetMana(e, saveId, mana) {
-  console.log(`[handleSetMana:${saveId}]: Updating mana to ${mana}`)
-
-  if (!isNumber(mana)) {
-    console.log(`[handleSetMana:${saveId}]: Mana is not a number ${mana}, won't update`)
-    return false
-  }
-
-  const saveInfo = unpackedSavesPathsCache.get(saveId)
-  if (!saveInfo) {
-    console.log(`couldn't find save with id ${saveId} in cache`)
-    return false
-  }
-
-  const { jsonPaths } = saveInfo
-
-  updateJsonValue(jsonPaths.header, "stats.mana_max", mana)
-  updateJsonValue(jsonPaths.header, "stats.mana_current", mana)
-  updateJsonValue(jsonPaths.player, "stats.mana_max", mana)
-  updateJsonValue(jsonPaths.player, "stats.mana_current", mana)
+  updateJsonValue(jsonPaths.player, "pronoun_choice", pronouns)
 
   return true
 }

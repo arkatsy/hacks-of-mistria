@@ -1,22 +1,20 @@
+import { useEffect, useState } from "react"
 import {
   Box,
   Center,
   Flex,
   Grid,
+  GridItem,
   HStack,
   Image,
-  Input,
   Spinner,
   Stack,
   Text,
-  VStack,
   createListCollection
 } from "@chakra-ui/react"
 import { Field } from "@components/ui/field"
 import { Button } from "@components/ui/button"
 import { InputGroup } from "@components/ui/input-group"
-import { saves, seasonsList, getCalendarTime } from "@utils"
-import { useEffect, useState } from "react"
 import { NumberInputRoot, NumberInputField } from "@components/ui/number-input"
 import {
   SelectContent,
@@ -29,16 +27,21 @@ import {
 import tesseraeIcon from "@assets/tessarae.webp"
 import essenceIcon from "@assets/essence.png"
 import renownIcon from "@assets/renown.png"
+import pronounsIcon from "@assets/pronouns.png"
+import editIcon from "@assets/edit.png"
+import { saves, seasonsList, getCalendarTime, PronounsList, formatPronouns } from "@utils"
 
 const TesseraeIcon = () => <Image src={tesseraeIcon} w="20px" h="20px" />
 const EssenceIcon = () => <Image src={essenceIcon} w="20px" h="20px" />
 const RenownIcon = () => <Image src={renownIcon} w="20px" h="20px" />
+const EditIcon = () => <Image src={editIcon} w="20px" h="20px" />
+const PronounsIcon = () => <Image src={pronounsIcon} w="20px" h="20px" />
 
 export default function SaveEditing({ saveId, onBack }) {
   const save = saves.find((save) => save.id === saveId)
 
   const [isLoadingSaveData, setIsLoadingSaveData] = useState(true)
-  const [saveData, setSaveData] = useState(null)
+  const [_, setSaveData] = useState(null)
 
   const [isApplyingEdits, setIsApplyingEdits] = useState(false)
   const [edits, setEdits] = useState(null)
@@ -46,6 +49,7 @@ export default function SaveEditing({ saveId, onBack }) {
   const refreshSaveData = async () => {
     setIsLoadingSaveData(true)
     const saveData = await window.api.getSaveData(saveId)
+    // we assume the data shape of api.getSaveData(), edits & saveData is the same
     setSaveData(saveData)
     setEdits(saveData)
     setIsLoadingSaveData(false)
@@ -57,7 +61,7 @@ export default function SaveEditing({ saveId, onBack }) {
     await window.api.setEssence(saveId, edits.essence)
     await window.api.setRenown(saveId, edits.renown)
     await window.api.setCalendarTime(saveId, getCalendarTime(edits.year, edits.season, edits.day))
-    // await window.api.setCalendarTime(saveId, edits.calendarTime)
+    await window.api.setPronouns(saveId, edits.pronouns)
 
     const success = await window.api.updateSave(saveId)
     setIsApplyingEdits(false)
@@ -83,8 +87,9 @@ export default function SaveEditing({ saveId, onBack }) {
   const setYear = (newYear) => setEdits((edits) => ({ ...edits, year: newYear }))
   const setSeason = (newSeason) => setEdits((edits) => ({ ...edits, season: newSeason }))
   const setDay = (newDay) => setEdits((edits) => ({ ...edits, day: newDay }))
-  const setCalendarTime = (newCalendarTime) =>
-    setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
+  const setPronouns = (pronouns) => setEdits((edits) => ({ ...edits, pronouns: pronouns }))
+  // const setCalendarTime = (newCalendarTime) =>
+  //   setEdits((edits) => ({ ...edits, calendarTime: newCalendarTime }))
 
   const shouldPreventUserInteraction = isLoadingSaveData || isApplyingEdits
   const loadingMessage = isLoadingSaveData
@@ -129,38 +134,58 @@ export default function SaveEditing({ saveId, onBack }) {
           <Stack gap="5">
             {/* ===== General ===== */}
             <Stack gap="4">
-              <Text textStyle="xl" fontWeight="bold">
-                General
-              </Text>
-              <Flex gap="3">
-                <NumberInput
-                  value={edits.gold}
-                  onValueChange={setGold}
-                  label="Gold"
-                  step={10}
-                  icon={<TesseraeIcon />}
-                />
-                <NumberInput
-                  value={edits.essence}
-                  onValueChange={setEssence}
-                  label="Essence"
-                  step={10}
-                  icon={<EssenceIcon />}
-                />
-                <NumberInput
-                  value={edits.renown}
-                  onValueChange={setRenown}
-                  label="Renown"
-                  step={10}
-                  icon={<RenownIcon />}
-                />
-              </Flex>
+              <HStack gap="2">
+                <EditIcon />
+                <Text textStyle="xl" fontWeight="bold">
+                  General
+                </Text>
+              </HStack>
+              <Grid templateColumns="repeat(3, 1fr)" gap="3">
+                <GridItem>
+                  <NumberInput
+                    value={edits.gold}
+                    onValueChange={setGold}
+                    label="Gold"
+                    step={10}
+                    icon={<TesseraeIcon />}
+                  />
+                </GridItem>
+                <GridItem>
+                  <NumberInput
+                    value={edits.essence}
+                    onValueChange={setEssence}
+                    label="Essence"
+                    step={10}
+                    icon={<EssenceIcon />}
+                  />
+                </GridItem>
+                <GridItem>
+                  <NumberInput
+                    value={edits.renown}
+                    onValueChange={setRenown}
+                    label="Renown"
+                    step={10}
+                    icon={<RenownIcon />}
+                  />
+                </GridItem>
+                <GridItem>
+                  <SelectInput
+                    currentValue={edits.pronouns}
+                    onValueChange={setPronouns}
+                    textLabel="Pronouns"
+                    collection={pronouns}
+                  />
+                </GridItem>
+              </Grid>
             </Stack>
             {/* ===== Calendar ===== */}
             <Stack gap="4">
-              <Text textStyle="xl" fontWeight="bold">
-                Calendar
-              </Text>
+              <HStack gap="2">
+                <EditIcon />
+                <Text textStyle="xl" fontWeight="bold">
+                  Calendar
+                </Text>
+              </HStack>
               <Flex gap="2" w="full">
                 <SelectInput
                   currentValue={edits.day}
@@ -232,6 +257,10 @@ function SelectInput({ collection, textLabel, currentValue, onValueChange }) {
     </SelectRoot>
   )
 }
+
+const pronouns = createListCollection({
+  items: Object.keys(PronounsList).map((p) => ({ label: formatPronouns(p), value: p }))
+})
 
 const seasons = createListCollection({
   items: [

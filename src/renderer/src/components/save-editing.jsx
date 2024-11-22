@@ -6,6 +6,7 @@ import {
   Grid,
   GridItem,
   HStack,
+  Input,
   Image,
   Spinner,
   Stack,
@@ -28,12 +29,22 @@ import tesseraeIcon from "@assets/tessarae.webp"
 import essenceIcon from "@assets/essence.png"
 import renownIcon from "@assets/renown.png"
 import editIcon from "@assets/edit.png"
+import farmIcon from "@assets/farm.png"
+import nameIcon from "@assets/name.png"
+import healthIcon from "@assets/heart.png"
+import staminaIcon from "@assets/stamina.png"
+import manaIcon from "@assets/mana.png"
 import { saves, seasonsList, getCalendarTime, PronounsList, formatPronouns } from "@utils"
 
 const TesseraeIcon = () => <Image src={tesseraeIcon} w="20px" h="20px" />
 const EssenceIcon = () => <Image src={essenceIcon} w="20px" h="20px" />
 const RenownIcon = () => <Image src={renownIcon} w="20px" h="20px" />
 const EditIcon = () => <Image src={editIcon} w="20px" h="20px" />
+const FarmIcon = () => <Image src={farmIcon} w="20px" h="20px" />
+const NameIcon = () => <Image src={nameIcon} w="20px" h="20px" />
+const HealthIcon = () => <Image src={healthIcon} w="20px" h="20px" />
+const StaminaIcon = () => <Image src={staminaIcon} w="20px" h="20px" />
+const ManaIcon = () => <Image src={manaIcon} w="20px" h="20px" />
 
 export default function SaveEditing({ saveId, onBack }) {
   const save = saves.find((save) => save.id === saveId)
@@ -55,11 +66,13 @@ export default function SaveEditing({ saveId, onBack }) {
 
   const applyEdits = async () => {
     setIsApplyingEdits(true)
+    await window.api.setName(saveId, edits.name)
+    await window.api.setPronouns(saveId, edits.pronouns)
+    await window.api.setFarmName(saveId, edits.farmName)
     await window.api.setGold(saveId, edits.gold)
     await window.api.setEssence(saveId, edits.essence)
     await window.api.setRenown(saveId, edits.renown)
     await window.api.setCalendarTime(saveId, getCalendarTime(edits.year, edits.season, edits.day))
-    await window.api.setPronouns(saveId, edits.pronouns)
     await window.api.setHealth(saveId, edits.health)
     await window.api.setStamina(saveId, edits.stamina)
     await window.api.setMana(saveId, edits.mana)
@@ -82,6 +95,8 @@ export default function SaveEditing({ saveId, onBack }) {
     refreshSaveData()
   }, [saveId])
 
+  const setName = (newName) => setEdits((edits) => ({ ...edits, name: newName }))
+  const setFarmName = (newFarmName) => setEdits((edits) => ({ ...edits, farmName: newFarmName }))
   const setGold = (newGold) => setEdits((edits) => ({ ...edits, gold: newGold }))
   const setEssence = (newEssence) => setEdits((edits) => ({ ...edits, essence: newEssence }))
   const setRenown = (newRenown) => setEdits((edits) => ({ ...edits, renown: newRenown }))
@@ -144,6 +159,41 @@ export default function SaveEditing({ saveId, onBack }) {
               </HStack>
               <Grid templateColumns="repeat(3, 1fr)" gap="3">
                 <GridItem>
+                  <TextInput
+                    currentValue={edits.name}
+                    onChange={setName}
+                    textLabel="Name"
+                    icon={<NameIcon />}
+                  />
+                </GridItem>
+                <GridItem>
+                  <SelectInput
+                    currentValue={edits.pronouns}
+                    onValueChange={setPronouns}
+                    textLabel="Pronouns"
+                    collection={pronouns}
+                  />
+                </GridItem>
+                <GridItem>
+                  <TextInput
+                    currentValue={edits.farmName}
+                    onChange={setFarmName}
+                    textLabel="Farm Name"
+                    icon={<FarmIcon />}
+                  />
+                </GridItem>
+              </Grid>
+            </Stack>
+            {/* ===== Stats ===== */}
+            <Stack gap="4">
+              <HStack gap="2">
+                <EditIcon />
+                <Text textStyle="xl" fontWeight="bold">
+                  Stats
+                </Text>
+              </HStack>
+              <Grid templateColumns="repeat(3, 1fr)" gap="3">
+                <GridItem>
                   <NumberInput
                     value={edits.gold}
                     onValueChange={setGold}
@@ -171,19 +221,12 @@ export default function SaveEditing({ saveId, onBack }) {
                   />
                 </GridItem>
                 <GridItem>
-                  <SelectInput
-                    currentValue={edits.pronouns}
-                    onValueChange={setPronouns}
-                    textLabel="Pronouns"
-                    collection={pronouns}
-                  />
-                </GridItem>
-                <GridItem>
                   <NumberInput
                     value={edits.health}
                     onValueChange={setHealth}
                     label="Health"
                     step={10}
+                    icon={<HealthIcon />}
                   />
                 </GridItem>
                 <GridItem>
@@ -192,6 +235,7 @@ export default function SaveEditing({ saveId, onBack }) {
                     onValueChange={setStamina}
                     label="Stamina"
                     step={10}
+                    icon={<StaminaIcon />}
                   />
                 </GridItem>
                 <GridItem>
@@ -200,6 +244,7 @@ export default function SaveEditing({ saveId, onBack }) {
                     onValueChange={setMana}
                     label="Mana"
                     step={4}
+                    icon={<ManaIcon />}
                   />
                 </GridItem>
               </Grid>
@@ -257,6 +302,20 @@ function NumberInput({ value, onValueChange, step, min, label, helper, icon }) {
           <NumberInputField />
         </InputGroup>
       </NumberInputRoot>
+    </Field>
+  )
+}
+
+function TextInput({ currentValue, textLabel, onChange, icon }) {
+  return (
+    <Field label={textLabel}>
+      <InputGroup flex="" w="full" startElement={icon || null}>
+        <Input 
+          value={currentValue}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </InputGroup>
+      
     </Field>
   )
 }

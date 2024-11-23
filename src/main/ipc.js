@@ -7,18 +7,10 @@ import {
   unpackSavesToTemp,
   isNumber,
   PronounsList,
-  translateCalendarTime,
-  getTestingDir,
-  readFomSaves,
-  getSaveIdFromPath,
-  deleteDirIfExists
+  translateCalendarTime
 } from "./utils"
 
-import { join } from "node:path"
-import { mkdirSync, cpSync, readdirSync } from "node:fs"
-
 export const IPC = {
-  MEASURE_UNPACKING: "measure/unpacking",
   UPDATE_SAVE: "update/save",
   GET_SORTED_LOADING_SAVES: "get/sorted-loading-saves",
   GET_SAVE_DATA: "get/save-data",
@@ -35,7 +27,6 @@ export const IPC = {
 }
 
 export const channels = {
-  [IPC.MEASURE_UNPACKING]: handleMeasureUnpacking,
   [IPC.UPDATE_SAVE]: handleUpdateSave,
   [IPC.GET_SORTED_LOADING_SAVES]: handleGetSortedLoadingSaves,
   [IPC.GET_SAVE_DATA]: handleGetSaveData,
@@ -51,38 +42,6 @@ export const channels = {
   [IPC.SET_MANA]: handleSetMana
 }
 
-function handleMeasureUnpacking(e, amount) {
-  if (!isNumber(amount) || amount < 1) {
-    console.log(`[handleMeasureUnpacking]: Invalid amount ${amount}`)
-    return
-  }
-  const testingDir = getTestingDir()
-  const testSavePath = readFomSaves()[0]
-  const saveBasename = getSaveIdFromPath(testSavePath)
-
-  mkdirSync(testingDir)
-
-  for (let i = 1; i <= amount; i++) {
-    cpSync(testSavePath, join(testingDir, `${saveBasename}-${i}.sav`))
-  }
-
-  const startTime = process.hrtime()
-  const savesToUnpack = readdirSync(testingDir).map((file) => join(testingDir, file))
-
-  for (const savePath of savesToUnpack) {
-    const unpackDir = join(testingDir, getSaveIdFromPath(savePath))
-    // execFileSync(vaultc, ["unpack", savePath, unpackDir])
-    vaultc.unpackSave(savePath, unpackDir)
-  }
-
-  const endTime = process.hrtime(startTime)
-  const measurement = endTime[0] + endTime[1] / 1e9 // Convert to seconds
-
-  deleteDirIfExists(testingDir)
-
-  return measurement
-}
-
 function handleUpdateSave(e, saveId) {
   console.log(`[handleUpdateSave:${saveId}]`)
 
@@ -92,12 +51,21 @@ function handleUpdateSave(e, saveId) {
     return false
   }
 
-  const { jsonPaths } = saveInfo
-  const infoData = parseInfoJson(jsonPaths.info)
-  updateJsonValue(jsonPaths.info, "last_played", infoData.last_played + 0.00000000001)
+  // We find the max biggest `last_played` value and then
+  // add a miniscule value to it to make the edited file show first in-game
 
+  const unpackedSavesInfo = Array.from(unpackedSavesPathsCache.values())
+  const longestLastPlayed = Math.max(
+    ...unpackedSavesInfo.map((_saveInfo) => {
+      const infoData = parseInfoJson(_saveInfo.jsonPaths.info)
+      return infoData.last_played
+    })
+  )
+
+  updateJsonValue(saveInfo.jsonPaths.info, "last_played", longestLastPlayed + 0.00000000001)
   vaultc.packSave(saveInfo.unpackPath, saveInfo.fomSavePath)
 
+  // TODO: Instead of refreshing all the saves, we should refresh only the one we edited
   unpackSavesToTemp()
   return true
 }

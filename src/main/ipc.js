@@ -6,12 +6,19 @@ import {
   vaultc,
   unpackSavesToTemp,
   isNumber,
-  PronounsList
+  PronounsList,
+  translateCalendarTime,
+  getTestingDir,
+  readFomSaves,
+  getSaveIdFromPath,
+  deleteDirIfExists
 } from "./utils"
 
-import { translateCalendarTime } from "./utils"
+import { join } from "node:path"
+import { mkdirSync, cpSync, readdirSync } from "node:fs"
 
 export const IPC = {
+  MEASURE_UNPACKING: "measure/unpacking",
   UPDATE_SAVE: "update/save",
   GET_SORTED_LOADING_SAVES: "get/sorted-loading-saves",
   GET_SAVE_DATA: "get/save-data",
@@ -28,6 +35,7 @@ export const IPC = {
 }
 
 export const channels = {
+  [IPC.MEASURE_UNPACKING]: handleMeasureUnpacking,
   [IPC.UPDATE_SAVE]: handleUpdateSave,
   [IPC.GET_SORTED_LOADING_SAVES]: handleGetSortedLoadingSaves,
   [IPC.GET_SAVE_DATA]: handleGetSaveData,
@@ -41,6 +49,38 @@ export const channels = {
   [IPC.SET_HEALTH]: handleSetHealth,
   [IPC.SET_STAMINA]: handleSetStamina,
   [IPC.SET_MANA]: handleSetMana
+}
+
+function handleMeasureUnpacking(e, amount) {
+  if (!isNumber(amount) || amount < 1) {
+    console.log(`[handleMeasureUnpacking]: Invalid amount ${amount}`)
+    return
+  }
+  const testingDir = getTestingDir()
+  const testSavePath = readFomSaves()[0]
+  const saveBasename = getSaveIdFromPath(testSavePath)
+
+  mkdirSync(testingDir)
+
+  for (let i = 1; i <= amount; i++) {
+    cpSync(testSavePath, join(testingDir, `${saveBasename}-${i}.sav`))
+  }
+
+  const startTime = process.hrtime()
+  const savesToUnpack = readdirSync(testingDir).map((file) => join(testingDir, file))
+
+  for (const savePath of savesToUnpack) {
+    const unpackDir = join(testingDir, getSaveIdFromPath(savePath))
+    // execFileSync(vaultc, ["unpack", savePath, unpackDir])
+    vaultc.unpackSave(savePath, unpackDir)
+  }
+
+  const endTime = process.hrtime(startTime)
+  const measurement = endTime[0] + endTime[1] / 1e9 // Convert to seconds
+
+  deleteDirIfExists(testingDir)
+
+  return measurement
 }
 
 function handleUpdateSave(e, saveId) {
@@ -113,7 +153,7 @@ function handleGetSaveData(e, saveId) {
 function handleSetName(e, saveId, name) {
   console.log(`[handleSetName:${saveId}]: Updating name to ${name}`)
 
-  if (!(typeof name === 'string' || name instanceof String)) {
+  if (!(typeof name === "string" || name instanceof String)) {
     console.log(`[handleSetName:${saveId}]: Name is not a string ${name}, won't update`)
     return false
   }
@@ -155,8 +195,10 @@ function handleSetPronouns(e, saveId, pronouns) {
 function handleSetFarmName(e, saveId, farmName) {
   console.log(`[handleSetFarmName:${saveId}]: Updating farm name to ${farmName}`)
 
-  if (!(typeof farmName === 'string' || farmName instanceof String)) {
-    console.log(`[handleSetFarmName:${saveId}]: Farm name is not a string ${farmName}, won't update`)
+  if (!(typeof farmName === "string" || farmName instanceof String)) {
+    console.log(
+      `[handleSetFarmName:${saveId}]: Farm name is not a string ${farmName}, won't update`
+    )
     return false
   }
 

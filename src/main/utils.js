@@ -14,6 +14,11 @@ export const tempPath = path.join(appDataPath, "Local", "Temp")
 export const fomSavesPath = path.join(appDataPath, "Local", "FieldsOfMistria", "saves")
 export const tempSavesPath = path.join(tempPath, "moths-cheats")
 
+export function getTestingDir() {
+  const timestamp = Math.floor(Date.now() / 1000)
+  return path.join(__dirname, `testing-${timestamp}`)
+}
+
 export const jsonFileNames = [
   "beach",
   "checksums",

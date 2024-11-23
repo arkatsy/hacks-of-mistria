@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from "electron"
 import { IPC } from "../main/ipc"
 
 const api = {
+  measureUnpacking: async (amount) => ipcRenderer.invoke(IPC.MEASURE_UNPACKING, amount),
   updateSave: async (saveId) => ipcRenderer.invoke(IPC.UPDATE_SAVE, saveId),
   getSortedLoadingSaves: () => ipcRenderer.sendSync(IPC.GET_SORTED_LOADING_SAVES),
   getSaveData: async (saveId) => ipcRenderer.invoke(IPC.GET_SAVE_DATA, saveId),

@@ -6,45 +6,27 @@ import {
   Grid,
   GridItem,
   HStack,
-  Input,
-  Image,
   Spinner,
   Stack,
   Text,
   createListCollection
 } from "@chakra-ui/react"
-import { Field } from "@components/ui/field"
 import { Button } from "@components/ui/button"
-import { InputGroup } from "@components/ui/input-group"
-import { NumberInputRoot, NumberInputField } from "@components/ui/number-input"
+import NumberInput from "@components/number-input"
+import TextInput from "@components/text-input"
+import SelectInput from "@components/select-input"
 import {
-  SelectContent,
-  SelectItem,
-  SelectLabel,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText
-} from "@components/ui/select"
-import tesseraeIcon from "@assets/tessarae.webp"
-import essenceIcon from "@assets/essence.png"
-import renownIcon from "@assets/renown.png"
-import editIcon from "@assets/edit.png"
-import farmIcon from "@assets/farm.png"
-import nameIcon from "@assets/name.png"
-import healthIcon from "@assets/heart.png"
-import staminaIcon from "@assets/stamina.png"
-import manaIcon from "@assets/mana.png"
+  TesseraeIcon,
+  EssenceIcon,
+  RenownIcon,
+  EditIcon,
+  FarmIcon,
+  NameIcon,
+  HealthIcon,
+  StaminaIcon,
+  ManaIcon
+} from "@components/icons"
 import { saves, seasonsList, getCalendarTime, PronounsList, formatPronouns } from "@utils"
-
-const TesseraeIcon = () => <Image src={tesseraeIcon} w="20px" h="20px" />
-const EssenceIcon = () => <Image src={essenceIcon} w="20px" h="20px" />
-const RenownIcon = () => <Image src={renownIcon} w="20px" h="20px" />
-const EditIcon = () => <Image src={editIcon} w="20px" h="20px" />
-const FarmIcon = () => <Image src={farmIcon} w="20px" h="20px" />
-const NameIcon = () => <Image src={nameIcon} w="20px" h="20px" />
-const HealthIcon = () => <Image src={healthIcon} w="20px" h="20px" />
-const StaminaIcon = () => <Image src={staminaIcon} w="20px" h="20px" />
-const ManaIcon = () => <Image src={manaIcon} w="20px" h="20px" />
 
 export default function SaveEditing({ saveId, onBack }) {
   const save = saves.find((save) => save.id === saveId)
@@ -285,52 +267,6 @@ export default function SaveEditing({ saveId, onBack }) {
         )}
       </Box>
     </Box>
-  )
-}
-
-function NumberInput({ value, onValueChange, step, min, label, helper, icon }) {
-  return (
-    <Field label={label} helperText={helper || ""}>
-      <NumberInputRoot
-        min={min || 0}
-        step={step || 1}
-        value={+value || 0}
-        onValueChange={(e) => onValueChange(+e.value)}
-        w="full"
-      >
-        <InputGroup flex="" w="full" startElement={icon || null}>
-          <NumberInputField />
-        </InputGroup>
-      </NumberInputRoot>
-    </Field>
-  )
-}
-
-function TextInput({ currentValue, textLabel, onChange, icon }) {
-  return (
-    <Field label={textLabel}>
-      <InputGroup flex="" w="full" startElement={icon || null}>
-        <Input value={currentValue} onChange={(e) => onChange(e.target.value)} />
-      </InputGroup>
-    </Field>
-  )
-}
-
-function SelectInput({ collection, textLabel, currentValue, onValueChange }) {
-  return (
-    <SelectRoot collection={collection} size="md" onValueChange={(e) => onValueChange(e.value[0])}>
-      <SelectLabel>{textLabel}</SelectLabel>
-      <SelectTrigger>
-        <SelectValueText placeholder={currentValue} />
-      </SelectTrigger>
-      <SelectContent>
-        {collection.items.map((item) => (
-          <SelectItem item={item} key={item.value}>
-            {item.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </SelectRoot>
   )
 }
 

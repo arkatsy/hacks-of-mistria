@@ -48,7 +48,9 @@ app.whenReady().then(async () => {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"))
   }
 
-  mainWindow.webContents.openDevTools()
+  if (isDev) {
+    mainWindow.webContents.openDevTools()
+  }
 })
 
 ipcMain.on(IPC.GET_SORTED_LOADING_SAVES, channels[IPC.GET_SORTED_LOADING_SAVES])

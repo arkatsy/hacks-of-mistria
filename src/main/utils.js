@@ -16,7 +16,7 @@ export const tempSavesPath = path.join(tempPath, "moths-cheats")
 
 export function getTestingDir() {
   const timestamp = Math.floor(Date.now() / 1000)
-  return path.join(__dirname, `testing-${timestamp}`)
+  return path.join(tempPath, `testing-${timestamp}`)
 }
 
 export const jsonFileNames = [

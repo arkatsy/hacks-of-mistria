@@ -15,7 +15,7 @@ function Layout({ children }) {
         minH="100vh"
         display="flex"
         flexDir="column"
-        gap="50px"
+        gap="30px"
         alignItems="center"
         pos="relative"
       >
@@ -32,9 +32,42 @@ function Layout({ children }) {
         <Image src={fomLogo} zIndex={1} draggable={false} />
         {children}
       </Box>
-      <Separator />
-      <UnpackingMeasurement />
     </Box>
+  )
+}
+
+export function App() {
+  const [editingSaveId, setEditingSaveId] = useState(null)
+
+  const goToEditing = (saveId) => setEditingSaveId(saveId)
+  const goToSelection = () => setEditingSaveId(null)
+
+  return (
+    <Layout>
+      {editingSaveId ? (
+        <SaveEditing saveId={editingSaveId} onBack={goToSelection} />
+      ) : (
+        <>
+          <Box pos="relative" w="full">
+            <SaveSelection onSaveSelected={goToEditing} />
+            <Image
+              src={dozy}
+              zIndex={2}
+              draggable={false}
+              pos="absolute"
+              bottom="10"
+              right="10"
+              transform="scaleX(-1)"
+            />
+            <Image src={dozy} zIndex={2} draggable={false} pos="absolute" bottom="10" left="10" />
+          </Box>
+          <Separator />
+          <Box alignSelf="start">
+            <UnpackingMeasurement />
+          </Box>
+        </>
+      )}
+    </Layout>
   )
 }
 
@@ -62,7 +95,7 @@ function UnpackingMeasurement() {
   }
 
   return (
-    <Stack p="8" gap="4">
+    <Stack p="8" gap="4" w="full">
       <Text textStyle="xl">Unpacking Time Measurement</Text>
       <HStack>
         <Box maxW="300px">
@@ -79,34 +112,5 @@ function UnpackingMeasurement() {
         {report && <Text>{report}</Text>}
       </HStack>
     </Stack>
-  )
-}
-
-export function App() {
-  const [editingSaveId, setEditingSaveId] = useState(null)
-
-  const goToEditing = (saveId) => setEditingSaveId(saveId)
-  const goToSelection = () => setEditingSaveId(null)
-
-  return (
-    <Layout>
-      {editingSaveId ? (
-        <SaveEditing saveId={editingSaveId} onBack={goToSelection} />
-      ) : (
-        <>
-          <SaveSelection onSaveSelected={goToEditing} />
-          <Image
-            src={dozy}
-            zIndex={2}
-            draggable={false}
-            pos="absolute"
-            bottom="10"
-            right="10"
-            transform="scaleX(-1)"
-          />
-          <Image src={dozy} zIndex={2} draggable={false} pos="absolute" bottom="10" left="10" />
-        </>
-      )}
-    </Layout>
   )
 }

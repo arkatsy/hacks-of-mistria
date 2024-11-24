@@ -1,8 +1,6 @@
 import {
   unpackedSavesPathsCache,
   updateJsonValue,
-  parseInfoJson,
-  parseHeaderJson,
   vaultc,
   unpackSavesToTemp,
   isNumber,
@@ -11,11 +9,12 @@ import {
   getTestingDir,
   readFomSaves,
   getSaveIdFromPath,
-  deleteDirIfExists
+  deleteDirIfExists,
+  parseJsonFile
 } from "./utils"
 
-import { join } from "node:path"
-import { mkdirSync, cpSync, readdirSync } from "node:fs"
+import { join } from "path"
+import { mkdir, copyFile, readdir } from "fs/promises"
 
 export const IPC = {
   MEASURE_UNPACKING: "measure/unpacking",
@@ -57,17 +56,17 @@ async function handleMeasureUnpacking(e, amount) {
     return
   }
   const testingDir = getTestingDir()
-  const testSavePath = readFomSaves()[0]
+  const testSavePath = (await readFomSaves())[0]
   const saveBasename = getSaveIdFromPath(testSavePath)
 
-  mkdirSync(testingDir)
+  await mkdir(testingDir)
 
   for (let i = 1; i <= amount; i++) {
-    cpSync(testSavePath, join(testingDir, `${saveBasename}-${i}.sav`))
+    await copyFile(testSavePath, join(testingDir, `${saveBasename}-${i}.sav`))
   }
 
   const startTime = process.hrtime()
-  const savesToUnpack = readdirSync(testingDir).map((file) => join(testingDir, file))
+  const savesToUnpack = await readdir(testingDir).map((file) => join(testingDir, file))
 
   for (const savePath of savesToUnpack) {
     const unpackDir = join(testingDir, getSaveIdFromPath(savePath))
@@ -77,7 +76,7 @@ async function handleMeasureUnpacking(e, amount) {
   const endTime = process.hrtime(startTime)
   const measurement = endTime[0] + endTime[1] / 1e9 // Convert to seconds
 
-  deleteDirIfExists(testingDir)
+  await deleteDirIfExists(testingDir)
 
   return measurement
 }
@@ -96,13 +95,15 @@ async function handleUpdateSave(e, saveId) {
 
   const unpackedSavesInfo = Array.from(unpackedSavesPathsCache.values())
   const longestLastPlayed = Math.max(
-    ...unpackedSavesInfo.map((_saveInfo) => {
-      const infoData = parseInfoJson(_saveInfo.jsonPaths.info)
-      return infoData.last_played
-    })
+    ...(await Promise.all(
+      unpackedSavesInfo.map(async (_saveInfo) => {
+        const infoData = await parseJsonFile(_saveInfo.jsonPaths.info)
+        return infoData.last_played
+      })
+    ))
   )
 
-  updateJsonValue(saveInfo.jsonPaths.info, "last_played", longestLastPlayed + 0.00000000001)
+  await updateJsonValue(saveInfo.jsonPaths.info, "last_played", longestLastPlayed + 0.00000000001)
   await vaultc.packSave(saveInfo.unpackPath, saveInfo.fomSavePath)
 
   // TODO: Instead of refreshing all the saves, we should refresh only the one we edited
@@ -110,27 +111,29 @@ async function handleUpdateSave(e, saveId) {
   return true
 }
 
-function handleGetSortedLoadingSaves(e) {
+async function handleGetSortedLoadingSaves(e) {
   console.log(`[handleGetSortedLoadingSaves]`)
   const unpackedSavesInfo = Array.from(unpackedSavesPathsCache.values())
 
-  const sortedSavesByLastPlayed = unpackedSavesInfo
-    .map((saveInfo) => {
-      const infoData = parseInfoJson(saveInfo.jsonPaths.info)
-      const headerData = parseHeaderJson(saveInfo.jsonPaths.header)
-      return {
-        info: infoData,
-        header: headerData,
-        id: saveInfo.saveId,
-        autosave: saveInfo.saveId.includes("autosave")
-      }
-    })
-    .sort((a, b) => b.info.last_played - a.info.last_played)
+  const sortedSavesByLastPlayed = await Promise.all(
+    unpackedSavesInfo
+      .map(async (saveInfo) => {
+        const infoData = await parseJsonFile(saveInfo.jsonPaths.info)
+        const headerData = await parseJsonFile(saveInfo.jsonPaths.header)
+        return {
+          info: infoData,
+          header: headerData,
+          id: saveInfo.saveId,
+          autosave: saveInfo.saveId.includes("autosave")
+        }
+      })
+      .sort((a, b) => b.info.last_played - a.info.last_played)
+  )
 
   e.returnValue = sortedSavesByLastPlayed
 }
 
-function handleGetSaveData(e, saveId) {
+async function handleGetSaveData(e, saveId) {
   console.log(`[handleGetSaveData:${saveId}]`)
   const saveInfo = unpackedSavesPathsCache.get(saveId)
   if (!saveInfo) {
@@ -138,8 +141,8 @@ function handleGetSaveData(e, saveId) {
     return null
   }
 
-  const headerData = parseHeaderJson(saveInfo.jsonPaths.header)
-  const playerData = parseHeaderJson(saveInfo.jsonPaths.player)
+  const headerData = await parseJsonFile(saveInfo.jsonPaths.header)
+  const playerData = await parseJsonFile(saveInfo.jsonPaths.player)
 
   return {
     name: headerData.name,
@@ -158,7 +161,7 @@ function handleGetSaveData(e, saveId) {
   }
 }
 
-function handleSetName(e, saveId, name) {
+async function handleSetName(e, saveId, name) {
   console.log(`[handleSetName:${saveId}]: Updating name to ${name}`)
 
   if (!(typeof name === "string" || name instanceof String)) {
@@ -174,13 +177,13 @@ function handleSetName(e, saveId, name) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "name", name)
-  updateJsonValue(jsonPaths.player, "name", name)
+  await updateJsonValue(jsonPaths.header, "name", name)
+  await updateJsonValue(jsonPaths.player, "name", name)
 
   return true
 }
 
-function handleSetPronouns(e, saveId, pronouns) {
+async function handleSetPronouns(e, saveId, pronouns) {
   console.log(`[handleSetPronouns:${saveId}]: Updating pronouns to ${pronouns}`)
 
   if (!(pronouns in PronounsList)) {
@@ -195,12 +198,12 @@ function handleSetPronouns(e, saveId, pronouns) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.player, "pronoun_choice", pronouns)
+  await updateJsonValue(jsonPaths.player, "pronoun_choice", pronouns)
 
   return true
 }
 
-function handleSetFarmName(e, saveId, farmName) {
+async function handleSetFarmName(e, saveId, farmName) {
   console.log(`[handleSetFarmName:${saveId}]: Updating farm name to ${farmName}`)
 
   if (!(typeof farmName === "string" || farmName instanceof String)) {
@@ -218,13 +221,13 @@ function handleSetFarmName(e, saveId, farmName) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "farm_name", farmName)
-  updateJsonValue(jsonPaths.player, "farm_name", farmName)
+  await updateJsonValue(jsonPaths.header, "farm_name", farmName)
+  await updateJsonValue(jsonPaths.player, "farm_name", farmName)
 
   return true
 }
 
-function handleSetGold(e, saveId, gold) {
+async function handleSetGold(e, saveId, gold) {
   console.log(`[handleSetGold:${saveId}]: Updating gold to ${gold}`)
 
   if (!isNumber(gold)) {
@@ -240,13 +243,13 @@ function handleSetGold(e, saveId, gold) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "stats.gold", gold)
-  updateJsonValue(jsonPaths.player, "stats.gold", gold)
+  await updateJsonValue(jsonPaths.header, "stats.gold", gold)
+  await updateJsonValue(jsonPaths.player, "stats.gold", gold)
 
   return true
 }
 
-function handleSetEssence(e, saveId, essence) {
+async function handleSetEssence(e, saveId, essence) {
   console.log(`[handleSetEssence:${saveId}]: Updating essence to ${essence}`)
 
   if (!isNumber(essence)) {
@@ -262,13 +265,13 @@ function handleSetEssence(e, saveId, essence) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "stats.essence", essence)
-  updateJsonValue(jsonPaths.player, "stats.essence", essence)
+  await updateJsonValue(jsonPaths.header, "stats.essence", essence)
+  await updateJsonValue(jsonPaths.player, "stats.essence", essence)
 
   return true
 }
 
-function handleSetRenown(e, saveId, renown) {
+async function handleSetRenown(e, saveId, renown) {
   console.log(`[handleSetRenown:${saveId}]: Updating renown to ${renown}`)
 
   if (!isNumber(renown)) {
@@ -284,13 +287,13 @@ function handleSetRenown(e, saveId, renown) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "stats.renown", renown)
-  updateJsonValue(jsonPaths.player, "stats.renown", renown)
+  await updateJsonValue(jsonPaths.header, "stats.renown", renown)
+  await updateJsonValue(jsonPaths.player, "stats.renown", renown)
 
   return true
 }
 
-function handleSetCalendarTime(e, saveId, calendarTime) {
+async function handleSetCalendarTime(e, saveId, calendarTime) {
   console.log(`[handleSetCalendarTime:${saveId}]: Updating calendar time to ${calendarTime}`)
 
   if (!isNumber(calendarTime)) {
@@ -315,14 +318,14 @@ function handleSetCalendarTime(e, saveId, calendarTime) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "calendar_time", calendarTime)
-  updateJsonValue(jsonPaths.gamedata, "date", calendarTime)
+  await updateJsonValue(jsonPaths.header, "calendar_time", calendarTime)
+  await updateJsonValue(jsonPaths.gamedata, "date", calendarTime)
   //TODO: IMPLEMENT DAY OF THE WEEK
 
   return true
 }
 
-function handleSetHealth(e, saveId, health) {
+async function handleSetHealth(e, saveId, health) {
   console.log(`[handleSetHealth:${saveId}]: Updating health to ${health}`)
 
   if (!isNumber(health)) {
@@ -338,15 +341,15 @@ function handleSetHealth(e, saveId, health) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "stats.base_health", health)
-  updateJsonValue(jsonPaths.header, "stats.health_current", health)
-  updateJsonValue(jsonPaths.player, "stats.base_health", health)
-  updateJsonValue(jsonPaths.player, "stats.health_current", health)
+  await updateJsonValue(jsonPaths.header, "stats.base_health", health)
+  await updateJsonValue(jsonPaths.header, "stats.health_current", health)
+  await updateJsonValue(jsonPaths.player, "stats.base_health", health)
+  await updateJsonValue(jsonPaths.player, "stats.health_current", health)
 
   return true
 }
 
-function handleSetStamina(e, saveId, stamina) {
+async function handleSetStamina(e, saveId, stamina) {
   console.log(`[handleSetStamina:${saveId}]: Updating stamina to ${stamina}`)
 
   if (!isNumber(stamina)) {
@@ -362,15 +365,15 @@ function handleSetStamina(e, saveId, stamina) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "stats.base_stamina", stamina)
-  updateJsonValue(jsonPaths.header, "stats.stamina_current", stamina)
-  updateJsonValue(jsonPaths.player, "stats.base_stamina", stamina)
-  updateJsonValue(jsonPaths.player, "stats.stamina_current", stamina)
+  await updateJsonValue(jsonPaths.header, "stats.base_stamina", stamina)
+  await updateJsonValue(jsonPaths.header, "stats.stamina_current", stamina)
+  await updateJsonValue(jsonPaths.player, "stats.base_stamina", stamina)
+  await updateJsonValue(jsonPaths.player, "stats.stamina_current", stamina)
 
   return true
 }
 
-function handleSetMana(e, saveId, mana) {
+async function handleSetMana(e, saveId, mana) {
   console.log(`[handleSetMana:${saveId}]: Updating mana to ${mana}`)
 
   if (!isNumber(mana)) {
@@ -386,10 +389,10 @@ function handleSetMana(e, saveId, mana) {
 
   const { jsonPaths } = saveInfo
 
-  updateJsonValue(jsonPaths.header, "stats.mana_max", mana)
-  updateJsonValue(jsonPaths.header, "stats.mana_current", mana)
-  updateJsonValue(jsonPaths.player, "stats.mana_max", mana)
-  updateJsonValue(jsonPaths.player, "stats.mana_current", mana)
+  await updateJsonValue(jsonPaths.header, "stats.mana_max", mana)
+  await updateJsonValue(jsonPaths.header, "stats.mana_current", mana)
+  await updateJsonValue(jsonPaths.player, "stats.mana_max", mana)
+  await updateJsonValue(jsonPaths.player, "stats.mana_current", mana)
 
   return true
 }

@@ -53,10 +53,6 @@ app.whenReady().then(async () => {
   }
 })
 
-ipcMain.on(IPC.GET_SORTED_LOADING_SAVES, channels[IPC.GET_SORTED_LOADING_SAVES])
-
-Object.keys(channels)
-  .filter((channel) => channel !== IPC.GET_SORTED_LOADING_SAVES)
-  .forEach((channelName) => {
-    ipcMain.handle(channelName, channels[channelName])
-  })
+Object.keys(channels).forEach((channelName) => {
+  ipcMain.handle(channelName, channels[channelName])
+})

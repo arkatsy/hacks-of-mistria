@@ -2,7 +2,8 @@ import os from "os"
 import fs from "fs"
 import { execFile } from "child_process"
 import path from "path"
-import {promisify} from "util"
+import { promisify } from "util"
+import { readFile, writeFile, readdir, access, rm } from "fs/promises"
 
 const execFileAsync = promisify(execFile)
 
@@ -88,8 +89,8 @@ export function translateCalendarTime(time) {
  * @param filePath The path to the JSON file
  * @returns The parsed JSON object
  */
-export function readJsonFile(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, "utf-8"))
+export async function parseJsonFile(filePath) {
+  return JSON.parse(await readFile(filePath, "utf-8"))
 }
 
 /**
@@ -97,53 +98,22 @@ export function readJsonFile(filePath) {
  * @param filePath The path to the file
  * @param data The data to be written to the file
  */
-export function writeJsonFile(filePath, data) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8")
-}
-
-/**
- * @desc Parses the `info.json` file from an unpacked save directory
- * @param unpackedPath The path to the unpacked save directory
- * @returns The parsed `info.json` object
- */
-export function parseInfoJson(unpackedPath) {
-  return readJsonFile(unpackedPath)
-}
-
-/**
- * @desc Parses the `header.json` file from an unpacked save directory
- * @param unpackedPath The path to the unpacked save directory
- * @returns The parsed `header.json` object
- */
-export function parseHeaderJson(unpackedPath) {
-  return readJsonFile(unpackedPath)
-}
-
-/**
- * @desc Parses the `player.json` file from an unpacked save directory
- * @param unpackedPath The path to the unpacked save directory
- * @returns The parsed `player.json` object
- */
-export function parsePlayerJson(unpackedPath) {
-  return readJsonFile(unpackedPath)
-}
-
-/**
- * @desc Parses the `gamedata.json` file from an unpacked save directory
- * @param unpackedPath The path to the unpacked save directory
- * @returns The parsed `player.json` object
- */
-export function parseGamedataJson(unpackedPath) {
-  return readJsonFile(unpackedPath)
+export async function writeJsonFile(filePath, data) {
+  await writeFile(filePath, JSON.stringify(data, null, 2), "utf-8")
 }
 
 /**
  * @desc Deletes a directory if exists
  * @param dirPath The path to the directory to be deleted
  */
-export function deleteDirIfExists(dirPath) {
-  if (fs.existsSync(dirPath)) {
-    fs.rmSync(dirPath, { recursive: true })
+export async function deleteDirIfExists(dirPath) {
+  try {
+    await access(dirPath)
+    await rm(dirPath, { recursive: true })
+  } catch (error) {
+    if (error.code !== "ENOENT") {
+      throw error
+    }
   }
 }
 
@@ -151,11 +121,9 @@ export function deleteDirIfExists(dirPath) {
  * @desc Reads all the save files from the game's save directory (`fomSavesPath`) and returns their absolute paths
  * @returns An array with the absolute paths to all the save files in the game's save directory (`fomSavesPath`)
  */
-export function readFomSaves() {
-  return fs
-    .readdirSync(fomSavesPath)
-    .filter((file) => file.endsWith(".sav"))
-    .map((file) => path.join(fomSavesPath, file))
+export async function readFomSaves() {
+  const files = await readdir(fomSavesPath)
+  return files.filter((file) => file.endsWith(".sav")).map((file) => path.join(fomSavesPath, file))
 }
 
 /**
@@ -177,7 +145,7 @@ export const vaultc = {
    * @param unpackDirPath The path to the directory where the unpacked json files will be saved
    */
   unpackSave: async (savefilePath, unpackDirPath) => {
-   await execFileAsync(vaultcPath, ["unpack", savefilePath, unpackDirPath])
+    await execFileAsync(vaultcPath, ["unpack", savefilePath, unpackDirPath])
   }
 }
 
@@ -215,16 +183,15 @@ export const unpackedSavesPathsCache = new Map()
  * It also updates the `unpackedSavesPathsCache` with the new unpacked save info.
  */
 export async function unpackSavesToTemp() {
-  deleteDirIfExists(tempSavesPath)
+  await deleteDirIfExists(tempSavesPath)
 
-  const fomSaves = readFomSaves()
+  const fomSaves = await readFomSaves()
 
   for (const fomSavePath of fomSaves) {
     const saveId = getSaveIdFromPath(fomSavePath)
     const unpackDirPath = getUnpackPathFromSaveId(saveId)
 
-    deleteDirIfExists(unpackDirPath)
-
+    await deleteDirIfExists(unpackDirPath)
     await vaultc.unpackSave(fomSavePath, unpackDirPath)
 
     const unpackedSaveInfo = {
@@ -266,8 +233,8 @@ export async function unpackSavesToTemp() {
  * @param key The key to be updated in the JSON file. It can also be a nested key separated by dots (e.g. 't2_world_facts.ari_name')
  * @param value The new value to be set
  */
-export function updateJsonValue(filePath, key, value) {
-  const file = JSON.parse(fs.readFileSync(filePath, "utf-8"))
+export async function updateJsonValue(filePath, key, value) {
+  const file = await parseJsonFile(filePath)
   const keys = key.split(".")
 
   let current = file
@@ -284,5 +251,5 @@ export function updateJsonValue(filePath, key, value) {
 
   current[keys[keys.length - 1]] = value
 
-  writeJsonFile(filePath, file)
+  await writeJsonFile(filePath, file)
 }

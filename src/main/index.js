@@ -10,7 +10,7 @@ app.whenReady().then(async () => {
   electronApp.setAppUserModelId("moths-cheats")
 
   // this is where we unpack the saves initially, before even creating the window
-  unpackSavesToTemp()
+  await unpackSavesToTemp()
 
   // this is where the main window is being created
   const mainWindow = new BrowserWindow({

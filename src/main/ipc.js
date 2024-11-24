@@ -51,7 +51,7 @@ export const channels = {
   [IPC.SET_MANA]: handleSetMana
 }
 
-function handleMeasureUnpacking(e, amount) {
+async function handleMeasureUnpacking(e, amount) {
   if (!isNumber(amount) || amount < 1) {
     console.log(`[handleMeasureUnpacking]: Invalid amount ${amount}`)
     return
@@ -71,7 +71,7 @@ function handleMeasureUnpacking(e, amount) {
 
   for (const savePath of savesToUnpack) {
     const unpackDir = join(testingDir, getSaveIdFromPath(savePath))
-    vaultc.unpackSave(savePath, unpackDir)
+    await vaultc.unpackSave(savePath, unpackDir)
   }
 
   const endTime = process.hrtime(startTime)
@@ -82,7 +82,7 @@ function handleMeasureUnpacking(e, amount) {
   return measurement
 }
 
-function handleUpdateSave(e, saveId) {
+async function handleUpdateSave(e, saveId) {
   console.log(`[handleUpdateSave:${saveId}]`)
 
   const saveInfo = unpackedSavesPathsCache.get(saveId)
@@ -103,10 +103,10 @@ function handleUpdateSave(e, saveId) {
   )
 
   updateJsonValue(saveInfo.jsonPaths.info, "last_played", longestLastPlayed + 0.00000000001)
-  vaultc.packSave(saveInfo.unpackPath, saveInfo.fomSavePath)
+  await vaultc.packSave(saveInfo.unpackPath, saveInfo.fomSavePath)
 
   // TODO: Instead of refreshing all the saves, we should refresh only the one we edited
-  unpackSavesToTemp()
+  await unpackSavesToTemp()
   return true
 }
 

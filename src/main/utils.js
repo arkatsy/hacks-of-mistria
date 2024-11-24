@@ -1,7 +1,10 @@
 import os from "os"
 import fs from "fs"
-import { execFileSync } from "child_process"
+import { execFile } from "child_process"
 import path from "path"
+import {promisify} from "util"
+
+const execFileAsync = promisify(execFile)
 
 export const isDev = process.env["NODE_ENV"] === "development"
 export const isProd = process.env["NODE_ENV"] === "production"
@@ -165,16 +168,16 @@ export const vaultc = {
    * @param savefilePath The path to the `.sav` file to be created
    * @param unpackDirPath The path to the directory containing the unpacked json files
    */
-  packSave: (savefilePath, unpackDirPath) => {
-    execFileSync(vaultcPath, ["pack", savefilePath, unpackDirPath])
+  packSave: async (savefilePath, unpackDirPath) => {
+    await execFileAsync(vaultcPath, ["pack", savefilePath, unpackDirPath])
   },
   /**
    * @desc Unpacks a save file (a `.sav` file) into a directory with the unpacked json files
    * @param savefilePath The path to the `.sav` file to be unpacked
    * @param unpackDirPath The path to the directory where the unpacked json files will be saved
    */
-  unpackSave: (savefilePath, unpackDirPath) => {
-    execFileSync(vaultcPath, ["unpack", savefilePath, unpackDirPath])
+  unpackSave: async (savefilePath, unpackDirPath) => {
+   await execFileAsync(vaultcPath, ["unpack", savefilePath, unpackDirPath])
   }
 }
 
@@ -211,7 +214,7 @@ export const unpackedSavesPathsCache = new Map()
  * @desc Unpacks all the save files from the game's save directory (`fomSavesPath`) to a temporary directory (`tempSavesPath`)
  * It also updates the `unpackedSavesPathsCache` with the new unpacked save info.
  */
-export function unpackSavesToTemp() {
+export async function unpackSavesToTemp() {
   deleteDirIfExists(tempSavesPath)
 
   const fomSaves = readFomSaves()
@@ -222,7 +225,7 @@ export function unpackSavesToTemp() {
 
     deleteDirIfExists(unpackDirPath)
 
-    vaultc.unpackSave(fomSavePath, unpackDirPath)
+    await vaultc.unpackSave(fomSavePath, unpackDirPath)
 
     const unpackedSaveInfo = {
       unpackPath: unpackDirPath,

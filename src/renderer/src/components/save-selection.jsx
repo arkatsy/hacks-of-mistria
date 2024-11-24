@@ -1,6 +1,6 @@
-import { useState } from "react"
-import { saves, translateCalendarTime } from "@utils"
-import { Box, Flex, Input, VStack } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
+import { translateCalendarTime } from "@utils"
+import { Box, Flex, Input, VStack, Separator, Image } from "@chakra-ui/react"
 import {
   PaginationItems,
   PaginationPrevTrigger,
@@ -8,12 +8,24 @@ import {
   PaginationRoot
 } from "@components/ui/pagination"
 import SaveCard from "@components/save-card"
+import dozy from "@assets/dozy.webp"
+import UnpackingMeasurement from "./unpacking-measurement"
+import Loading from "./loading"
 
 const pageSize = 5
 
 export default function SaveSelection({ onSaveSelected }) {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
+  const [saves, setSaves] = useState()
+
+  useEffect(() => {
+    window.api.getSortedLoadingSaves().then(setSaves)
+  }, [])
+
+  if (!saves) {
+    return <Loading text="Loading saves..." />
+  }
 
   const filteredSaves = saves.filter((save) => {
     const query = search.toLowerCase()
@@ -49,7 +61,7 @@ export default function SaveSelection({ onSaveSelected }) {
   }
 
   return (
-    <VStack textAlign="center" py={10}>
+    <VStack textAlign="center" py={10} w="full">
       <Flex flexDir="column" gap={6} maxW="660px" w="full" justifyContent="center">
         <Input
           variant="subtle"
@@ -65,24 +77,42 @@ export default function SaveSelection({ onSaveSelected }) {
             {visibleSaves.map((save) => (
               <SaveCard key={save.id} save={save} onClick={handleSaveClick} />
             ))}
-            <PaginationRoot
-              variant="solid"
-              count={filteredSaves.length}
-              pageSize={pageSize}
-              defaultPage={1}
-              pt={5}
-              onPageChange={handlePageChange}
-              display="flex"
-              justifyContent="center"
-              gap={2}
-            >
-              <PaginationPrevTrigger />
-              <PaginationItems />
-              <PaginationNextTrigger />
-            </PaginationRoot>
+            <Box pos="relative" w="full">
+              <PaginationRoot
+                variant="solid"
+                count={filteredSaves.length}
+                pageSize={pageSize}
+                defaultPage={1}
+                pt={5}
+                onPageChange={handlePageChange}
+                display="flex"
+                justifyContent="center"
+                gap={2}
+              >
+                <PaginationPrevTrigger />
+                <PaginationItems />
+                <PaginationNextTrigger />
+              </PaginationRoot>
+            </Box>
           </>
         )}
       </Flex>
+      <Box w="full" pos="relative">
+        <Image
+          src={dozy}
+          zIndex={2}
+          draggable={false}
+          pos="absolute"
+          right="10"
+          bottom="0"
+          transform="scaleX(-1)"
+        />
+        <Image src={dozy} zIndex={2} draggable={false} pos="absolute" bottom="0" left="10" />
+      </Box>
+      <Box w="full" py="4">
+        <Separator />
+        <UnpackingMeasurement />
+      </Box>
     </VStack>
   )
 }

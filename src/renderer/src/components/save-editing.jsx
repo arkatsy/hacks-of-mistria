@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
 import {
   Box,
-  Center,
   Flex,
   Grid,
   GridItem,
   HStack,
-  Spinner,
   Stack,
   Text,
   createListCollection
@@ -26,24 +24,27 @@ import {
   StaminaIcon,
   ManaIcon
 } from "@components/icons"
-import { saves, seasonsList, getCalendarTime, PronounsList, formatPronouns } from "@utils"
+import { seasonsList, getCalendarTime, PronounsList, formatPronouns } from "@utils"
+import Loading from "./loading"
 
 export default function SaveEditing({ saveId, onBack }) {
-  const save = saves.find((save) => save.id === saveId)
-
-  const [isLoadingSaveData, setIsLoadingSaveData] = useState(true)
-  const [_, setSaveData] = useState(null)
-
+  const [save, setSave] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [isApplyingEdits, setIsApplyingEdits] = useState(false)
   const [edits, setEdits] = useState(null)
 
+  useEffect(() => {
+    window.api.getSortedLoadingSaves().then((saves) => {
+      setSave(saves.find((save) => save.id === saveId))
+      refreshSaveData()
+    })
+  }, [saveId])
+
   const refreshSaveData = async () => {
-    setIsLoadingSaveData(true)
+    setIsLoading(true)
     const saveData = await window.api.getSaveData(saveId)
-    // we assume the data shape of api.getSaveData(), edits & saveData is the same
-    setSaveData(saveData)
     setEdits(saveData)
-    setIsLoadingSaveData(false)
+    setIsLoading(false)
   }
 
   const applyEdits = async () => {
@@ -66,16 +67,9 @@ export default function SaveEditing({ saveId, onBack }) {
       refreshSaveData()
     } else {
       console.error("Failed to update save")
+      setIsLoading(false)
     }
   }
-
-  useEffect(() => {
-    if (!save) {
-      return
-    }
-
-    refreshSaveData()
-  }, [saveId])
 
   const setName = (newName) => setEdits((edits) => ({ ...edits, name: newName }))
   const setFarmName = (newFarmName) => setEdits((edits) => ({ ...edits, farmName: newFarmName }))
@@ -90,31 +84,24 @@ export default function SaveEditing({ saveId, onBack }) {
   const setStamina = (newStamina) => setEdits((edits) => ({ ...edits, stamina: newStamina }))
   const setMana = (newMana) => setEdits((edits) => ({ ...edits, mana: newMana }))
 
-  const shouldPreventUserInteraction = isLoadingSaveData || isApplyingEdits
-  const loadingMessage = isLoadingSaveData
-    ? "Reloading Save..."
-    : isApplyingEdits
-      ? "Applying edits..."
-      : ""
+  const message = isApplyingEdits ? "Applying edits..." : "Loading save..."
+
+  if (!save || !edits || isLoading || isApplyingEdits) {
+    return <Loading text={message} />
+  }
 
   return (
-    <Box px={6} w="full">
+    <Box px={6} py={4} w="full">
       <Flex justifyContent="space-between" pos="relative">
-        <Button variant="outline" onClick={onBack} disabled={shouldPreventUserInteraction}>
+        <Button variant="outline" onClick={onBack}>
           Back
         </Button>
         <Flex flexDir="column" gap={2}>
           <Flex gap={3}>
-            <Button
-              variant="subtle"
-              onClick={refreshSaveData}
-              disabled={shouldPreventUserInteraction}
-            >
+            <Button variant="subtle" onClick={refreshSaveData}>
               Reload Save
             </Button>
-            <Button onClick={applyEdits} disabled={shouldPreventUserInteraction}>
-              Apply Edits
-            </Button>
+            <Button onClick={applyEdits}>Apply Edits</Button>
           </Flex>
           <Text textStyle="sm" opacity={0.7} textAlign="end">
             {save.id}
@@ -122,149 +109,140 @@ export default function SaveEditing({ saveId, onBack }) {
         </Flex>
       </Flex>
       <Box my={10}>
-        {shouldPreventUserInteraction ? (
-          <Center>
-            <Flex flexDir="column" gap="4" alignItems="center">
-              <Text>{loadingMessage}</Text>
-              <Spinner />
-            </Flex>
-          </Center>
-        ) : (
-          <Stack gap="8">
-            {/* ===== General ===== */}
-            <Stack gap="4">
-              <HStack gap="2">
-                <EditIcon />
-                <Text textStyle="xl" fontWeight="bold">
-                  General
-                </Text>
-              </HStack>
-              <Grid templateColumns="repeat(3, 1fr)" gap="3">
-                <GridItem>
-                  <TextInput
-                    currentValue={edits.name}
-                    onChange={setName}
-                    textLabel="Name"
-                    icon={<NameIcon />}
-                  />
-                </GridItem>
-                <GridItem>
-                  <SelectInput
-                    currentValue={formatPronouns(edits.pronouns)}
-                    onValueChange={setPronouns}
-                    textLabel="Pronouns"
-                    collection={pronouns}
-                  />
-                </GridItem>
-                <GridItem>
-                  <TextInput
-                    currentValue={edits.farmName}
-                    onChange={setFarmName}
-                    textLabel="Farm Name"
-                    icon={<FarmIcon />}
-                  />
-                </GridItem>
-              </Grid>
-            </Stack>
-            {/* ===== Stats ===== */}
-            <Stack gap="4">
-              <HStack gap="2">
-                <EditIcon />
-                <Text textStyle="xl" fontWeight="bold">
-                  Stats
-                </Text>
-              </HStack>
-              <Grid templateColumns="repeat(3, 1fr)" gap="3">
-                <GridItem>
-                  <NumberInput
-                    value={edits.gold}
-                    onValueChange={setGold}
-                    label="Gold"
-                    step={10}
-                    icon={<TesseraeIcon />}
-                  />
-                </GridItem>
-                <GridItem>
-                  <NumberInput
-                    value={edits.essence}
-                    onValueChange={setEssence}
-                    label="Essence"
-                    step={10}
-                    icon={<EssenceIcon />}
-                  />
-                </GridItem>
-                <GridItem>
-                  <NumberInput
-                    value={edits.renown}
-                    onValueChange={setRenown}
-                    label="Renown"
-                    step={10}
-                    icon={<RenownIcon />}
-                  />
-                </GridItem>
-                <GridItem>
-                  <NumberInput
-                    value={edits.health}
-                    onValueChange={setHealth}
-                    label="Health"
-                    step={10}
-                    icon={<HealthIcon />}
-                  />
-                </GridItem>
-                <GridItem>
-                  <NumberInput
-                    value={edits.stamina}
-                    onValueChange={setStamina}
-                    label="Stamina"
-                    step={10}
-                    icon={<StaminaIcon />}
-                  />
-                </GridItem>
-                <GridItem>
-                  <NumberInput
-                    value={edits.mana}
-                    onValueChange={setMana}
-                    label="Mana"
-                    step={4}
-                    icon={<ManaIcon />}
-                  />
-                </GridItem>
-              </Grid>
-            </Stack>
-            {/* ===== Calendar ===== */}
-            <Stack gap="4">
-              <HStack gap="2">
-                <EditIcon />
-                <Text textStyle="xl" fontWeight="bold">
-                  Calendar
-                </Text>
-              </HStack>
-              <Flex gap="2" w="full">
-                <NumberInput
-                  value={edits.year}
-                  onValueChange={setYear}
-                  label="Year"
-                  step={1}
-                  min={1}
+        <Stack gap="8">
+          {/* ===== General ===== */}
+          <Stack gap="4">
+            <HStack gap="2">
+              <EditIcon />
+              <Text textStyle="xl" fontWeight="bold">
+                General
+              </Text>
+            </HStack>
+            <Grid templateColumns="repeat(3, 1fr)" gap="3">
+              <GridItem>
+                <TextInput
+                  currentValue={edits.name}
+                  onChange={setName}
+                  textLabel="Name"
+                  icon={<NameIcon />}
                 />
+              </GridItem>
+              <GridItem>
                 <SelectInput
-                  currentValue={seasonsList[edits.season]}
-                  onValueChange={setSeason}
-                  textLabel="Season"
-                  collection={seasons}
+                  currentValue={formatPronouns(edits.pronouns)}
+                  onValueChange={setPronouns}
+                  textLabel="Pronouns"
+                  collection={pronouns}
                 />
-                <SelectInput
-                  currentValue={edits.day}
-                  onValueChange={setDay}
-                  textLabel="Day"
-                  collection={days}
+              </GridItem>
+              <GridItem>
+                <TextInput
+                  currentValue={edits.farmName}
+                  onChange={setFarmName}
+                  textLabel="Farm Name"
+                  icon={<FarmIcon />}
                 />
-              </Flex>
-            </Stack>
-            {/* ===== Inventory ===== */}
-            <Stack gap="4"></Stack>
+              </GridItem>
+            </Grid>
           </Stack>
-        )}
+          {/* ===== Stats ===== */}
+          <Stack gap="4">
+            <HStack gap="2">
+              <EditIcon />
+              <Text textStyle="xl" fontWeight="bold">
+                Stats
+              </Text>
+            </HStack>
+            <Grid templateColumns="repeat(3, 1fr)" gap="3">
+              <GridItem>
+                <NumberInput
+                  value={edits.gold}
+                  onValueChange={setGold}
+                  label="Gold"
+                  step={10}
+                  icon={<TesseraeIcon />}
+                />
+              </GridItem>
+              <GridItem>
+                <NumberInput
+                  value={edits.essence}
+                  onValueChange={setEssence}
+                  label="Essence"
+                  step={10}
+                  icon={<EssenceIcon />}
+                />
+              </GridItem>
+              <GridItem>
+                <NumberInput
+                  value={edits.renown}
+                  onValueChange={setRenown}
+                  label="Renown"
+                  step={10}
+                  icon={<RenownIcon />}
+                />
+              </GridItem>
+              <GridItem>
+                <NumberInput
+                  value={edits.health}
+                  onValueChange={setHealth}
+                  label="Health"
+                  step={10}
+                  icon={<HealthIcon />}
+                />
+              </GridItem>
+              <GridItem>
+                <NumberInput
+                  value={edits.stamina}
+                  onValueChange={setStamina}
+                  label="Stamina"
+                  step={10}
+                  icon={<StaminaIcon />}
+                />
+              </GridItem>
+              <GridItem>
+                <NumberInput
+                  value={edits.mana}
+                  onValueChange={setMana}
+                  label="Mana"
+                  step={4}
+                  icon={<ManaIcon />}
+                />
+              </GridItem>
+            </Grid>
+          </Stack>
+          {/* ===== Calendar ===== */}
+          <Stack gap="4">
+            <HStack gap="2">
+              <EditIcon />
+              <Text textStyle="xl" fontWeight="bold">
+                Calendar
+              </Text>
+            </HStack>
+            <Flex gap="2" w="full">
+              <NumberInput
+                value={edits.year}
+                onValueChange={setYear}
+                label="Year"
+                step={1}
+                min={1}
+              />
+              <SelectInput
+                currentValue={seasonsList[edits.season]}
+                onValueChange={setSeason}
+                textLabel="Season"
+                collection={seasons}
+              />
+              <SelectInput
+                currentValue={edits.day}
+                onValueChange={setDay}
+                textLabel="Day"
+                collection={days}
+              />
+            </Flex>
+          </Stack>
+          {/* ===== Inventory ===== */}
+          <Stack gap="4"></Stack>
+        </Stack>
       </Box>
     </Box>
   )

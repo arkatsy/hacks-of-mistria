@@ -66,7 +66,7 @@ async function handleMeasureUnpacking(e, amount) {
   }
 
   const startTime = process.hrtime()
-  const savesToUnpack = await readdir(testingDir).map((file) => join(testingDir, file))
+  const savesToUnpack = (await readdir(testingDir)).map((file) => join(testingDir, file))
 
   for (const savePath of savesToUnpack) {
     const unpackDir = join(testingDir, getSaveIdFromPath(savePath))
@@ -116,21 +116,22 @@ async function handleGetSortedLoadingSaves(e) {
   const unpackedSavesInfo = Array.from(unpackedSavesPathsCache.values())
 
   const sortedSavesByLastPlayed = await Promise.all(
-    unpackedSavesInfo
-      .map(async (saveInfo) => {
-        const infoData = await parseJsonFile(saveInfo.jsonPaths.info)
-        const headerData = await parseJsonFile(saveInfo.jsonPaths.header)
-        return {
-          info: infoData,
-          header: headerData,
-          id: saveInfo.saveId,
-          autosave: saveInfo.saveId.includes("autosave")
-        }
-      })
-      .sort((a, b) => b.info.last_played - a.info.last_played)
+    unpackedSavesInfo.map(async (saveInfo) => {
+      const infoData = await parseJsonFile(saveInfo.jsonPaths.info)
+      const headerData = await parseJsonFile(saveInfo.jsonPaths.header)
+      return {
+        info: infoData,
+        header: headerData,
+        id: saveInfo.saveId,
+        autosave: saveInfo.saveId.includes("autosave")
+      }
+    })
+    // .sort((a, b) => b.info.last_played - a.info.last_played)
   )
 
-  e.returnValue = sortedSavesByLastPlayed
+  sortedSavesByLastPlayed.sort((a, b) => b.info.last_played - a.info.last_played)
+
+  return sortedSavesByLastPlayed
 }
 
 async function handleGetSaveData(e, saveId) {

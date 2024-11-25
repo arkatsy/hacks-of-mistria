@@ -7,7 +7,7 @@ import { channels } from "./ipc"
 
 // Electron runs first and then, when is ready it runs the callback we passed.
 app.whenReady().then(async () => {
-  electronApp.setAppUserModelId("moths-cheats")
+  electronApp.setAppUserModelId("hacks-of-mistria")
 
   // this is where we unpack the saves initially, before even creating the window
   await unpackSavesToTemp()

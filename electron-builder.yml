@@ -1,5 +1,5 @@
-appId: com.moths-cheats.app
-productName: moths-cheats
+appId: com.hacks-of-mistria.app
+productName: hacks-of-mistria
 directories:
   buildResources: build
 files:
@@ -13,7 +13,7 @@ asarUnpack:
   - resources/**
 win:
   icon: build/icon.ico
-  executableName: moths-cheats
+  executableName: hacks-of-mistria
   target:
     - nsis
     - portable

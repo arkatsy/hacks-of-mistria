@@ -15,7 +15,7 @@ export const homePath = os.homedir()
 export const appDataPath = path.join(homePath, "AppData")
 export const tempPath = path.join(appDataPath, "Local", "Temp")
 export const fomSavesPath = path.join(appDataPath, "Local", "FieldsOfMistria", "saves")
-export const tempSavesPath = path.join(tempPath, "moths-cheats")
+export const tempSavesPath = path.join(tempPath, "hacks-of-mistria")
 
 export function getTestingDir() {
   const timestamp = Math.floor(Date.now() / 1000)

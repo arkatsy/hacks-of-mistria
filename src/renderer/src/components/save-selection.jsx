@@ -11,23 +11,21 @@ import SaveCard from "@components/save-card"
 import dozy from "@assets/dozy.webp"
 import UnpackingMeasurement from "./unpacking-measurement"
 import Loading from "./loading"
+import { useSaveMetadata } from "../queries"
 
 const pageSize = 5
 
 export default function SaveSelection({ onSaveSelected }) {
+  const { data } = useSaveMetadata()
+
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
-  const [saves, setSaves] = useState()
 
-  useEffect(() => {
-    window.api.getSortedLoadingSaves().then(setSaves)
-  }, [])
-
-  if (!saves) {
+  if (!data) {
     return <Loading text="Loading saves..." />
   }
 
-  const filteredSaves = saves.filter((save) => {
+  const filteredSaves = data.filter((save) => {
     const query = search.toLowerCase()
     const seasons = ["spring", "summer", "fall", "winter"]
     const season = seasons[translateCalendarTime(save.header.calendar_time)[1]]

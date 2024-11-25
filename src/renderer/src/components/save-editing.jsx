@@ -26,29 +26,34 @@ import {
 } from "@components/icons"
 import { seasonsList, getCalendarTime, PronounsList, formatPronouns } from "@utils"
 import Loading from "./loading"
+import { useSaveData } from "../queries"
+import { useSaveDataMutation } from "../mutations"
 
 export default function SaveEditing({ saveId, onBack }) {
-  const [save, setSave] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isApplyingEdits, setIsApplyingEdits] = useState(false)
+  const { data: saveData, isError: isErrorData } = useSaveData(saveId)
+  const {
+    mutate: updateSave,
+    isPending: isUpdatePending,
+    isError: isUpdateError
+  } = useSaveDataMutation(saveId)
   const [edits, setEdits] = useState(null)
 
   useEffect(() => {
-    window.api.getSortedLoadingSaves().then((saves) => {
-      setSave(saves.find((save) => save.id === saveId))
-      refreshSaveData()
-    })
-  }, [saveId])
-
-  const refreshSaveData = async () => {
-    setIsLoading(true)
-    const saveData = await window.api.getSaveData(saveId)
     setEdits(saveData)
-    setIsLoading(false)
+  }, [saveData])
+
+  useEffect(() => {
+    if (edits === null && saveData) {
+      setEdits(saveData)
+    }
+  }, [edits])
+
+  const handleDiscardEdits = () => {
+    setEdits(null)
   }
 
-  const applyEdits = async () => {
-    setIsApplyingEdits(true)
+  const handleApplyEdits = async () => {
+    // TODO: diff the edits and make all the edits mutations
     await window.api.setName(saveId, edits.name)
     await window.api.setPronouns(saveId, formatPronouns(edits.pronouns, true))
     await window.api.setFarmName(saveId, edits.farmName)
@@ -60,15 +65,7 @@ export default function SaveEditing({ saveId, onBack }) {
     await window.api.setStamina(saveId, edits.stamina)
     await window.api.setMana(saveId, edits.mana)
 
-    const success = await window.api.updateSave(saveId)
-    setIsApplyingEdits(false)
-    if (success) {
-      console.log("Save updated succesfully")
-      refreshSaveData()
-    } else {
-      console.error("Failed to update save")
-      setIsLoading(false)
-    }
+    updateSave()
   }
 
   const setName = (newName) => setEdits((edits) => ({ ...edits, name: newName }))
@@ -84,10 +81,20 @@ export default function SaveEditing({ saveId, onBack }) {
   const setStamina = (newStamina) => setEdits((edits) => ({ ...edits, stamina: newStamina }))
   const setMana = (newMana) => setEdits((edits) => ({ ...edits, mana: newMana }))
 
-  const message = isApplyingEdits ? "Applying edits..." : "Loading save..."
+  if (isUpdateError) {
+    return <Text>Error updating save</Text>
+  }
 
-  if (!save || !edits || isLoading || isApplyingEdits) {
-    return <Loading text={message} />
+  if (isUpdatePending) {
+    return <Loading text="Updating save..." />
+  }
+
+  if (isErrorData) {
+    return <Text>Error loading save data</Text>
+  }
+
+  if (!saveData || !edits) {
+    return <Loading text="Loading..." />
   }
 
   return (
@@ -98,13 +105,13 @@ export default function SaveEditing({ saveId, onBack }) {
         </Button>
         <Flex flexDir="column" gap={2}>
           <Flex gap={3}>
-            <Button variant="subtle" onClick={refreshSaveData}>
-              Reload Save
+            <Button variant="subtle" onClick={handleDiscardEdits}>
+              Discard Edits
             </Button>
-            <Button onClick={applyEdits}>Apply Edits</Button>
+            <Button onClick={handleApplyEdits}>Apply Edits</Button>
           </Flex>
           <Text textStyle="sm" opacity={0.7} textAlign="end">
-            {save.id}
+            {saveData.id}
           </Text>
         </Flex>
       </Flex>
@@ -156,7 +163,7 @@ export default function SaveEditing({ saveId, onBack }) {
             <Grid templateColumns="repeat(3, 1fr)" gap="3">
               <GridItem>
                 <NumberInput
-                  value={edits.gold}
+                  value={edits ? edits.gold : saveData.gold}
                   onValueChange={setGold}
                   label="Gold"
                   step={10}

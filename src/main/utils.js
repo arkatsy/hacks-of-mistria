@@ -193,36 +193,61 @@ export async function unpackSavesToTemp() {
     await deleteDirIfExists(unpackDirPath)
     await vaultc.unpackSave(fomSavePath, unpackDirPath)
 
-    const unpackedSaveInfo = {
-      unpackPath: unpackDirPath,
-      fomSavePath: fomSavePath,
-      saveId,
-      jsonPaths: {
-        beach: path.join(unpackDirPath, "beach.json"),
-        checksums: path.join(unpackDirPath, "checksums.json"),
-        deep_woods: path.join(unpackDirPath, "deep_woods.json"),
-        earth_seal: path.join(unpackDirPath, "earth_seal.json"),
-        eastern_road: path.join(unpackDirPath, "eastern_road.json"),
-        farm: path.join(unpackDirPath, "farm.json"),
-        fire_seal: path.join(unpackDirPath, "fire_seal.json"),
-        game_stats: path.join(unpackDirPath, "game_stats.json"),
-        gamedata: path.join(unpackDirPath, "gamedata.json"),
-        haydens_farm: path.join(unpackDirPath, "haydens_farm.json"),
-        header: path.join(unpackDirPath, "header.json"),
-        info: path.join(unpackDirPath, "info.json"),
-        narrows: path.join(unpackDirPath, "narrows.json"),
-        npcs: path.join(unpackDirPath, "npcs.json"),
-        player: path.join(unpackDirPath, "player.json"),
-        player_home: path.join(unpackDirPath, "player_home.json"),
-        quests: path.join(unpackDirPath, "quests.json"),
-        summit: path.join(unpackDirPath, "summit.json"),
-        town: path.join(unpackDirPath, "town.json"),
-        water_seal: path.join(unpackDirPath, "water_seal.json"),
-        western_ruins: path.join(unpackDirPath, "western_ruins.json")
-      }
-    }
-
+    const unpackedSaveInfo = createUnpackedSaveCache(fomSavePath)
     unpackedSavesPathsCache.set(saveId, unpackedSaveInfo)
+  }
+}
+
+/**
+ * @desc Same as `unpackSavesToTemp` but for a single save file
+ * @param fomSavePath The path to the FoM save file
+ */
+export async function unpackSaveToTemp(fomSavePath) {
+  const saveId = getSaveIdFromPath(fomSavePath)
+  const unpackDirPath = getUnpackPathFromSaveId(saveId)
+
+  await vaultc.unpackSave(fomSavePath, unpackDirPath)
+
+  const unpackedSaveInfo = createUnpackedSaveCache(fomSavePath)
+  unpackedSavesPathsCache.set(saveId, unpackedSaveInfo)
+}
+
+/**
+ * @desc Constructs a cache value for the unpacked save files
+ * @param fomSavePath The path to the FoM save file
+ * @returns An object with the info about the unpacked save file
+ */
+function createUnpackedSaveCache(fomSavePath) {
+  const saveId = getSaveIdFromPath(fomSavePath)
+  const unpackDirPath = getUnpackPathFromSaveId(saveId)
+
+  return {
+    unpackPath: unpackDirPath,
+    fomSavePath: fomSavePath,
+    saveId,
+    jsonPaths: {
+      beach: path.join(unpackDirPath, "beach.json"),
+      checksums: path.join(unpackDirPath, "checksums.json"),
+      deep_woods: path.join(unpackDirPath, "deep_woods.json"),
+      earth_seal: path.join(unpackDirPath, "earth_seal.json"),
+      eastern_road: path.join(unpackDirPath, "eastern_road.json"),
+      farm: path.join(unpackDirPath, "farm.json"),
+      fire_seal: path.join(unpackDirPath, "fire_seal.json"),
+      game_stats: path.join(unpackDirPath, "game_stats.json"),
+      gamedata: path.join(unpackDirPath, "gamedata.json"),
+      haydens_farm: path.join(unpackDirPath, "haydens_farm.json"),
+      header: path.join(unpackDirPath, "header.json"),
+      info: path.join(unpackDirPath, "info.json"),
+      narrows: path.join(unpackDirPath, "narrows.json"),
+      npcs: path.join(unpackDirPath, "npcs.json"),
+      player: path.join(unpackDirPath, "player.json"),
+      player_home: path.join(unpackDirPath, "player_home.json"),
+      quests: path.join(unpackDirPath, "quests.json"),
+      summit: path.join(unpackDirPath, "summit.json"),
+      town: path.join(unpackDirPath, "town.json"),
+      water_seal: path.join(unpackDirPath, "water_seal.json"),
+      western_ruins: path.join(unpackDirPath, "western_ruins.json")
+    }
   }
 }
 

@@ -92,7 +92,6 @@ async function handleUpdateSave(e, saveId) {
 
   // We find the max biggest `last_played` value and then
   // add a miniscule value to it to make the edited file show first in-game
-
   const unpackedSavesInfo = Array.from(unpackedSavesPathsCache.values())
   const longestLastPlayed = Math.max(
     ...(await Promise.all(
@@ -126,7 +125,6 @@ async function handleGetSortedLoadingSaves(e) {
         autosave: saveInfo.saveId.includes("autosave")
       }
     })
-    // .sort((a, b) => b.info.last_played - a.info.last_played)
   )
 
   sortedSavesByLastPlayed.sort((a, b) => b.info.last_played - a.info.last_played)

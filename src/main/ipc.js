@@ -10,7 +10,8 @@ import {
   getSaveIdFromPath,
   deleteDirIfExists,
   parseJsonFile,
-  unpackSaveToTemp
+  unpackSaveToTemp,
+  unpackSavesToTemp
 } from "./utils"
 
 import { join } from "path"
@@ -20,6 +21,7 @@ export const IPC = {
   MEASURE_UNPACKING: "measure/unpacking",
   UPDATE_SAVE: "update/save",
   GET_SORTED_LOADING_SAVES: "get/sorted-loading-saves",
+  REFRESH_SAVES: "refresh/saves",
   GET_SAVE_DATA: "get/save-data",
   SET_NAME: "set/name",
   SET_PRONOUNS: "set/pronouns",
@@ -37,6 +39,7 @@ export const channels = {
   [IPC.MEASURE_UNPACKING]: handleMeasureUnpacking,
   [IPC.UPDATE_SAVE]: handleUpdateSave,
   [IPC.GET_SORTED_LOADING_SAVES]: handleGetSortedLoadingSaves,
+  [IPC.REFRESH_SAVES]: handleRefreshSaves,
   [IPC.GET_SAVE_DATA]: handleGetSaveData,
   [IPC.SET_NAME]: handleSetName,
   [IPC.SET_PRONOUNS]: handleSetPronouns,
@@ -130,6 +133,11 @@ async function handleGetSortedLoadingSaves(e) {
   sortedSavesByLastPlayed.sort((a, b) => b.info.last_played - a.info.last_played)
 
   return sortedSavesByLastPlayed
+}
+
+async function handleRefreshSaves(e) {
+  await unpackSavesToTemp()
+  return true
 }
 
 async function handleGetSaveData(e, saveId) {

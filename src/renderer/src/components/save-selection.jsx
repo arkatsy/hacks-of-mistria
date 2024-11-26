@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { translateCalendarTime } from "@utils"
-import { Box, Flex, Input, VStack, Separator, Image } from "@chakra-ui/react"
+import { Box, Flex, Input, Separator, Image, Stack, HStack } from "@chakra-ui/react"
 import {
   PaginationItems,
   PaginationPrevTrigger,
@@ -12,16 +12,26 @@ import dozy from "@assets/dozy.webp"
 import UnpackingMeasurement from "./unpacking-measurement"
 import Loading from "./loading"
 import { useSaveMetadata } from "../queries"
+import { useRefreshSavesMutation } from "../mutations"
+import { Button } from "@components/ui/button"
+import { InputGroup } from "@components/ui/input-group"
+import { FarmIcon } from "@components/icons"
+import { LuRefreshCw } from "react-icons/lu"
 
 const pageSize = 5
 
 export default function SaveSelection({ onSaveSelected }) {
   const { data } = useSaveMetadata()
+  const {
+    mutate: refreshSaves,
+    isPending: isRefreshPending,
+    isError: isRefreshError
+  } = useRefreshSavesMutation()
 
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
 
-  if (!data) {
+  if (!data || isRefreshPending) {
     return <Loading text="Loading saves..." />
   }
 
@@ -58,16 +68,30 @@ export default function SaveSelection({ onSaveSelected }) {
     onSaveSelected(saveId)
   }
 
+  const handleRefreshClick = () => refreshSaves()
+
   return (
-    <VStack textAlign="center" py={10} w="full">
-      <Flex flexDir="column" gap={6} maxW="660px" w="full" justifyContent="center">
-        <Input
-          variant="subtle"
-          w="full"
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Search for a save by character name, farm name, season or autosave"
-        />
+    <Stack w="full">
+      <Flex flexDir="column" mx="auto" mt="5" gap={6} maxW="660px" w="full" justifyContent="center">
+        <Flex gap="2">
+          <InputGroup flex="1" startElement={<FarmIcon />}>
+            <Input
+              variant="subtle"
+              w="full"
+              value={search}
+              onChange={handleSearchChange}
+              placeholder="Search your saves"
+            />
+          </InputGroup>
+          <Button
+            onClick={handleRefreshClick}
+            isLoading={isRefreshPending}
+            isDisabled={isRefreshPending}
+          >
+            <LuRefreshCw />
+            Reload
+          </Button>
+        </Flex>
         {visibleSaves.length === 0 ? (
           <Box>No saves found</Box>
         ) : (
@@ -111,6 +135,6 @@ export default function SaveSelection({ onSaveSelected }) {
         <Separator />
         <UnpackingMeasurement />
       </Box>
-    </VStack>
+    </Stack>
   )
 }

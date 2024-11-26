@@ -7,9 +7,17 @@ export function useSaveDataMutation(saveId) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["save-data", saveId] })
       queryClient.invalidateQueries({ queryKey: ["save-metadata"] })
-    },
-    onError: (error) => {
-      console.error(error)
+    }
+  })
+}
+
+export function useRefreshSavesMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: window.api.refreshSaves,
+    queryKey: ["save-metadata"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["save-metadata"] })
     }
   })
 }

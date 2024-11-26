@@ -5,6 +5,7 @@ const api = {
   measureUnpacking: (amount) => ipcRenderer.invoke(IPC.MEASURE_UNPACKING, amount),
   updateSave: (saveId) => ipcRenderer.invoke(IPC.UPDATE_SAVE, saveId),
   getSortedLoadingSaves: () => ipcRenderer.invoke(IPC.GET_SORTED_LOADING_SAVES),
+  refreshSaves: () => ipcRenderer.invoke(IPC.REFRESH_SAVES),
   getSaveData: (saveId) => ipcRenderer.invoke(IPC.GET_SAVE_DATA, saveId),
   setName: (saveId, name) => ipcRenderer.invoke(IPC.SET_NAME, saveId, name),
   setPronouns: (saveId, pronouns) => ipcRenderer.invoke(IPC.SET_PRONOUNS, saveId, pronouns),

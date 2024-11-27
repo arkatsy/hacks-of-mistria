@@ -66,22 +66,22 @@ export default function SaveCard({ save, onClick }) {
 
   const styles = {
     background: {
-      spring: "rose.950",
-      summer: "green.950",
-      fall: "yellow.950",
-      winter: "teal.900"
+      spring: "green.900",
+      summer: "yellow.950",
+      fall: "rose.950",
+      winter: "blue.950"
     },
     foreground: {
-      spring: "rose.50",
-      summer: "green.100/90",
-      fall: "yellow.100/75",
-      winter: "teal.50"
+      spring: "green.50",
+      summer: "yellow.50",
+      fall: "rose.50",
+      winter: "blue.50"
     },
     border: {
-      spring: "rose.600",
-      summer: "green.600",
-      fall: "yellow.600",
-      winter: "teal.600"
+      spring: "green.600",
+      summer: "yellow.600",
+      fall: "rose.600",
+      winter: "blue.600"
     }
   }
 
@@ -96,7 +96,7 @@ export default function SaveCard({ save, onClick }) {
       display="inline"
       bg={styles.background[season]}
       color={styles.foreground[season]}
-      filter={isWinter || isSpring ? "brightness(0.8)" : "brightness(1)"}
+      filter={isWinter || isFall ? "brightness(0.95)" : "brightness(1)"}
       w="full"
       mx="auto"
       cursor="pointer"

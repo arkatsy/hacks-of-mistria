@@ -6,7 +6,7 @@ export function Provider(props) {
   return (
     <ChakraProvider value={system}>
       <ColorModeProvider forcedTheme="dark">
-        <Theme colorPalette="orange" bg="orange.950/20" appearance="dark" {...props} />
+        <Theme colorPalette="gray" bg="gray.950/20" appearance="dark" {...props} />
       </ColorModeProvider>
     </ChakraProvider>
   )

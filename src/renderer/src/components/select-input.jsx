@@ -11,17 +11,12 @@ export default function SelectInput({ collection, textLabel, currentValue, onVal
   return (
     <SelectRoot collection={collection} onValueChange={(e) => onValueChange(e.value[0])}>
       <SelectLabel>{textLabel}</SelectLabel>
-      <SelectTrigger bg="orange.950/10">
+      <SelectTrigger>
         <SelectValueText placeholder={currentValue} />
       </SelectTrigger>
-      <SelectContent bg="orange.950">
+      <SelectContent>
         {collection.items.map((item) => (
-          <SelectItem
-            bg="orange.950/25"
-            _hover={{ bg: "orange.500/25" }}
-            item={item}
-            key={item.value}
-          >
+          <SelectItem item={item} key={item.value}>
             {item.label}
           </SelectItem>
         ))}

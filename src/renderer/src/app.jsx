@@ -2,7 +2,7 @@ import { Image, Box } from "@chakra-ui/react"
 import SaveSelection from "@components/save-selection"
 import SaveEditing from "@components/save-editing"
 import fomLogo from "@assets/fom-logo.webp"
-import background from "@assets/fom-bg1.png"
+import fomClouds from "@assets/fom-clouds.png"
 import { useStore } from "./store"
 
 function Layout({ children }) {
@@ -16,21 +16,19 @@ function Layout({ children }) {
         alignItems="center"
         pos="relative"
       >
-        <Image src={fomLogo} zIndex={1} draggable={false} />
-        {children}
         <Image
-          src={background}
+          src={fomClouds}
           objectFit="cover"
-          h="100vh"
+          h="250px"
           w="100vw"
           alt="background"
           userSelect="none"
           draggable={false}
-          pos="fixed"
-          zIndex={-1}
-          filter="contrast(1.2) brightness(0.08) blur(2px) saturate(1.5)"
-          backgroundColor="rgba(0, 0, 139, 0.7)"
+          borderBottomRadius="5px"
+          pos="absolute"
         />
+        <Image src={fomLogo} zIndex={1} draggable={false} />
+        {children}
       </Box>
     </Box>
   )

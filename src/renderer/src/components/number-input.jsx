@@ -11,7 +11,6 @@ export default function NumberInput({ value, onValueChange, step, min, label, he
         value={+value || 0}
         onValueChange={(e) => onValueChange(+e.value)}
         w="full"
-        bg="orange.900/10"
       >
         <InputGroup flex="1" w="full" startElement={icon || null}>
           <NumberInputField />

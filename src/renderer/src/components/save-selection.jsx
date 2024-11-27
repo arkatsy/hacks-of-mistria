@@ -77,7 +77,6 @@ export default function SaveSelection() {
         <Flex gap="2">
           <InputGroup flex="1" startElement={<FarmIcon />}>
             <Input
-              bg="orange.900/10"
               variant="outline"
               w="full"
               value={search}

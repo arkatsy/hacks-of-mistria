@@ -7,8 +7,16 @@ export const NumberInputRoot = forwardRef(function NumberInput(props, ref) {
     <ChakraNumberInput.Root ref={ref} variant="outline" {...rest}>
       {children}
       <ChakraNumberInput.Control>
-        <ChakraNumberInput.IncrementTrigger />
-        <ChakraNumberInput.DecrementTrigger />
+        <ChakraNumberInput.IncrementTrigger
+          _hover={{
+            bg: "orange.900"
+          }}
+        />
+        <ChakraNumberInput.DecrementTrigger
+          _hover={{
+            bg: "orange.900"
+          }}
+        />
       </ChakraNumberInput.Control>
     </ChakraNumberInput.Root>
   )

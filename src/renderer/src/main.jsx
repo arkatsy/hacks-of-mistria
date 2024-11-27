@@ -1,4 +1,3 @@
-import "./styles/globals.css"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { App } from "./app"
@@ -11,7 +10,7 @@ const queryClient = new QueryClient()
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider forcedTheme="dark">
+      <ChakraProvider>
         <App />
       </ChakraProvider>
       <ReactQueryDevtools initialIsOpen={false} />

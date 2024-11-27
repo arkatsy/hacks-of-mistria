@@ -49,7 +49,7 @@ const weatherIcons = [
   }
 ]
 
-function SaveCard({ save, onClick }) {
+export default function SaveCard({ save, onClick }) {
   const { header, autosave, id } = save
 
   const data = {
@@ -62,15 +62,46 @@ function SaveCard({ save, onClick }) {
     onClick && onClick(id)
   }
 
+  const season = displayCalendarTime(header.calendar_time).split(" ")[2].toLowerCase()
+
+  const styles = {
+    background: {
+      spring: "rose.950",
+      summer: "green.950",
+      fall: "yellow.950",
+      winter: "teal.900"
+    },
+    foreground: {
+      spring: "rose.50",
+      summer: "green.100/90",
+      fall: "yellow.100/75",
+      winter: "teal.50"
+    },
+    border: {
+      spring: "rose.600",
+      summer: "green.600",
+      fall: "yellow.600",
+      winter: "teal.600"
+    }
+  }
+
+  const isSpring = season === "spring"
+  const isSummer = season === "summer"
+  const isFall = season === "fall"
+  const isWinter = season === "winter"
+
   return (
     <Card.Root
       as="button"
       display="inline"
-      bg="gray.900"
+      bg={styles.background[season]}
+      color={styles.foreground[season]}
+      filter={isWinter || isSpring ? "brightness(0.8)" : "brightness(1)"}
       w="full"
       mx="auto"
       cursor="pointer"
       onClick={handleClick}
+      borderColor={styles.border[season]}
     >
       <Card.Header display="flex" flexDir="row" justifyContent="space-between" pos="relative">
         <Flex flexDir="column">
@@ -123,5 +154,3 @@ function SaveCard({ save, onClick }) {
     </Card.Root>
   )
 }
-
-export default memo(SaveCard)

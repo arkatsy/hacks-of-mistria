@@ -28,8 +28,12 @@ import { seasonsList, getCalendarTime, PronounsList, formatPronouns } from "@uti
 import Loading from "./loading"
 import { useSaveData } from "../queries"
 import { useSaveDataMutation } from "../mutations"
+import { useStore } from "../store"
+import { LuArrowLeft } from "react-icons/lu"
 
-export default function SaveEditing({ saveId, onBack }) {
+export default function SaveEditing() {
+  const { goToSelection: onBack, editingSaveId: saveId } = useStore()
+
   const { data: saveData, isError: isErrorData } = useSaveData(saveId)
   const {
     mutate: updateSave,
@@ -100,15 +104,15 @@ export default function SaveEditing({ saveId, onBack }) {
   return (
     <Box px={6} py={4} w="full">
       <Flex justifyContent="space-between" pos="relative">
-        <Button variant="outline" onClick={onBack}>
-          Back
+        <Button variant="subtle" onClick={onBack}>
+          <LuArrowLeft /> Back
         </Button>
         <Flex flexDir="column" gap={2}>
           <Flex gap={3}>
             <Button variant="subtle" onClick={handleDiscardEdits}>
-              Discard Edits
+              Discard
             </Button>
-            <Button onClick={handleApplyEdits}>Apply Edits</Button>
+            <Button onClick={handleApplyEdits}>Apply</Button>
           </Flex>
           <Text textStyle="sm" opacity={0.7} textAlign="end">
             {saveData.id}
@@ -136,6 +140,7 @@ export default function SaveEditing({ saveId, onBack }) {
               </GridItem>
               <GridItem>
                 <SelectInput
+                  colorPalette="teal"
                   currentValue={formatPronouns(edits.pronouns)}
                   onValueChange={setPronouns}
                   textLabel="Pronouns"
@@ -234,12 +239,14 @@ export default function SaveEditing({ saveId, onBack }) {
                 min={1}
               />
               <SelectInput
+                colorPalette="teal"
                 currentValue={seasonsList[edits.season]}
                 onValueChange={setSeason}
                 textLabel="Season"
                 collection={seasons}
               />
               <SelectInput
+                colorPalette="teal"
                 currentValue={edits.day}
                 onValueChange={setDay}
                 textLabel="Day"

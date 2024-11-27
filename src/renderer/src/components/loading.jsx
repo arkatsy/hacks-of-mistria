@@ -1,10 +1,13 @@
-import { Center, Flex, Text, Spinner } from "@chakra-ui/react"
+import { Center, Flex, Text, Spinner, VStack } from "@chakra-ui/react"
 
-export default function Loading({ text }) {
+export default function Loading({ text = "", extra = "" }) {
   return (
     <Center>
       <Flex flexDir="column" gap="4" alignItems="center">
-        <Text>{text}</Text>
+        <VStack>
+          <Text>{text}</Text>
+          <Text>{extra}</Text>
+        </VStack>
         <Spinner />
       </Flex>
     </Center>

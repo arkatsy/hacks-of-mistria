@@ -1,9 +1,9 @@
-import { useState } from "react"
 import { Image, Box } from "@chakra-ui/react"
 import SaveSelection from "@components/save-selection"
 import SaveEditing from "@components/save-editing"
-import fomClouds from "@assets/fom-clouds.png"
 import fomLogo from "@assets/fom-logo.webp"
+import background from "@assets/fom-bg1.png"
+import { useStore } from "./store"
 
 function Layout({ children }) {
   return (
@@ -16,36 +16,28 @@ function Layout({ children }) {
         alignItems="center"
         pos="relative"
       >
+        <Image src={fomLogo} zIndex={1} draggable={false} />
+        {children}
         <Image
-          src={fomClouds}
+          src={background}
           objectFit="cover"
-          h="250px"
+          h="100vh"
           w="100vw"
           alt="background"
           userSelect="none"
           draggable={false}
-          pos="absolute"
+          pos="fixed"
+          zIndex={-1}
+          filter="contrast(1.2) brightness(0.08) blur(2px) saturate(1.5)"
+          backgroundColor="rgba(0, 0, 139, 0.7)"
         />
-        <Image src={fomLogo} zIndex={1} draggable={false} />
-        {children}
       </Box>
     </Box>
   )
 }
 
 export function App() {
-  const [editingSaveId, setEditingSaveId] = useState(null)
+  const { editingSaveId } = useStore()
 
-  const goToEditing = (saveId) => setEditingSaveId(saveId)
-  const goToSelection = () => setEditingSaveId(null)
-
-  return (
-    <Layout>
-      {editingSaveId ? (
-        <SaveEditing saveId={editingSaveId} onBack={goToSelection} />
-      ) : (
-        <SaveSelection onSaveSelected={goToEditing} />
-      )}
-    </Layout>
-  )
+  return <Layout>{editingSaveId ? <SaveEditing /> : <SaveSelection />}</Layout>
 }

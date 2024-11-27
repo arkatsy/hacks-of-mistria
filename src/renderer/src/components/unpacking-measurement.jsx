@@ -1,5 +1,5 @@
-import { Box, HStack, Stack, Text } from "@chakra-ui/react"
 import { useState, useEffect } from "react"
+import { Stack, Text, HStack, Box } from "@chakra-ui/react"
 import InputNumber from "@components/number-input"
 import { Button } from "@components/ui/button"
 
@@ -27,8 +27,10 @@ export default function UnpackingMeasurement() {
   }
 
   return (
-    <Stack pt="8" pl="8" gap="4" w="full">
-      <Text textAlign="left" textStyle="xl">Measure Unpacking Time</Text>
+    <Stack pos="relative" pb="8">
+      <Text textAlign="left" textStyle="xl">
+        Measure Unpacking Time
+      </Text>
       <HStack>
         <Box maxW="300px">
           <InputNumber
@@ -38,11 +40,15 @@ export default function UnpackingMeasurement() {
             disabled={isLoading}
           />
         </Box>
-        <Button colorPalette="orange" variant="surface" onClick={handleClick} loading={isLoading}>
+        <Button variant="surface" onClick={handleClick} loading={isLoading}>
           Test!
         </Button>
-        {report && <Text>{report}</Text>}
       </HStack>
+      {report && (
+        <Text pos="absolute" bottom="0">
+          {report}
+        </Text>
+      )}
     </Stack>
   )
 }

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { translateCalendarTime } from "@utils"
-import { Box, Flex, Input, Separator, Image, Stack, HStack } from "@chakra-ui/react"
+import { Box, Flex, Input, Image, Stack } from "@chakra-ui/react"
 import {
   PaginationItems,
   PaginationPrevTrigger,
@@ -9,7 +9,6 @@ import {
 } from "@components/ui/pagination"
 import SaveCard from "@components/save-card"
 import dozy from "@assets/dozy.webp"
-import UnpackingMeasurement from "./unpacking-measurement"
 import Loading from "./loading"
 import { useSaveMetadata } from "../queries"
 import { useRefreshSavesMutation } from "../mutations"
@@ -17,10 +16,12 @@ import { Button } from "@components/ui/button"
 import { InputGroup } from "@components/ui/input-group"
 import { FarmIcon } from "@components/icons"
 import { LuRefreshCw } from "react-icons/lu"
+import { useStore } from "../store"
 
-const pageSize = 5
+const pageSize = 10
 
-export default function SaveSelection({ onSaveSelected }) {
+export default function SaveSelection() {
+  const { setEditingSaveId } = useStore()
   const { data } = useSaveMetadata()
   const {
     mutate: refreshSaves,
@@ -32,7 +33,7 @@ export default function SaveSelection({ onSaveSelected }) {
   const [search, setSearch] = useState("")
 
   if (!data || isRefreshPending) {
-    return <Loading text="Loading saves..." />
+    return <Loading text="Loading saves..." extra="It might take a moment, depending on how many saves you have" />
   }
 
   const filteredSaves = data.filter((save) => {
@@ -65,7 +66,7 @@ export default function SaveSelection({ onSaveSelected }) {
   }
 
   function handleSaveClick(saveId) {
-    onSaveSelected(saveId)
+    setEditingSaveId(saveId)
   }
 
   const handleRefreshClick = () => refreshSaves()
@@ -76,7 +77,8 @@ export default function SaveSelection({ onSaveSelected }) {
         <Flex gap="2">
           <InputGroup flex="1" startElement={<FarmIcon />}>
             <Input
-              variant="subtle"
+              bg="orange.900/10"
+              variant="outline"
               w="full"
               value={search}
               onChange={handleSearchChange}
@@ -84,12 +86,12 @@ export default function SaveSelection({ onSaveSelected }) {
             />
           </InputGroup>
           <Button
+            variant="subtle"
             onClick={handleRefreshClick}
             isLoading={isRefreshPending}
             isDisabled={isRefreshPending}
           >
             <LuRefreshCw />
-            Reload
           </Button>
         </Flex>
         {visibleSaves.length === 0 ? (
@@ -99,7 +101,7 @@ export default function SaveSelection({ onSaveSelected }) {
             {visibleSaves.map((save) => (
               <SaveCard key={save.id} save={save} onClick={handleSaveClick} />
             ))}
-            <Box pos="relative" w="full">
+            <Box pos="relative" w="full" pb="8">
               <PaginationRoot
                 variant="solid"
                 count={filteredSaves.length}
@@ -119,21 +121,17 @@ export default function SaveSelection({ onSaveSelected }) {
           </>
         )}
       </Flex>
-      <Box w="full" pos="relative">
+      <Box w="full" pos="relative" mb="2">
         <Image
           src={dozy}
           zIndex={2}
           draggable={false}
           pos="absolute"
           right="10"
-          bottom="0"
+          bottom="8"
           transform="scaleX(-1)"
         />
-        <Image src={dozy} zIndex={2} draggable={false} pos="absolute" bottom="0" left="10" />
-      </Box>
-      <Box w="full" py="4">
-        <Separator />
-        <UnpackingMeasurement />
+        <Image src={dozy} zIndex={2} draggable={false} pos="absolute" bottom="8" left="10" />
       </Box>
     </Stack>
   )

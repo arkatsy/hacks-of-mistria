@@ -17,7 +17,8 @@ const api = {
     ipcRenderer.invoke(IPC.SET_CALENDAR_TIME, saveId, calendarTime),
   setHealth: (saveId, health) => ipcRenderer.invoke(IPC.SET_HEALTH, saveId, health),
   setStamina: (saveId, stamina) => ipcRenderer.invoke(IPC.SET_STAMINA, saveId, stamina),
-  setMana: (saveId, mana) => ipcRenderer.invoke(IPC.SET_MANA, saveId, mana)
+  setMana: (saveId, mana) => ipcRenderer.invoke(IPC.SET_MANA, saveId, mana),
+  setBirthday: (saveId, birthday) => ipcRenderer.invoke(IPC.SET_BIRTHDAY, saveId, birthday)
 }
 
 contextBridge.exposeInMainWorld("api", api)

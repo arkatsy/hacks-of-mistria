@@ -32,7 +32,8 @@ export const IPC = {
   SET_CALENDAR_TIME: "set/calendar-time",
   SET_HEALTH: "set/health",
   SET_STAMINA: "set/stamina",
-  SET_MANA: "set/mana"
+  SET_MANA: "set/mana",
+  SET_BIRTHDAY: "set/birthday"
 }
 
 export const channels = {
@@ -50,7 +51,8 @@ export const channels = {
   [IPC.SET_CALENDAR_TIME]: handleSetCalendarTime,
   [IPC.SET_HEALTH]: handleSetHealth,
   [IPC.SET_STAMINA]: handleSetStamina,
-  [IPC.SET_MANA]: handleSetMana
+  [IPC.SET_MANA]: handleSetMana,
+  [IPC.SET_BIRTHDAY]: handleSetBirthday
 }
 
 async function handleMeasureUnpacking(e, amount) {
@@ -164,7 +166,9 @@ async function handleGetSaveData(e, saveId) {
     day: translateCalendarTime(headerData.calendar_time)[2],
     health: headerData.stats.base_health,
     stamina: headerData.stats.base_stamina,
-    mana: headerData.stats.mana_max
+    mana: headerData.stats.mana_max,
+    birthdaySeason: translateCalendarTime(playerData.birthday)[1],
+    birthdayDay: translateCalendarTime(playerData.birthday)[2]
   }
 }
 
@@ -400,6 +404,36 @@ async function handleSetMana(e, saveId, mana) {
   await updateJsonValue(jsonPaths.header, "stats.mana_current", mana)
   await updateJsonValue(jsonPaths.player, "stats.mana_max", mana)
   await updateJsonValue(jsonPaths.player, "stats.mana_current", mana)
+
+  return true
+}
+
+async function handleSetBirthday(e, saveId, birthday) {
+  console.log(`[handleSetBirthday:${saveId}]: Updating birthday to ${birthday}`)
+
+  if (!isNumber(birthday)) {
+    console.log(
+      `[handleSetBirthday:${saveId}]: birthday is not a number ${birthday}, won't update`
+    )
+    return false
+  }
+
+  if (birthday % 86400 != 0) {
+    console.log(
+      `[handleSetBirthday:${saveId}]: Birthday ${birthday} is not a multiple of 86400, won't update`
+    )
+    return false
+  }
+
+  const saveInfo = unpackedSavesPathsCache.get(saveId)
+  if (!saveInfo) {
+    console.log(`couldn't find save with id ${saveId} in cache`)
+    return false
+  }
+
+  const { jsonPaths } = saveInfo
+
+  await updateJsonValue(jsonPaths.player, "birthday", birthday)
 
   return true
 }

@@ -68,6 +68,7 @@ export default function SaveEditing() {
     await window.api.setHealth(saveId, edits.health)
     await window.api.setStamina(saveId, edits.stamina)
     await window.api.setMana(saveId, edits.mana)
+    await window.api.setBirthday(saveId, getCalendarTime(0, edits.birthdaySeason, edits.birthdayDay))
 
     updateSave()
   }
@@ -84,6 +85,8 @@ export default function SaveEditing() {
   const setHealth = (newHealth) => setEdits((edits) => ({ ...edits, health: newHealth }))
   const setStamina = (newStamina) => setEdits((edits) => ({ ...edits, stamina: newStamina }))
   const setMana = (newMana) => setEdits((edits) => ({ ...edits, mana: newMana }))
+  const setBirthdaySeason = (newSeason) => setEdits((edits) => ({ ...edits, birthdaySeason: newSeason }))
+  const setBirthdayDay = (newDay) => setEdits((edits) => ({ ...edits, birthdayDay: newDay }))
 
   if (isUpdateError) {
     return <Text>Error updating save</Text>
@@ -153,6 +156,22 @@ export default function SaveEditing() {
                   onChange={setFarmName}
                   textLabel="Farm Name"
                   icon={<FarmIcon />}
+                />
+              </GridItem>
+              <GridItem>
+                <SelectInput
+                  colorPalette="teal"
+                  currentValue={seasonsList[edits.birthdaySeason]}
+                  onValueChange={setBirthdaySeason}
+                  textLabel="Birthday"
+                  collection={seasons}
+                />
+                <SelectInput
+                  colorPalette="teal"
+                  currentValue={edits.birthdayDay}
+                  onValueChange={setBirthdayDay}
+                  // textLabel="Day"
+                  collection={days}
                 />
               </GridItem>
             </Grid>

@@ -1,22 +1,16 @@
 import { Box, Card, Flex, Image, Text } from "@chakra-ui/react"
 
-import {
-  displayCalendarTime,
-  displayClockTime,
-  displayPlaytime,
-  displayWeather
-} from "@renderer/utils"
-import { memo } from "react"
+import { displayCalendarTime, displayClockTime, displayPlaytime, displayWeather } from "src/utils"
 
-import iconBlizzard from "@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_blizzard.png"
-import iconLeaves from "@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_leaves.png"
-import iconPetals from "@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_petals.png"
-import iconRain from "@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_rain.png"
-// import iconRainy from '@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_rainy.png'
-import iconSnow from "@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_snow.png"
-import iconStorm from "@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_storm.png"
-import iconSunny from "@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_sunny.png"
-// import iconThunderstorm from '@renderer/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_thunderstorm.png'
+import iconBlizzard from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_blizzard.png"
+import iconLeaves from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_leaves.png"
+import iconPetals from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_petals.png"
+import iconRain from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_rain.png"
+// import iconRainy from '@/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_rainy.png'
+import iconSnow from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_snow.png"
+import iconStorm from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_storm.png"
+import iconSunny from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_sunny.png"
+// import iconThunderstorm from '@/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_thunderstorm.png'
 
 const weatherIcons = [
   {

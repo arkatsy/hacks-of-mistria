@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { forwardRef } from "react"
 import { LuEye, LuEyeOff } from "react-icons/lu"
-import { InputGroup } from "./input-group"
+import { InputGroup } from "src/components/primitives/input-group"
 
 export const PasswordInput = forwardRef(function PasswordInput(props, ref) {
   const {

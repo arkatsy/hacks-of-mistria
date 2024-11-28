@@ -33,7 +33,7 @@ export const IPC = {
   SET_HEALTH: "set/health",
   SET_STAMINA: "set/stamina",
   SET_MANA: "set/mana",
-  SET_BIRTHDAY: "set/birthday"
+  SET_REWARD_INVENTORY: "set/reward-inventory"
 }
 
 export const channels = {
@@ -52,7 +52,7 @@ export const channels = {
   [IPC.SET_HEALTH]: handleSetHealth,
   [IPC.SET_STAMINA]: handleSetStamina,
   [IPC.SET_MANA]: handleSetMana,
-  [IPC.SET_BIRTHDAY]: handleSetBirthday
+  [IPC.SET_REWARD_INVENTORY]: handleSetRewardInventory
 }
 
 async function handleMeasureUnpacking(e, amount) {
@@ -167,8 +167,7 @@ async function handleGetSaveData(e, saveId) {
     health: headerData.stats.base_health,
     stamina: headerData.stats.base_stamina,
     mana: headerData.stats.mana_max,
-    birthdaySeason: translateCalendarTime(playerData.birthday)[1],
-    birthdayDay: translateCalendarTime(playerData.birthday)[2]
+    reward_inventory: playerData.renown_reward_inventory
   }
 }
 
@@ -408,22 +407,8 @@ async function handleSetMana(e, saveId, mana) {
   return true
 }
 
-async function handleSetBirthday(e, saveId, birthday) {
-  console.log(`[handleSetBirthday:${saveId}]: Updating birthday to ${birthday}`)
-
-  if (!isNumber(birthday)) {
-    console.log(
-      `[handleSetBirthday:${saveId}]: birthday is not a number ${birthday}, won't update`
-    )
-    return false
-  }
-
-  if (birthday % 86400 != 0) {
-    console.log(
-      `[handleSetBirthday:${saveId}]: Birthday ${birthday} is not a multiple of 86400, won't update`
-    )
-    return false
-  }
+function handleSetRewardInventory(e, saveId, inventory) {
+  console.log(`[handleSetRewardInventory:${saveId}]: Updating reward inventory to ${inventory}`)
 
   const saveInfo = unpackedSavesPathsCache.get(saveId)
   if (!saveInfo) {
@@ -431,9 +416,9 @@ async function handleSetBirthday(e, saveId, birthday) {
     return false
   }
 
+  // TODO: validate inventory
+
   const { jsonPaths } = saveInfo
 
-  await updateJsonValue(jsonPaths.player, "birthday", birthday)
-
-  return true
+  return updateJsonValue(jsonPaths.player, "renown_reward_inventory", inventory)
 }

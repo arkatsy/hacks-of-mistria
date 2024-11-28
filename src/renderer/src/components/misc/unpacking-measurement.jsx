@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Stack, Text, HStack, Box } from "@chakra-ui/react"
-import InputNumber from "@components/number-input"
-import { Button } from "@components/ui/button"
+import { InputNumber } from "src/components/custom/number-input"
+import { Button } from "src/components/primitives/button"
 
 export default function UnpackingMeasurement() {
   const [unpackingAmount, setUnpackingAmount] = useState(10)

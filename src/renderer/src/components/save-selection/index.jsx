@@ -1,39 +1,44 @@
-import { useState } from "react"
-import { translateCalendarTime } from "@utils"
+import { useContext, useState } from "react"
+import { translateCalendarTime } from "src/utils"
 import { Box, Flex, Input, Image, Stack } from "@chakra-ui/react"
 import {
   PaginationItems,
   PaginationPrevTrigger,
   PaginationNextTrigger,
   PaginationRoot
-} from "@components/ui/pagination"
-import SaveCard from "@components/save-card"
-import dozy from "@assets/dozy.webp"
-import Loading from "./loading"
-import { useSaveMetadata } from "../queries"
-import { useRefreshSavesMutation } from "../mutations"
-import { Button } from "@components/ui/button"
-import { InputGroup } from "@components/ui/input-group"
-import { FarmIcon } from "@components/icons"
+} from "src/components/primitives/pagination"
+import SaveCard from "src/components/save-selection/save-card"
+import dozy from "src/assets/dozy.webp"
+import { Loading } from "src/components/custom/loading"
+import { useSaveMetadata } from "src/queries"
+import { useSavesRefresh } from "src/mutations"
+import { Button } from "src/components/primitives/button"
+import { InputGroup } from "src/components/primitives/input-group"
+import { FarmIcon } from "src/components/custom/icons"
 import { LuRefreshCw } from "react-icons/lu"
-import { useStore } from "../store"
+import { SaveIdContext } from "src/app"
 
 const pageSize = 10
 
 export default function SaveSelection() {
-  const { setEditingSaveId } = useStore()
+  const { setEditingSaveId } = useContext(SaveIdContext)
   const { data } = useSaveMetadata()
   const {
     mutate: refreshSaves,
     isPending: isRefreshPending,
     isError: isRefreshError
-  } = useRefreshSavesMutation()
+  } = useSavesRefresh()
 
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
 
   if (!data || isRefreshPending) {
-    return <Loading text="Loading saves..." extra="It might take a moment, depending on how many saves you have" />
+    return (
+      <Loading
+        text="Loading saves..."
+        extra="It might take a moment, depending on how many saves you have"
+      />
+    )
   }
 
   const filteredSaves = data.filter((save) => {

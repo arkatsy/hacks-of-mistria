@@ -7,13 +7,14 @@
   "scripts": {
     "format": "prettier --write .",
     "dev": "set NODE_ENV=development && electron-vite dev",
-    "measure-unpacking": "node ./measure-unpacking.js",
+    "measure-unpacking": "node ./scripts/measure-unpacking.js",
+    "extract-ids": "node ./scripts/extract-ids.js",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build": "set NODE_ENV=production && electron-vite build && electron-builder --win"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.0.2",
+    "@chakra-ui/react": "^3.2.1",
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@emotion/react": "^11.13.3",
@@ -22,7 +23,9 @@
     "next-themes": "^0.4.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-error-boundary": "^4.1.2",
     "react-icons": "^5.3.0",
+    "wouter": "^3.3.5",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
@@ -32,6 +35,6 @@
     "electron-devtools-installer": "^3.2.0",
     "electron-vite": "^2.3.0",
     "prettier": "^3.3.2",
-    "vite": "^5.3.1"
+    "vite": "^5.4.10"
   }
 }

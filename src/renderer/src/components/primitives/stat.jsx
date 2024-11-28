@@ -1,5 +1,5 @@
 import { Badge, Stat as ChakraStat, FormatNumber } from "@chakra-ui/react"
-import { InfoTip } from "./toggle-tip"
+import { InfoTip } from "src/components/primitives/toggle-tip"
 import { forwardRef } from "react"
 
 export const StatLabel = forwardRef(function StatLabel(props, ref) {

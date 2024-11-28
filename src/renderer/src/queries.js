@@ -20,6 +20,6 @@ export function useSaveData(saveId) {
   return useQuery({
     ...defaultQueryOpts,
     queryKey: ["save-data", saveId],
-    queryFn: () => window.api.getSaveData(saveId)
+    queryFn: window.api.getSaveData.bind(null, saveId)
   })
 }

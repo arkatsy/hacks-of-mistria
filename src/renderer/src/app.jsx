@@ -1,9 +1,9 @@
+import { createContext, useState } from "react"
 import { Image, Box } from "@chakra-ui/react"
-import SaveSelection from "@components/save-selection"
-import SaveEditing from "@components/save-editing"
-import fomLogo from "@assets/fom-logo.webp"
-import fomClouds from "@assets/fom-clouds.png"
-import { useStore } from "./store"
+import SaveSelection from "src/components/save-selection"
+import SaveEditing from "src/components/save-editing"
+import fomLogo from "src/assets/fom-logo.webp"
+import fomClouds from "src/assets/fom-clouds.png"
 
 function Layout({ children }) {
   return (
@@ -34,8 +34,24 @@ function Layout({ children }) {
   )
 }
 
-export function App() {
-  const { editingSaveId } = useStore()
+export const SaveIdContext = createContext(null)
 
-  return <Layout>{editingSaveId ? <SaveEditing /> : <SaveSelection />}</Layout>
+export default function App() {
+  const [editingSaveId, setEditingSaveId] = useState()
+
+  const goToSelection = () => setEditingSaveId(null)
+
+  const value = {
+    editingSaveId,
+    setEditingSaveId,
+    goToSelection
+  }
+
+  return (
+    <Layout>
+      <SaveIdContext.Provider value={value}>
+        {editingSaveId ? <SaveEditing /> : <SaveSelection />}
+      </SaveIdContext.Provider>
+    </Layout>
+  )
 }

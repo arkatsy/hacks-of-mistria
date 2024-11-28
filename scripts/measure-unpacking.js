@@ -18,14 +18,7 @@ rl.question(`How many saves you want to measure? (enter a number) `, (answer) =>
     process.exit(1)
   }
 
-  const vaultc = path.join(__dirname, "vaultc.exe")
-
-  if (!fs.existsSync(vaultc)) {
-    console.log(
-      `Couldn't find vaultc.exe.\m The script needs to be in the same directory with the vaultc tool`
-    )
-    process.exit(1)
-  }
+  const vaultc = path.join(__dirname, "../", "vaultc.exe")
 
   const testingDir = path.join(__dirname, `testing-${timestamp()}`)
   const fomSavesPath = path.join(os.homedir(), "AppData", "Local", "FieldsOfMistria", "saves")

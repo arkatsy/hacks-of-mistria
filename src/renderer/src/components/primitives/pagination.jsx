@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react"
 import { forwardRef } from "react"
 import { HiChevronLeft, HiChevronRight, HiMiniEllipsisHorizontal } from "react-icons/hi2"
-import { LinkButton } from "./link-button"
+import { LinkButton } from "src/components/primitives/link-button"
 
 const [RootPropsProvider, useRootProps] = createContext({
   name: "RootPropsProvider"

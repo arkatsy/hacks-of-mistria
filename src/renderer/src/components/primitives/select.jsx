@@ -1,5 +1,5 @@
 import { Select as ChakraSelect, Portal } from "@chakra-ui/react"
-import { CloseButton } from "./close-button"
+import { CloseButton } from "src/components/primitives/close-button"
 import { forwardRef } from "react"
 
 export const SelectTrigger = forwardRef(function SelectTrigger(props, ref) {

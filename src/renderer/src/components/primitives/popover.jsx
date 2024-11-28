@@ -1,5 +1,5 @@
 import { Popover as ChakraPopover, Portal } from "@chakra-ui/react"
-import { CloseButton } from "./close-button"
+import { CloseButton } from "src/components/primitives/close-button"
 import { forwardRef } from "react"
 
 export const PopoverContent = forwardRef(function PopoverContent(props, ref) {

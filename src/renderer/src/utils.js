@@ -1,42 +1,5 @@
 export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
 
-export const PronounsList = {
-  they_them: "they_them",
-  she_her: "she_her",
-  he_him: "he_him",
-  she_they: "she_they",
-  they_she: "they_she",
-  he_they: "he_they",
-  they_he: "they_he",
-  he_she: "he_she",
-  she_he: "she_he",
-  it_its: "it_its",
-  all: "all",
-  none: "none"
-}
-
-/**
- * @desc Transforms the pronouns string
- * @param {string} pronouns the pronouns string to format (either "they_them" or "They/Them")
- * @param {boolean} inverse by default is false and transforms "they_them" to "They/Them", if set to true it does the opposite
- * @returns The transformed pronouns string
- */
-export function formatPronouns(pronouns, inverse = false) {
-  const transformFn = inverse ? "toLowerCase" : "toUpperCase"
-
-  if (!(pronouns.includes("/") || pronouns.includes("_"))) {
-    return pronouns.charAt(0)[transformFn]() + pronouns.slice(1)
-  }
-
-  const fromSymbol = inverse ? "/" : "_"
-  const toSymbol = inverse ? "_" : "/"
-
-  return pronouns
-    .split(fromSymbol)
-    .map((word) => word.charAt(0)[transformFn]() + word.slice(1))
-    .join(toSymbol)
-}
-
 /**
  * @desc Translates the playtime variable in header.json into a more accessible format
  * @param {number} time The playtime variable from header.json in seconds

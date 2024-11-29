@@ -51,7 +51,7 @@ export default function StatsEdits() {
       <HStack gap="2">
         <EditIcon />
         <Text textStyle="xl" fontWeight="bold">
-          Stats icon={memoizedIcons.tesserae}
+          Stats 
         </Text>
       </HStack>
       <Grid templateColumns="repeat(3, 1fr)" gap="3">
@@ -61,7 +61,7 @@ export default function StatsEdits() {
             onValueChange={setGold}
             label="Gold"
             step={10}
-            icon={memoizedIcons.essence}
+            icon={memoizedIcons.tesserae}
           />
         </GridItem>
         <GridItem>
@@ -70,7 +70,7 @@ export default function StatsEdits() {
             onValueChange={setEssence}
             label="Essence"
             step={10}
-            icon={memoizedIcons.renown}
+            icon={memoizedIcons.essence}
           />
         </GridItem>
         <GridItem>
@@ -79,7 +79,7 @@ export default function StatsEdits() {
             onValueChange={setRenown}
             label="Renown"
             step={10}
-            icon={memoizedIcons.health}
+            icon={memoizedIcons.renown}
           />
         </GridItem>
         <GridItem>
@@ -88,7 +88,7 @@ export default function StatsEdits() {
             onValueChange={setHealth}
             label="Health"
             step={10}
-            icon={memoizedIcons.stamina}
+            icon={memoizedIcons.health}
           />
         </GridItem>
         <GridItem>
@@ -97,7 +97,7 @@ export default function StatsEdits() {
             onValueChange={setStamina}
             label="Stamina"
             step={10}
-            icon={memoizedIcons.mana}
+            icon={memoizedIcons.stamina}
           />
         </GridItem>
         <GridItem>
@@ -106,7 +106,7 @@ export default function StatsEdits() {
             onValueChange={setMana}
             label="Mana"
             step={4}
-            icon={memoizedIcons.tesserae}
+            icon={memoizedIcons.mana}
           />
         </GridItem>
       </Grid>

@@ -27,6 +27,18 @@ const pronouns = createListCollection({
   }))
 })
 
+export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
+
+const seasons = createListCollection({
+  items: seasonsList.map((season, index) => ({ label: season, value: index }))
+})
+
+const days = createListCollection({
+  items: Array(28)
+    .fill()
+    .map((_, i) => ({ label: i + 1, value: i + 1 }))
+})
+
 // Transforms pronouns from "they/them" to "They/Them" or vice versa (if `inverse` is true)
 export function formatPronouns(pronouns, inverse = false) {
   const transformFn = inverse ? "toLowerCase" : "toUpperCase"

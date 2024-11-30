@@ -69,6 +69,14 @@ export default function GeneralEdits() {
       setEdits((edits) => ({ ...edits, pronouns: formatPronouns(newPronouns, true) })),
     []
   )
+  const setBirthdaySeason = useCallback(
+    (newSeason) => setEdits((edits) => ({ ...edits, birthdaySeason: newSeason })),
+    []
+  )
+  const setBirthdayDay = useCallback(
+    (newDay) => setEdits((edits) => ({ ...edits, birthdayDay: newDay })),
+    []
+  )
 
   const memoizedIcons = useMemo(
     () => ({
@@ -110,6 +118,24 @@ export default function GeneralEdits() {
             onChange={setFarmName}
             textLabel="Farm Name"
             icon={memoizedIcons.farm}
+          />
+        </GridItem>
+        <GridItem>
+          <SelectInput
+            colorPalette="teal"
+            collection={seasons}
+            value={edits.birthdaySeason}
+            onValueChange={setBirthdaySeason}
+            textLabel="Birthday"
+            placeholder={seasonsList[edits.birthdaySeason]}
+          />
+          <SelectInput
+            collection={days}
+            colorPalette="teal"
+            value={edits.birthdayDay}
+            onValueChange={setBirthdayDay}
+            // textLabel="Day"
+            placeholder={edits.birthdayDay}
           />
         </GridItem>
       </Grid>

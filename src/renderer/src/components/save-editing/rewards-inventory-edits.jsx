@@ -51,9 +51,11 @@ const RewardInventoryItem = memo(function RewardInventoryItem({ id, item, setIte
   let itemId = null
   let quantity = null
   let infusion = null
-  let isAnimalCosmetic = false
-  let isPlayerCosmetic = false
+  let isAnimalCosmetic = null
+  let isPlayerCosmetic = null
   let goldToGain = null
+  let innerItem = null
+  let autoUse = false
 
   if (members.length > 0) {
     itemId = members[0].item_id
@@ -62,10 +64,14 @@ const RewardInventoryItem = memo(function RewardInventoryItem({ id, item, setIte
     isAnimalCosmetic = members[0].animal_cosmetic
     isPlayerCosmetic = members[0].cosmetic
     goldToGain = members[0].gold_to_gain
+    innerItem = members[0].inner_item
+    autoUse = members[0].auto_use
   }
 
   const handleItemIdChange = (value) => {
-    const newMembers = [{ ...members[0], item_id: value }]
+    const newMembers = [{ auto_use: autoUse, cosmetic: isAnimalCosmetic, 
+      animal_cosmetic: isAnimalCosmetic, gold_to_gain: goldToGain, 
+      item_id: value, inner_item: innerItem, infusion: infusion}]
     setItem(id, { ...item, members: newMembers })
   }
 

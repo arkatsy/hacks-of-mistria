@@ -49,7 +49,13 @@ app.whenReady().then(async () => {
   }
 
   if (isDev) {
-    mainWindow.webContents.openDevTools()
+    mainWindow.webContents.on("before-input-event", (_, input) => {
+      if (input.type === "keyDown" && input.key === "F12") {
+        mainWindow.webContents.isDevToolsOpened()
+          ? mainWindow.webContents.closeDevTools()
+          : mainWindow.webContents.openDevTools({ mode: "right" })
+      }
+    })
   }
 })
 

@@ -69,7 +69,7 @@ export default function RewardsInventoryEdits() {
   })
 
   const setItemInfusion = useCallback((slotId, infusion) => {
-    inventory.updateSlotItem(slotId, { infusion })
+    inventory.updateSlotItem(slotId, { infusion: infusion === "" ? null : infusion })
     setEdits((prev) => ({ ...prev, reward_inventory: inventory.getInventory() }))
   })
 

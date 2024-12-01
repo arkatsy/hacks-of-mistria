@@ -6,7 +6,7 @@ class Member {
     gold_to_gain = null,
     item_id = null,
     inner_item = null,
-    infusion = ""
+    infusion = null
   }) {
     if (!item_id) {
       throw new Error(`Cannot create member without at least an item_id`)

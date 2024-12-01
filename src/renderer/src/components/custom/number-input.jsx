@@ -12,7 +12,6 @@ export const NumberInput = memo(function NumberInput({
   helper,
   icon
 }) {
-  console.log('rerender for', label)
   return (
     <Field label={label} helperText={helper || ""}>
       <NumberInputRoot

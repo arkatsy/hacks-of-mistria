@@ -4,6 +4,7 @@ import { electronApp } from "@electron-toolkit/utils"
 import icon from "../../resources/icon.png?asset"
 import { isDev, unpackSavesToTemp } from "./utils"
 import { channels } from "./ipc"
+import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer"
 
 // Electron runs first and then, when is ready it runs the callback we passed.
 app.whenReady().then(async () => {
@@ -56,6 +57,10 @@ app.whenReady().then(async () => {
           : mainWindow.webContents.openDevTools({ mode: "right" })
       }
     })
+
+    installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log("An error occurred: ", err))
   }
 })
 

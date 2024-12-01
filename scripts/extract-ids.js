@@ -31,7 +31,7 @@ const playerData = JSON.parse(fs.readFileSync(playerJson, "utf-8"))
 
 const idsJson = JSON.stringify(
   {
-    items_acquired: playerData.items_acquired,
+    items_sold: Object.keys(playerData.items_sold),
     perks: playerData.perks,
     unlocks: {
       cosmetics: {

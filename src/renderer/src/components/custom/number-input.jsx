@@ -12,6 +12,7 @@ export const NumberInput = memo(function NumberInput({
   helper,
   icon,
   disabled = false,
+  selectTextOnFocus = false,
   ...rest
 }) {
   return (
@@ -23,10 +24,18 @@ export const NumberInput = memo(function NumberInput({
         onValueChange={(e) => onValueChange(+e.value)}
         w="full"
         disabled={disabled}
+        selectTextOnFocus={selectTextOnFocus}
         {...rest}
       >
         <InputGroup flex="1" w="full" startElement={icon || null}>
-          <NumberInputField />
+          <NumberInputField
+            onClick={(e) => {
+              if (selectTextOnFocus) {
+                e.target.focus()
+                e.target.select()
+              }
+            }}
+          />
         </InputGroup>
       </NumberInputRoot>
     </Field>

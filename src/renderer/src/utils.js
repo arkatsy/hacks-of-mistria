@@ -99,7 +99,9 @@ export function getCalendarTime(year, season, day) {
   // Spring = 0, Summer = 1, Fall = 2, Winter = 3
   // 86400 * 28 = 2419200 seconds = 1 month because 28 days per month
   // 2419200 * 4 = 9676800 seconds = 1 year
-  if (year > 0) { year = (year - 1) * 9676800 }
+  if (year > 0) {
+    year = (year - 1) * 9676800
+  }
   season = season * 2419200
   day = (day - 1) * 86400
   return year + season + day

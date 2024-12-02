@@ -51,7 +51,7 @@ export default function StatsEdits() {
       <HStack gap="2">
         <EditIcon />
         <Text textStyle="xl" fontWeight="bold">
-          Stats 
+          Stats
         </Text>
       </HStack>
       <Grid templateColumns="repeat(3, 1fr)" gap="3">

@@ -1828,27 +1828,9 @@
           "unicorn_horn",
           "pink_bow"
         ],
-        "pig": [
-          "unicorn_horn",
-          "flower_crown",
-          "pink_bow",
-          "cowboy_hat",
-          "crown"
-        ],
-        "horse": [
-          "unicorn_horn",
-          "flower_crown",
-          "pink_bow",
-          "cowboy_hat",
-          "crown"
-        ],
-        "rabbit": [
-          "pink_bow",
-          "daisy_clips",
-          "halo",
-          "heart_clips",
-          "top_hat"
-        ],
+        "pig": ["unicorn_horn", "flower_crown", "pink_bow", "cowboy_hat", "crown"],
+        "horse": ["unicorn_horn", "flower_crown", "pink_bow", "cowboy_hat", "crown"],
+        "rabbit": ["pink_bow", "daisy_clips", "halo", "heart_clips", "top_hat"],
         "alpaca": [
           "beaded_necklace",
           "flower_crown",
@@ -1857,29 +1839,9 @@
           "scarf",
           "spiked_collar"
         ],
-        "capybara": [
-          "bowler_hat",
-          "yuzu",
-          "leaf",
-          "baseball_cap",
-          "bow"
-        ],
-        "duck": [
-          "bonnet",
-          "pink_bow",
-          "ruffled_collar",
-          "sun_hat",
-          "black_bowtie"
-        ],
-        "cow": [
-          "pink_bow",
-          "beret",
-          "cheese_hat",
-          "cowboy_hat",
-          "crown",
-          "halo",
-          "pink_sunglasses"
-        ]
+        "capybara": ["bowler_hat", "yuzu", "leaf", "baseball_cap", "bow"],
+        "duck": ["bonnet", "pink_bow", "ruffled_collar", "sun_hat", "black_bowtie"],
+        "cow": ["pink_bow", "beret", "cheese_hat", "cowboy_hat", "crown", "halo", "pink_sunglasses"]
       },
       "player": {
         "seen": [

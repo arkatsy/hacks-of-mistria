@@ -6,7 +6,7 @@ import {
   createContext,
   usePaginationContext
 } from "@chakra-ui/react"
-import { forwardRef } from "react"
+import { forwardRef, useMemo } from "react"
 import { HiChevronLeft, HiChevronRight, HiMiniEllipsisHorizontal } from "react-icons/hi2"
 import { LinkButton } from "src/components/primitives/link-button"
 
@@ -133,7 +133,7 @@ export const PaginationItems = (props) => {
 export const PaginationPageText = forwardRef(function PaginationPageText(props, ref) {
   const { format = "compact", ...rest } = props
   const { page, totalPages, pageRange, count } = usePaginationContext()
-  const content = React.useMemo(() => {
+  const content = useMemo(() => {
     if (format === "short") return `${page} / ${totalPages}`
     if (format === "compact") return `${page} of ${totalPages}`
     return `${pageRange.start + 1} - ${pageRange.end} of ${count}`

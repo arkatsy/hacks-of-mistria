@@ -10,16 +10,20 @@ export const NumberInput = memo(function NumberInput({
   min,
   label,
   helper,
-  icon
+  icon,
+  disabled = false,
+  ...rest
 }) {
   return (
-    <Field label={label} helperText={helper || ""}>
+    <Field label={label} helperText={helper || ""} disabled={disabled}>
       <NumberInputRoot
         min={min || 0}
         step={step || 1}
         value={+value || 0}
         onValueChange={(e) => onValueChange(+e.value)}
         w="full"
+        disabled={disabled}
+        {...rest}
       >
         <InputGroup flex="1" w="full" startElement={icon || null}>
           <NumberInputField />

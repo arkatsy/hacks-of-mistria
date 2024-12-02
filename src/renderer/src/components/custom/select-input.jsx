@@ -13,13 +13,15 @@ export const SelectInput = memo(function SelectInput({
   textLabel,
   value,
   onValueChange,
-  placeholder
+  placeholder,
+  ...rest
 }) {
   return (
     <SelectRoot
       collection={collection}
       value={[value]}
       onValueChange={(e) => onValueChange(e.value[0])}
+      {...rest}
     >
       <SelectLabel w="fit">{textLabel}</SelectLabel>
       <SelectTrigger>

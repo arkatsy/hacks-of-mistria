@@ -35,8 +35,8 @@ export default function SaveSelection() {
   if (!data || isRefreshPending) {
     return (
       <Loading
-        text="Loading saves..."
-        extra="It might take a moment, depending on how many saves you have"
+        text="Reloading saves..."
+        extra="It might take a moment, depending how many saves you have"
       />
     )
   }

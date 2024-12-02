@@ -1,5 +1,5 @@
 import { RadioCard } from "@chakra-ui/react"
-import { forwardRef } from "react"
+import { forwardRef, Fragment } from "react"
 
 export const RadioCardItem = forwardRef(function RadioCardItem(props, ref) {
   const {
@@ -14,12 +14,12 @@ export const RadioCardItem = forwardRef(function RadioCardItem(props, ref) {
   } = props
 
   const hasContent = label || description || icon
-  const ContentWrapper = indicator ? RadioCard.ItemContent : React.Fragment
+  const ContentWrapper = indicator ? RadioCard.ItemContent : Fragment
 
   return (
     <RadioCard.Item {...rest}>
       <RadioCard.ItemHiddenInput ref={ref} {...inputProps} />
-      <RadioCard.ItemControl>
+      <RadioCard.ItemControl px={4} py={2}>
         {indicatorPlacement === "start" && indicator}
         {hasContent && (
           <ContentWrapper>

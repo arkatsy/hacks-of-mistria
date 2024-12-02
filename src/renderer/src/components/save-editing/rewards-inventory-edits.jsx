@@ -87,6 +87,12 @@ export default function RewardsInventoryEdits() {
       return
     }
 
+    if (quantity === 0) {
+      inventory.updateItemQuantity(slotId, 1)
+      setEdits((prev) => ({ ...prev, reward_inventory: inventory.getInventory() }))
+      return
+    }
+
     inventory.updateItemQuantity(slotId, quantity)
     setEdits((prev) => ({ ...prev, reward_inventory: inventory.getInventory() }))
   })
@@ -257,7 +263,6 @@ const RewardInventorySlot = memo(function RewardInventorySlot({
             label="Quantity"
             placeholder="quantity"
             value={activeItemQuantity}
-            // min={1}
             max={999}
             step={1}
             onValueChange={handleChangeItemQuantity}

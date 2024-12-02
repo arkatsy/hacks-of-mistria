@@ -97,8 +97,6 @@ async function handleUpdateSave(e, saveId) {
     return false
   }
 
-  // We find the max biggest `last_played` value and then
-  // add a miniscule value to it to make the edited file show first in-game
   const unpackedSavesInfo = Array.from(unpackedSavesPathsCache.values())
   const longestLastPlayed = Math.max(
     ...(await Promise.all(
@@ -109,9 +107,13 @@ async function handleUpdateSave(e, saveId) {
     ))
   )
 
-  await updateJsonValue(saveInfo.jsonPaths.info, "last_played", longestLastPlayed + 0.00000000001)
-  await vaultc.packSave(saveInfo.unpackPath, saveInfo.fomSavePath)
+  const currentLastPlayedTime = (await parseJsonFile(saveInfo.jsonPaths.info)).last_played
+  if (!Object.is(currentLastPlayedTime, longestLastPlayed)) {
+    // bring the save to the top in-game
+    await updateJsonValue(saveInfo.jsonPaths.info, "last_played", longestLastPlayed + 0.00000000001)
+  }
 
+  await vaultc.packSave(saveInfo.unpackPath, saveInfo.fomSavePath)
   await unpackSaveToTemp(saveInfo.fomSavePath)
 
   return true

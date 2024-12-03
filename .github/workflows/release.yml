@@ -2,11 +2,6 @@ name: Moth's Cheats Release
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version number"
-        required: true
-        default: "0.0.1"
   push:
     paths:
       - "package.json"
@@ -54,7 +49,7 @@ jobs:
           draft: true
           files: |
             dist/*.exe
-          tag_name: Release v${{ env.VERSION }}
+          tag_name: v${{ env.VERSION }}
           name: Release v${{ env.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

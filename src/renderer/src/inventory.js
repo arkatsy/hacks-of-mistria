@@ -2,8 +2,8 @@ class Member {
   constructor({
     auto_use = false,
     cosmetic = null,
-    animal_cosmetic = null,
     gold_to_gain = null,
+    animal_cosmetic = null,
     item_id = null,
     inner_item = null,
     infusion = null

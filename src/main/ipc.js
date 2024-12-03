@@ -34,7 +34,8 @@ export const IPC = {
   SET_STAMINA: "set/stamina",
   SET_MANA: "set/mana",
   SET_REWARD_INVENTORY: "set/reward-inventory",
-  SET_BIRTHDAY: "set/birthday"
+  SET_BIRTHDAY: "set/birthday",
+  SET_INVENTORY: "set/inventory"
 }
 
 export const channels = {
@@ -54,7 +55,8 @@ export const channels = {
   [IPC.SET_STAMINA]: handleSetStamina,
   [IPC.SET_MANA]: handleSetMana,
   [IPC.SET_REWARD_INVENTORY]: handleSetRewardInventory,
-  [IPC.SET_BIRTHDAY]: handleSetBirthday
+  [IPC.SET_BIRTHDAY]: handleSetBirthday,
+  [IPC.SET_INVENTORY]: handleSetInventory
 }
 
 async function handleMeasureUnpacking(e, amount) {
@@ -172,6 +174,7 @@ async function handleGetSaveData(e, saveId) {
     stamina: headerData.stats.base_stamina,
     mana: headerData.stats.mana_max,
     reward_inventory: playerData.renown_reward_inventory,
+    inventory: playerData.inventory,
     birthdaySeason: translateCalendarTime(playerData.birthday)[1],
     birthdayDay: translateCalendarTime(playerData.birthday)[2]
   }
@@ -414,7 +417,7 @@ async function handleSetMana(e, saveId, mana) {
 }
 
 function handleSetRewardInventory(e, saveId, inventory) {
-  console.log(`[handleSetRewardInventory:${saveId}]: Updating reward inventory to ${inventory}`)
+  console.log(`[handleSetRewardInventory:${saveId}]: Updating reward inventory`)
 
   const saveInfo = unpackedSavesPathsCache.get(saveId)
   if (!saveInfo) {
@@ -452,4 +455,17 @@ async function handleSetBirthday(e, saveId, birthday) {
   await updateJsonValue(jsonPaths.player, "birthday", birthday)
 
   return true
+}
+
+function handleSetInventory(e, saveId, inventory) {
+  console.log(`[handleSetRewardInventory:${saveId}]: Updating player's inventory`)
+
+  const saveInfo = unpackedSavesPathsCache.get(saveId)
+  if (!saveInfo) {
+    console.log(`couldn't find save with id ${saveId} in cache`)
+    return false
+  }
+
+  const { jsonPaths } = saveInfo
+  return updateJsonValue(jsonPaths.player, "inventory", inventory)
 }

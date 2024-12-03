@@ -30,6 +30,8 @@ export function useSaveMutation(saveId) {
         saveId,
         getCalendarTime(0, edits.birthdaySeason, edits.birthdayDay)
       )
+      await window.api.setInventory(saveId, edits.inventory)
+
       await window.api.updateSave(saveId)
     },
     onSuccess: () => {

@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react"
-import { Box, Portal, Show, Stack, Text } from "@chakra-ui/react"
+import { createContext, useCallback, useContext, useEffect, useState } from "react"
+import { Box, HStack, Portal, Show, Stack, Tabs, Text } from "@chakra-ui/react"
 import { Button } from "src/components/primitives/button"
 import { Loading } from "src/components/custom/loading"
 import { useSaveData } from "src/queries"
@@ -9,7 +9,8 @@ import { SaveIdContext } from "src/app"
 import GeneralEdits from "src/components/save-editing/general-edits"
 import StatsEdits from "src/components/save-editing/stats-edits"
 import CalendarEdits from "src/components/save-editing/calendar-edits"
-import RewardsInventory from "src/components/save-editing/rewards-inventory-edits"
+import Inventory from "src/components/custom/inventory"
+import { EditIcon } from "../custom/icons"
 
 const BROWSER_BACK_BTN = 3
 
@@ -103,15 +104,48 @@ function SaveEditor({ saveData, saveId }) {
           </Box>
         </Portal>
       </Show>
-      <Show when={isError}>{isError && <Text>Error updating save: {error}</Text>}</Show>
+      <Show when={isError}>{isError && <Text>Error updating save: {error.message}</Text>}</Show>
       <Box my="10">
-        <Stack gap="8">
+        <Stack gap="8" w="full">
           <GeneralEdits />
           <CalendarEdits />
           <StatsEdits />
-          <RewardsInventory />
+          <Inventories />
         </Stack>
       </Box>
     </EditorContext.Provider>
+  )
+}
+
+const InventoryKeys = {
+  Player: "inventory",
+  Rewards: "reward_inventory"
+}
+
+function Inventories() {
+  const [activeTab, setActiveTab] = useState(InventoryKeys.Player)
+  const handleTabChange = useCallback((e) => setActiveTab(e.value), [])
+
+  return (
+    <Stack>
+      <HStack gap="2">
+        <EditIcon />
+        <Text textStyle="xl" fontWeight="bold">
+          Inventories
+        </Text>
+      </HStack>
+      <Tabs.Root variant="enclosed" value={activeTab} onValueChange={handleTabChange} lazyMount>
+        <Tabs.List>
+          <Tabs.Trigger value={InventoryKeys.Player}>Inventory</Tabs.Trigger>
+          <Tabs.Trigger value={InventoryKeys.Rewards}>Rewards</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value={InventoryKeys.Player}>
+          <Inventory inventoryKey={InventoryKeys.Player} label="Your Inventory" />
+        </Tabs.Content>
+        <Tabs.Content value={InventoryKeys.Rewards}>
+          <Inventory inventoryKey={InventoryKeys.Rewards} label="Rewards Inventory" />
+        </Tabs.Content>
+      </Tabs.Root>
+    </Stack>
   )
 }

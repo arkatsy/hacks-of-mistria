@@ -31,6 +31,7 @@ export function useSaveMutation(saveId) {
         getCalendarTime(0, edits.birthdaySeason, edits.birthdayDay)
       )
       await window.api.setInventory(saveId, edits.inventory)
+      await window.api.setMaximumMinesLevel(saveId, edits.maximumMinesLevel)
 
       await window.api.updateSave(saveId)
     },

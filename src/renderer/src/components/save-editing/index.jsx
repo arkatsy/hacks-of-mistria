@@ -9,8 +9,9 @@ import { SaveIdContext } from "src/app"
 import GeneralEdits from "src/components/save-editing/general-edits"
 import StatsEdits from "src/components/save-editing/stats-edits"
 import CalendarEdits from "src/components/save-editing/calendar-edits"
+import MiscEdits from "src/components/save-editing/misc-edits"
 import Inventory from "src/components/custom/inventory"
-import { EditIcon } from "../custom/icons"
+import { EditIcon } from "src/components/custom/icons"
 
 const BROWSER_BACK_BTN = 3
 
@@ -110,7 +111,8 @@ function SaveEditor({ saveData, saveId }) {
           <GeneralEdits />
           <CalendarEdits />
           <StatsEdits />
-          <Inventories />
+          <MiscEdits />
+          <InventoryEdits />
         </Stack>
       </Box>
     </EditorContext.Provider>
@@ -122,16 +124,16 @@ const InventoryKeys = {
   Rewards: "reward_inventory"
 }
 
-function Inventories() {
+function InventoryEdits() {
   const [activeTab, setActiveTab] = useState(InventoryKeys.Player)
   const handleTabChange = useCallback((e) => setActiveTab(e.value), [])
 
   return (
-    <Stack>
+    <Stack gap="4">
       <HStack gap="2">
         <EditIcon />
         <Text textStyle="xl" fontWeight="bold">
-          Inventories
+          Items
         </Text>
       </HStack>
       <Tabs.Root variant="enclosed" value={activeTab} onValueChange={handleTabChange} lazyMount>

@@ -4,16 +4,10 @@ import { electronApp } from "@electron-toolkit/utils"
 import icon from "../../resources/icon.png?asset"
 import { isDev, unpackSavesToTemp } from "./utils"
 import { channels } from "./ipc"
-import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer"
 
-// Electron runs first and then, when is ready it runs the callback we passed.
 app.whenReady().then(async () => {
   electronApp.setAppUserModelId("hacks-of-mistria")
 
-  // this is where we unpack the saves initially, before even creating the window
-  await unpackSavesToTemp()
-
-  // this is where the main window is being created
   const mainWindow = new BrowserWindow({
     width: 1050,
     minWidth: 800,
@@ -31,12 +25,11 @@ app.whenReady().then(async () => {
 
   mainWindow.removeMenu()
 
-  // The `ready-to-show` event is emitted when the renderer process has rendered the page for the first time.
-  // This is the reason why loading the saves sync initially is not a big problem. In the worst the app will just feel slow to open.
-  // https://www.electronjs.org/docs/latest/api/browser-window#using-the-ready-to-show-event
   mainWindow.on("ready-to-show", () => {
     mainWindow.show()
   })
+
+  await unpackSavesToTemp()
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
@@ -58,9 +51,17 @@ app.whenReady().then(async () => {
       }
     })
 
-    installExtension(REACT_DEVELOPER_TOOLS)
-      .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log("An error occurred: ", err))
+    import("electron-devtools-installer")
+      .then((mod) => {
+        const { default: installExtension, REACT_DEVELOPER_TOOLS } = mod
+
+        installExtension(REACT_DEVELOPER_TOOLS)
+          .then((name) => console.log(`Added Extension:  ${name}`))
+          .catch((err) => console.log("Couldn't load react devtools: ", err))
+      })
+      .catch((msg) => {
+        console.error(`Couldn't load electron-devtools-installer: ${msg}`)
+      })
   }
 })
 

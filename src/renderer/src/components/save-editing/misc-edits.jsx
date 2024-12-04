@@ -31,8 +31,8 @@ const MiscEdits = memo(function MiscEdits() {
           onValueChange={setMaxMinesLevel}
         />
         <Text textStyle="sm">
-          The max level for the version of the game v0.12.x is 59. Recommend to put that value again
-          after done exploring.
+          The max level for the version of the game v0.12.x is 59. Recommend to revert back so there
+          aren't any issues. If you're not sure then I recommend to leave it as is.
         </Text>
       </Stack>
     </Stack>

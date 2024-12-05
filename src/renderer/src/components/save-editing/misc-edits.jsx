@@ -1,15 +1,17 @@
 import { HStack, Stack, Text } from "@chakra-ui/react"
-import { memo, useContext } from "react"
-import { EditorContext } from "src/components/save-editing/"
+import { memo } from "react"
+import { useEditorContext } from "src/components/save-editing/"
 import { NumberInput } from "src/components/custom/number-input"
 import { EditIcon } from "src/components/custom/icons"
+import { useShallow } from "zustand/react/shallow"
 
 const MiscEdits = memo(function MiscEdits() {
-  const { edits, setEdits } = useContext(EditorContext)
-
-  const handleLevelChange = (val) => {
-    setEdits((prev) => ({ ...prev, maximumMinesLevel: val }))
-  }
+  const { maxMinesLevel, setMaxMinesLevel } = useEditorContext(
+    useShallow((s) => ({
+      maxMinesLevel: s.maxMinesLevel,
+      setMaxMinesLevel: s.setMaxMinesLevel
+    }))
+  )
 
   return (
     <Stack gap="4">
@@ -23,10 +25,10 @@ const MiscEdits = memo(function MiscEdits() {
       <Stack maxW="300px" w="full">
         <NumberInput
           label="Maximum Mines Level"
-          value={edits.maximumMinesLevel}
+          value={maxMinesLevel}
           min={1}
           max={100}
-          onValueChange={handleLevelChange}
+          onValueChange={setMaxMinesLevel}
         />
         <Text textStyle="sm">
           The max level for the version of the game v0.12.x is 59. Recommend to put that value again

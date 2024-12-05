@@ -36,7 +36,7 @@ export const IPC = {
   SET_REWARD_INVENTORY: "set/reward-inventory",
   SET_BIRTHDAY: "set/birthday",
   SET_INVENTORY: "set/inventory",
-  SET_MAXIMUM_MINES_LEVEL: "set/maximum-mines-level"
+  SET_MAX_MINES_LEVEL: "set/max-mines-level"
 }
 
 export const channels = {
@@ -58,7 +58,7 @@ export const channels = {
   [IPC.SET_REWARD_INVENTORY]: handleSetRewardInventory,
   [IPC.SET_BIRTHDAY]: handleSetBirthday,
   [IPC.SET_INVENTORY]: handleSetInventory,
-  [IPC.SET_MAXIMUM_MINES_LEVEL]: handleSetMaximumMinesLevel
+  [IPC.SET_MAX_MINES_LEVEL]: handleSetMaxMinesLevel
 }
 
 async function handleMeasureUnpacking(e, amount) {
@@ -176,11 +176,11 @@ async function handleGetSaveData(e, saveId) {
     health: headerData.stats.base_health,
     stamina: headerData.stats.base_stamina,
     mana: headerData.stats.mana_max,
-    reward_inventory: playerData.renown_reward_inventory,
+    rewardInventory: playerData.renown_reward_inventory,
     inventory: playerData.inventory,
     birthdaySeason: translateCalendarTime(playerData.birthday)[1],
     birthdayDay: translateCalendarTime(playerData.birthday)[2],
-    maximumMinesLevel: gamedataData.maximum_mines_level
+    maxMinesLevel: gamedataData.maximum_mines_level
   }
 }
 
@@ -475,7 +475,7 @@ async function handleSetInventory(e, saveId, inventory) {
   return true
 }
 
-async function handleSetMaximumMinesLevel(e, saveId, maxMinesLevel) {
+async function handleSetMaxMinesLevel(e, saveId, maxMinesLevel) {
   console.log(`[handleSetMaximumMinesLevel:${saveId}]: Updating maximum mines level`)
 
   const saveInfo = unpackedSavesPathsCache.get(saveId)

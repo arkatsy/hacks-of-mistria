@@ -1,5 +1,5 @@
-import { memo, useCallback, useContext, useMemo, useState, useRef } from "react"
-import { EditorContext } from "src/components/save-editing"
+import { memo, useCallback, useMemo, useState, useRef } from "react"
+import { InventoryKeys, useEditorContext } from "src/components/save-editing"
 import {
   Box,
   SimpleGrid,
@@ -37,6 +37,7 @@ import {
   PaginationRoot
 } from "src/components/primitives/pagination"
 import { LuTrash } from "react-icons/lu"
+import { useShallow } from "zustand/react/shallow"
 
 const infusions = [
   "none",
@@ -54,7 +55,7 @@ const infusions = [
   "quality"
 ]
 
-const infusionsList = createListCollection({
+const infusionsCollection = createListCollection({
   items: infusions.map((infusion) => ({
     label: infusion.at(0).toUpperCase() + infusion.slice(1),
     value: infusion === "none" ? "" : infusion
@@ -62,17 +63,28 @@ const infusionsList = createListCollection({
 })
 
 const InventoryEdits = memo(function InventoryEdits({ inventoryKey }) {
-  const { edits, setEdits } = useContext(EditorContext)
-  const { current: inventory } = useRef(new Inventory(edits[inventoryKey]))
-  const slots = inventory.getSlots()
+  const { inventory, setInventory } = useEditorContext(
+    useShallow((s) => ({
+      inventory: s[inventoryKey],
+      setInventory: s[inventoryKey === InventoryKeys.Player ? "setInventory" : "setRewardInventory"]
+    }))
+  )
+
+  const inventoryApi = useRef(new Inventory(inventory)).current
+  const slots = inventoryApi.getSlots()
+
+  const updateInventoryState = () => {
+    setInventory(structuredClone(inventoryApi.getInventory()))
+  }
 
   const setItemId = useCallback((slotId, itemId) => {
     if (itemId === "") {
-      inventory.freeSlot(slotId)
+      inventoryApi.freeSlot(slotId)
     } else {
-      inventory.setSlotItem(slotId, itemId)
+      inventoryApi.setSlotItem(slotId, itemId)
     }
-    setEdits((prev) => ({ ...prev, [inventoryKey]: inventory.getInventory() }))
+
+    updateInventoryState()
   })
 
   const setItemQuantity = useCallback((slotId, quantity) => {
@@ -80,24 +92,24 @@ const InventoryEdits = memo(function InventoryEdits({ inventoryKey }) {
       return
     }
 
-    const slot = inventory.getSlot(slotId)
+    const slot = inventoryApi.getSlot(slotId)
     if (slot.getItemId() === "") {
       return
     }
 
     if (quantity === 0) {
-      inventory.updateItemQuantity(slotId, 1)
-      setEdits((prev) => ({ ...prev, [inventoryKey]: inventory.getInventory() }))
+      inventoryApi.updateItemQuantity(slotId, 1)
+      updateInventoryState()
       return
     }
 
-    inventory.updateItemQuantity(slotId, quantity)
-    setEdits((prev) => ({ ...prev, [inventoryKey]: inventory.getInventory() }))
+    inventoryApi.updateItemQuantity(slotId, quantity)
+    updateInventoryState()
   })
 
   const setItemInfusion = useCallback((slotId, infusion) => {
-    inventory.updateSlotItem(slotId, { infusion: infusion === "" ? null : infusion })
-    setEdits((prev) => ({ ...prev, [inventoryKey]: inventory.getInventory() }))
+    inventoryApi.updateSlotItem(slotId, { infusion: infusion === "" ? null : infusion })
+    updateInventoryState()
   })
 
   return (
@@ -106,7 +118,7 @@ const InventoryEdits = memo(function InventoryEdits({ inventoryKey }) {
         {Object.values(slots).map((slot, id) => (
           <InventorySlot
             key={slot.id}
-            slot={slot}
+            item={slot}
             setItemId={setItemId}
             setItemQuantity={setItemQuantity}
             setItemInfusion={setItemInfusion}
@@ -120,6 +132,7 @@ const InventoryEdits = memo(function InventoryEdits({ inventoryKey }) {
 const itemIdsPageLimit = 60
 const problematicIds = ["purse", "animal_cosmetic", "cosmetic"]
 const itemIdsList = ids.items_sold.filter((itemId) => !problematicIds.includes(itemId))
+
 function formatItemId(itemId, reverse = false) {
   const fromSymbol = reverse ? " " : "_"
   const toSymbol = reverse ? "_" : " "
@@ -127,30 +140,32 @@ function formatItemId(itemId, reverse = false) {
 }
 
 const InventorySlot = memo(function InventorySlot({
-  slot,
+  item,
   setItemId,
   setItemQuantity,
   setItemInfusion
 }) {
-  const activeItemId = slot.slot.getItemId()
-  const activeItemInfusion = slot.slot.getItemInfusion()
-  const activeItemQuantity = slot.slot.getItemQuantity()
+  const activeItemId = item.slot.getItemId()
+  const activeItemInfusion = item.slot.getItemInfusion()
+  const activeItemQuantity = item.slot.getItemQuantity()
 
-  const handleChangeItemId = useCallback((val) => setItemId(slot.id, val), [slot.id])
-  const handleChangeItemQuantity = useCallback((val) => setItemQuantity(slot.id, val), [slot.id])
-  const handleChangeItemInfusion = useCallback((val) => setItemInfusion(slot.id, val), [slot.id])
+  const [itemIdSelected, setItemIdSelected] = useState(activeItemId)
+
+  const handleChangeItemId = useCallback((val) => setItemId(item.id, val), [item.id])
+  const handleChangeItemQuantity = useCallback((val) => setItemQuantity(item.id, val), [item.id])
+  const handleChangeItemInfusion = useCallback((val) => setItemInfusion(item.id, val), [item.id])
 
   const handleRemoveSlot = useCallback(() => {
-    setItemId(slot.id, "")
+    setItemId(item.id, "")
     setItemIdSelected("")
-  }, [slot.id])
+  }, [item.id])
 
   return (
     <CardRoot bg="black" size="sm">
       <CardHeader>
         <Flex justifyContent="space-between" alignItems="center">
           <Text w="full" textStyle="lg">
-            Slot {slot.id + 1}
+            Slot {item.id + 1}
           </Text>
           <IconButton
             size="sm"
@@ -164,9 +179,14 @@ const InventorySlot = memo(function InventorySlot({
       </CardHeader>
       <CardBody>
         <Stack gap="4">
-          <ItemDialogButton activeItemId={activeItemId} onItemIdChange={handleChangeItemId} />
+          <ItemDialogButton
+            activeItemId={activeItemId}
+            itemIdSelected={itemIdSelected}
+            setItemIdSelected={setItemIdSelected}
+            onItemIdChange={handleChangeItemId}
+          />
           <SelectInput
-            collection={infusionsList}
+            collection={infusionsCollection}
             textLabel="Infusion"
             value={activeItemInfusion}
             onValueChange={handleChangeItemInfusion}
@@ -188,10 +208,14 @@ const InventorySlot = memo(function InventorySlot({
   )
 })
 
-const ItemDialogButton = memo(function ItemDialogButton({ activeItemId, onItemIdChange }) {
+const ItemDialogButton = memo(function ItemDialogButton({
+  activeItemId,
+  itemIdSelected,
+  setItemIdSelected,
+  onItemIdChange
+}) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [page, setPage] = useState(1)
-  const [itemIdSelected, setItemIdSelected] = useState(activeItemId)
   const [query, setQuery] = useState("")
 
   const handleQueryChange = useCallback(

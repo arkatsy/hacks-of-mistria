@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react"
+import {
+  createContext,
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react"
 import { Box, HStack, Portal, Show, Stack, Tabs, Text } from "@chakra-ui/react"
 import { Button } from "src/components/primitives/button"
 import { Loading } from "src/components/custom/loading"
@@ -10,8 +18,9 @@ import GeneralEdits from "src/components/save-editing/general-edits"
 import StatsEdits from "src/components/save-editing/stats-edits"
 import CalendarEdits from "src/components/save-editing/calendar-edits"
 import MiscEdits from "src/components/save-editing/misc-edits"
-import Inventory from "src/components/custom/inventory"
+import Inventory from "src/components/save-editing/inventory"
 import { EditIcon } from "src/components/custom/icons"
+import { createStore, useStore } from "zustand"
 
 const BROWSER_BACK_BTN = 3
 
@@ -49,29 +58,101 @@ export default function Init() {
         <Button variant="subtle" onClick={goToSelection}>
           <LuArrowLeft /> Back
         </Button>
-        <SaveEditor saveData={data} saveId={editingSaveId} />
+        <EditorProvider {...structuredClone(data)}>
+          <SaveEditor saveId={editingSaveId} />
+        </EditorProvider>
       </Box>
     </Box>
   )
 }
 
-export const EditorContext = createContext(null)
+const createEditorStore = ({
+  name,
+  farmName,
+  pronouns,
+  gold,
+  essence,
+  renown,
+  calendarTime,
+  year,
+  season,
+  day,
+  health,
+  stamina,
+  mana,
+  rewardInventory,
+  birthdayDay,
+  birthdaySeason,
+  inventory,
+  maxMinesLevel
+}) => {
+  return createStore((set) => ({
+    name,
+    farmName,
+    pronouns,
+    gold,
+    essence,
+    renown,
+    calendarTime,
+    year,
+    season,
+    day,
+    health,
+    stamina,
+    mana,
+    rewardInventory,
+    birthdayDay,
+    birthdaySeason,
+    inventory,
+    maxMinesLevel,
+    setName: (newName) => set(() => ({ name: newName })),
+    setFarmName: (newFarmName) => set(() => ({ farmName: newFarmName })),
+    setPronouns: (newPronouns) => set(() => ({ pronouns: newPronouns })),
+    setGold: (newGold) => set(() => ({ gold: newGold })),
+    setEssence: (newEssence) => set(() => ({ essence: newEssence })),
+    setRenown: (newRenown) => set(() => ({ renown: newRenown })),
+    setCalendarTime: (newCalendarTime) => set(() => ({ calendarTime: newCalendarTime })),
+    setYear: (newYear) => set(() => ({ year: newYear })),
+    setSeason: (newSeason) => set(() => ({ season: newSeason })),
+    setDay: (newDay) => set(() => ({ day: newDay })),
+    setHealth: (newHealth) => set(() => ({ health: newHealth })),
+    setStamina: (newStamina) => set(() => ({ stamina: newStamina })),
+    setRewardInventory: (newRewardInventory) =>
+      set(() => ({ rewardInventory: newRewardInventory })),
+    setMana: (newMana) => set(() => ({ mana: newMana })),
+    setBirthdayDay: (newBirthdayDay) => set(() => ({ birthdayDay: newBirthdayDay })),
+    setBirthdaySeason: (newBirthdaySeason) => set(() => ({ birthdaySeason: newBirthdaySeason })),
+    setInventory: (newInventory) => set(() => ({ inventory: newInventory })),
+    setMaxMinesLevel: (newMaxMinesLevel) => set(() => ({ maxMinesLevel: newMaxMinesLevel })),
+    discardEdits: (defaultState) => set(() => ({ ...defaultState }))
+  }))
+}
 
-function SaveEditor({ saveData, saveId }) {
-  // NOTE: We're assuming `edits` will be the same shape as `saveData`
-  const [edits, setEdits] = useState(saveData)
-  const { mutate, isPending, isError, error } = useSaveMutation(saveId)
+const EditorContext = createContext(null)
 
-  const handleDiscard = () => setEdits((prev) => ({ ...prev, ...saveData }))
-  const handleApply = () => mutate(edits)
-
-  const value = {
-    edits,
-    setEdits
+function EditorProvider({ children, ...props }) {
+  const storeRef = useRef()
+  if (!storeRef.current) {
+    storeRef.current = createEditorStore(props)
   }
 
+  return <EditorContext.Provider value={storeRef.current}>{children}</EditorContext.Provider>
+}
+
+export function useEditorContext(selector) {
+  const store = useContext(EditorContext)
+  return useStore(store, selector)
+}
+
+function SaveEditor({ saveId }) {
+  const { mutate, isPending, isError, error } = useSaveMutation(saveId)
+  const store = useContext(EditorContext)
+
+  const handleDiscard = useEditorContext((s) => s.discardEdits)
+  const handleApply = () => mutate(store.getState())
+
   return (
-    <EditorContext.Provider value={value}>
+    <Fragment>
       <Button
         variant="subtle"
         pos="absolute"
@@ -115,13 +196,13 @@ function SaveEditor({ saveData, saveId }) {
           <InventoryEdits />
         </Stack>
       </Box>
-    </EditorContext.Provider>
+    </Fragment>
   )
 }
 
-const InventoryKeys = {
+export const InventoryKeys = {
   Player: "inventory",
-  Rewards: "reward_inventory"
+  Rewards: "rewardInventory"
 }
 
 function InventoryEdits() {

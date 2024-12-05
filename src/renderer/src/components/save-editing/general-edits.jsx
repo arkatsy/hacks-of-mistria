@@ -1,9 +1,10 @@
-import { useCallback, useContext, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { Grid, GridItem, HStack, Stack, Text, createListCollection } from "@chakra-ui/react"
-import { EditorContext } from "src/components/save-editing/index.jsx"
+import { useEditorContext } from "src/components/save-editing/index.jsx"
 import { TextInput } from "src/components/custom/text-input"
 import { FarmIcon, NameIcon, EditIcon } from "src/components/custom/icons"
 import { SelectInput } from "src/components/custom/select-input"
+import { useShallow } from "zustand/react/shallow"
 
 const PronounsList = {
   they_them: "they_them",
@@ -20,27 +21,7 @@ const PronounsList = {
   none: "none"
 }
 
-const pronouns = createListCollection({
-  items: Object.keys(PronounsList).map((p) => ({
-    label: formatPronouns(p),
-    value: formatPronouns(p, true)
-  }))
-})
-
-export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
-
-const seasons = createListCollection({
-  items: seasonsList.map((season, index) => ({ label: season, value: index }))
-})
-
-const days = createListCollection({
-  items: Array(28)
-    .fill()
-    .map((_, i) => ({ label: i + 1, value: i + 1 }))
-})
-
-// Transforms pronouns from "they/them" to "They/Them" or vice versa (if `inverse` is true)
-export function formatPronouns(pronouns, inverse = false) {
+function formatPronouns(pronouns, inverse = false) {
   const transformFn = inverse ? "toLowerCase" : "toUpperCase"
 
   if (!(pronouns.includes("/") || pronouns.includes("_"))) {
@@ -56,27 +37,55 @@ export function formatPronouns(pronouns, inverse = false) {
     .join(toSymbol)
 }
 
-export default function GeneralEdits() {
-  const { edits, setEdits } = useContext(EditorContext)
+const pronounsCollection = createListCollection({
+  items: Object.keys(PronounsList).map((p) => ({
+    label: formatPronouns(p),
+    value: formatPronouns(p, true)
+  }))
+})
 
-  const setName = useCallback((newName) => setEdits((edits) => ({ ...edits, name: newName })), [])
-  const setFarmName = useCallback(
-    (newFarmName) => setEdits((edits) => ({ ...edits, farmName: newFarmName })),
-    []
+export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
+
+const seasonsCollection = createListCollection({
+  items: seasonsList.map((season, index) => ({ label: season, value: index }))
+})
+
+const daysCollection = createListCollection({
+  items: Array(28)
+    .fill()
+    .map((_, i) => ({ label: i + 1, value: i + 1 }))
+})
+
+export default function GeneralEdits() {
+  const {
+    name,
+    setName,
+    farmName,
+    setFarmName,
+    pronouns,
+    setPronouns,
+    birthdayDay,
+    setBirthdayDay,
+    birthdaySeason,
+    setBirthdaySeason
+  } = useEditorContext(
+    useShallow((s) => ({
+      name: s.name,
+      setName: s.setName,
+      farmName: s.farmName,
+      setFarmName: s.setFarmName,
+      pronouns: s.pronouns,
+      setPronouns: s.setPronouns,
+      birthdayDay: s.birthdayDay,
+      setBirthdayDay: s.setBirthdayDay,
+      birthdaySeason: s.birthdaySeason,
+      setBirthdaySeason: s.setBirthdaySeason
+    }))
   )
-  const setPronouns = useCallback(
-    (newPronouns) =>
-      setEdits((edits) => ({ ...edits, pronouns: formatPronouns(newPronouns, true) })),
-    []
-  )
-  const setBirthdaySeason = useCallback(
-    (newSeason) => setEdits((edits) => ({ ...edits, birthdaySeason: newSeason })),
-    []
-  )
-  const setBirthdayDay = useCallback(
-    (newDay) => setEdits((edits) => ({ ...edits, birthdayDay: newDay })),
-    []
-  )
+
+  const setPronounsWrapper = useCallback((newPronouns) => {
+    setPronouns(formatPronouns(newPronouns, true))
+  }, [])
 
   const memoizedIcons = useMemo(
     () => ({
@@ -96,25 +105,20 @@ export default function GeneralEdits() {
       </HStack>
       <Grid templateColumns="repeat(3, 1fr)" gap="3">
         <GridItem>
-          <TextInput
-            value={edits.name}
-            onChange={setName}
-            textLabel="Name"
-            icon={memoizedIcons.name}
-          />
+          <TextInput value={name} onChange={setName} textLabel="Name" icon={memoizedIcons.name} />
         </GridItem>
         <GridItem>
           <SelectInput
-            collection={pronouns}
+            collection={pronounsCollection}
             textLabel="Pronouns"
-            value={formatPronouns(edits.pronouns, true)}
-            onValueChange={setPronouns}
-            placeholder={formatPronouns(edits.pronouns)}
+            value={formatPronouns(pronouns, true)}
+            onValueChange={setPronounsWrapper}
+            placeholder={formatPronouns(pronouns)}
           />
         </GridItem>
         <GridItem>
           <TextInput
-            value={edits.farmName}
+            value={farmName}
             onChange={setFarmName}
             textLabel="Farm Name"
             icon={memoizedIcons.farm}
@@ -123,19 +127,18 @@ export default function GeneralEdits() {
         <GridItem>
           <SelectInput
             colorPalette="teal"
-            collection={seasons}
-            value={edits.birthdaySeason}
+            collection={seasonsCollection}
+            value={birthdaySeason}
             onValueChange={setBirthdaySeason}
             textLabel="Birthday"
-            placeholder={seasonsList[edits.birthdaySeason]}
+            placeholder={seasonsList[birthdaySeason]}
           />
           <SelectInput
-            collection={days}
+            collection={daysCollection}
             colorPalette="teal"
-            value={edits.birthdayDay}
+            value={birthdayDay}
             onValueChange={setBirthdayDay}
-            // textLabel="Day"
-            placeholder={edits.birthdayDay}
+            placeholder={birthdayDay}
           />
         </GridItem>
       </Grid>

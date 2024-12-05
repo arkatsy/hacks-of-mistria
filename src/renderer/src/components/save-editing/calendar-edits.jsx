@@ -1,13 +1,13 @@
-import { useCallback, useContext } from "react"
 import { HStack, Stack, Text, Flex, createListCollection } from "@chakra-ui/react"
-import { EditorContext } from "src/components/save-editing/index.jsx"
+import { useEditorContext } from "src/components/save-editing/index.jsx"
 import { NumberInput } from "src/components/custom/number-input"
 import { SelectInput } from "src/components/custom/select-input"
 import { EditIcon } from "src/components/custom/icons"
+import { useShallow } from "zustand/react/shallow"
 
 export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
 
-const seasons = createListCollection({
+const seasonsCollection = createListCollection({
   items: seasonsList.map((season, index) => ({ label: season, value: index }))
 })
 
@@ -18,14 +18,16 @@ const days = createListCollection({
 })
 
 export default function CalendarEdits() {
-  const { edits, setEdits } = useContext(EditorContext)
-
-  const setYear = useCallback((newYear) => setEdits((edits) => ({ ...edits, year: newYear })), [])
-  const setSeason = useCallback(
-    (newSeason) => setEdits((edits) => ({ ...edits, season: newSeason })),
-    []
+  const { day, setDay, season, setSeason, year, setYear } = useEditorContext(
+    useShallow((s) => ({
+      day: s.day,
+      setDay: s.setDay,
+      season: s.season,
+      setSeason: s.setSeason,
+      year: s.year,
+      setYear: s.setYear
+    }))
   )
-  const setDay = useCallback((newDay) => setEdits((edits) => ({ ...edits, day: newDay })), [])
 
   return (
     <Stack gap="4">
@@ -36,20 +38,20 @@ export default function CalendarEdits() {
         </Text>
       </HStack>
       <Flex gap="2" w="full">
-        <NumberInput value={edits.year} onValueChange={setYear} label="Year" step={1} min={1} />
+        <NumberInput value={year} onValueChange={setYear} label="Year" step={1} min={1} />
         <SelectInput
-          collection={seasons}
-          value={edits.season}
+          collection={seasonsCollection}
+          value={season}
           onValueChange={setSeason}
           textLabel="Season"
-          placeholder={seasonsList[edits.season]}
+          placeholder={seasonsList[season]}
         />
         <SelectInput
           collection={days}
-          value={edits.day}
+          value={day}
           onValueChange={setDay}
           textLabel="Day"
-          placeholder={edits.day}
+          placeholder={day}
         />
       </Flex>
     </Stack>

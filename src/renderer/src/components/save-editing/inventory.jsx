@@ -210,14 +210,11 @@ const ItemDialogButton = memo(function ItemDialogButton({ activeItemId, itemIdSe
   const handlePageChange = useCallback((e) => setPage(e.page), [])
   const handleItemIdSelectedChange = useCallback((e) => setItemIdSelected(e.value), [])
 
-  const filteredItemIds = useMemo(
-    () =>
-      itemIdsList
-        .map(formatItemId)
-        .filter((itemId) => itemId.includes(query))
-        .map((formattedItem) => formatItemId(formattedItem, true)),
-    [query]
-  )
+  const filteredItemIds = itemIdsList
+    .map((itemId) => formatItemId(itemId))
+    .filter((formattedItemId) => formattedItemId.includes(query))
+    .map((formattedItemId) => formatItemId(formattedItemId, true))
+
   const viewableItemIds = filteredItemIds.slice((page - 1) * itemIdsPageLimit, page * itemIdsPageLimit)
 
   return (

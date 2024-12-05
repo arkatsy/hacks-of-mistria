@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState, useContext, useRef } from "react"
+import { Fragment, useCallback, useEffect, useState, useContext } from "react"
 import { Box, HStack, Portal, Show, Stack, Tabs, Text } from "@chakra-ui/react"
 import { Button } from "src/components/primitives/button"
 import { Loading } from "src/components/custom/loading"
@@ -13,9 +13,8 @@ import Inventory from "src/components/save-editing/inventory"
 import { EditIcon } from "src/components/custom/icons"
 import ErrorBoundary from "src/components/custom/error-boundary"
 import { EditorProvider } from "src/components/save-editing/provider"
-import { useEditorContext, useEditSettings } from "src/components/save-editing/store"
+import { useEditSettings } from "src/components/save-editing/store"
 import { InventoryKeys } from "src/utils"
-import { useShallow } from "zustand/react/shallow"
 
 export default function Init() {
   const { goToSelection, editingSaveId } = useContext(SaveIdContext)

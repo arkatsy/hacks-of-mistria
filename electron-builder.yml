@@ -1,7 +1,7 @@
-appId: com.hacks-of-mistria.app
-productName: hacks-of-mistria
+appId: com.arkatsy.hacks-of-mistria
+productName: Hacks of Mistria
 directories:
-  buildResources: build
+  buildResources: resources
 files:
   - "!**/.vscode/*"
   - "!src/*"
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  icon: build/icon.ico
+  icon: resources/icon.png
   executableName: hacks-of-mistria
   target:
     - nsis
@@ -25,6 +25,3 @@ nsis:
 portable:
   artifactName: ${name}-${version}-portable.${ext}
 npmRebuild: false
-publish:
-  provider: generic
-  url: https://example.com/auto-updates

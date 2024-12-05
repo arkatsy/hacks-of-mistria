@@ -17,7 +17,6 @@ import { SaveIdContext } from "src/app"
 import GeneralEdits from "src/components/save-editing/general-edits"
 import StatsEdits from "src/components/save-editing/stats-edits"
 import CalendarEdits from "src/components/save-editing/calendar-edits"
-import MiscEdits from "src/components/save-editing/misc-edits"
 import Inventory from "src/components/save-editing/inventory"
 import { EditIcon } from "src/components/custom/icons"
 import { createStore, useStore } from "zustand"
@@ -192,7 +191,6 @@ function SaveEditor({ saveId }) {
           <GeneralEdits />
           <CalendarEdits />
           <StatsEdits />
-          <MiscEdits />
           <InventoryEdits />
         </Stack>
       </Box>

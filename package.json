@@ -8,7 +8,7 @@
     "format": "prettier --write .",
     "dev": "set NODE_ENV=development && electron-vite dev",
     "measure-unpacking": "node ./scripts/measure-unpacking.js",
-    "extract-ids": "node ./scripts/extract-ids.js",
+    "update-ids": "node ./scripts/update-ids.js",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build": "set NODE_ENV=production && electron-vite build && electron-builder --win"

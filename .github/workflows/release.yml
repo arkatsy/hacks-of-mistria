@@ -1,4 +1,4 @@
-name: Moth's Cheats Release
+name: Hacks of Mistria Release
 
 on:
   workflow_dispatch:
@@ -39,6 +39,8 @@ jobs:
         run: echo "VERSION=$(jq -r .version package.json)" >> $env:GITHUB_ENV
 
       - name: build
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN}}
         if: success() || (failure() && steps.check_version_change.outcome == 'success')
         run: npm run build
 

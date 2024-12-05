@@ -1,6 +1,6 @@
 singleQuote: false
 semi: false
-printWidth: 100
+printWidth: 130
 trailingComma: none
 quoteProps: consistent
 endOfLine: "lf"

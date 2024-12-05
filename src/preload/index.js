@@ -13,17 +13,13 @@ const api = {
   setGold: (saveId, gold) => ipcRenderer.invoke(IPC.SET_GOLD, saveId, gold),
   setEssence: (saveId, essence) => ipcRenderer.invoke(IPC.SET_ESSENCE, saveId, essence),
   setRenown: (saveId, renown) => ipcRenderer.invoke(IPC.SET_RENOWN, saveId, renown),
-  setCalendarTime: (saveId, calendarTime) =>
-    ipcRenderer.invoke(IPC.SET_CALENDAR_TIME, saveId, calendarTime),
+  setCalendarTime: (saveId, calendarTime) => ipcRenderer.invoke(IPC.SET_CALENDAR_TIME, saveId, calendarTime),
   setHealth: (saveId, health) => ipcRenderer.invoke(IPC.SET_HEALTH, saveId, health),
   setStamina: (saveId, stamina) => ipcRenderer.invoke(IPC.SET_STAMINA, saveId, stamina),
   setMana: (saveId, mana) => ipcRenderer.invoke(IPC.SET_MANA, saveId, mana),
-  setRewardInventory: (saveId, rewardInventory) =>
-    ipcRenderer.invoke(IPC.SET_REWARD_INVENTORY, saveId, rewardInventory),
+  setRewardInventory: (saveId, rewardInventory) => ipcRenderer.invoke(IPC.SET_REWARD_INVENTORY, saveId, rewardInventory),
   setBirthday: (saveId, birthday) => ipcRenderer.invoke(IPC.SET_BIRTHDAY, saveId, birthday),
-  setInventory: (saveId, inventory) => ipcRenderer.invoke(IPC.SET_INVENTORY, saveId, inventory),
-  setMaxMinesLevel: (saveId, maxMinesLevel) =>
-    ipcRenderer.invoke(IPC.SET_MAX_MINES_LEVEL, saveId, maxMinesLevel)
+  setInventory: (saveId, inventory) => ipcRenderer.invoke(IPC.SET_INVENTORY, saveId, inventory)
 }
 
 contextBridge.exposeInMainWorld("api", api)

@@ -1,5 +1,25 @@
 export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
 
+export const InventoryKeys = {
+  Player: "inventory",
+  Rewards: "rewardInventory"
+}
+
+export const PronounsList = {
+  they_them: "they_them",
+  she_her: "she_her",
+  he_him: "he_him",
+  she_they: "she_they",
+  they_she: "they_she",
+  he_they: "he_they",
+  they_he: "they_he",
+  he_she: "he_she",
+  she_he: "she_he",
+  it_its: "it_its",
+  all: "all",
+  none: "none"
+}
+
 /**
  * @desc Translates the playtime variable in header.json into a more accessible format
  * @param {number} time The playtime variable from header.json in seconds

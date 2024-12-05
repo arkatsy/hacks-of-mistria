@@ -1,12 +1,4 @@
-import {
-  createContext,
-  Fragment,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState
-} from "react"
+import { Fragment, useCallback, useEffect, useState, useContext, useRef } from "react"
 import { Box, HStack, Portal, Show, Stack, Tabs, Text } from "@chakra-ui/react"
 import { Button } from "src/components/primitives/button"
 import { Loading } from "src/components/custom/loading"
@@ -19,19 +11,20 @@ import StatsEdits from "src/components/save-editing/stats-edits"
 import CalendarEdits from "src/components/save-editing/calendar-edits"
 import Inventory from "src/components/save-editing/inventory"
 import { EditIcon } from "src/components/custom/icons"
-import { createStore, useStore } from "zustand"
-
-const BROWSER_BACK_BTN = 3
+import ErrorBoundary from "src/components/custom/error-boundary"
+import { EditorProvider } from "src/components/save-editing/provider"
+import { useEditorContext, useEditSettings } from "src/components/save-editing/store"
+import { InventoryKeys } from "src/utils"
+import { useShallow } from "zustand/react/shallow"
 
 export default function Init() {
   const { goToSelection, editingSaveId } = useContext(SaveIdContext)
   const { data, isError } = useSaveData(editingSaveId)
 
-  // Some keyboard shortcuts for easier navigation
   useEffect(() => {
     const handleMouseUp = (e) => {
       const btnCode = e.button
-      if (btnCode === BROWSER_BACK_BTN) {
+      if (btnCode === 3) {
         goToSelection()
       }
     }
@@ -57,111 +50,30 @@ export default function Init() {
         <Button variant="subtle" onClick={goToSelection}>
           <LuArrowLeft /> Back
         </Button>
-        <EditorProvider {...structuredClone(data)}>
-          <SaveEditor saveId={editingSaveId} />
-        </EditorProvider>
+        <ErrorBoundary>
+          <EditorProvider {...structuredClone(data)}>
+            <SaveEditor saveId={editingSaveId} />
+          </EditorProvider>
+        </ErrorBoundary>
       </Box>
     </Box>
   )
 }
 
-const createEditorStore = ({
-  name,
-  farmName,
-  pronouns,
-  gold,
-  essence,
-  renown,
-  calendarTime,
-  year,
-  season,
-  day,
-  health,
-  stamina,
-  mana,
-  rewardInventory,
-  birthdayDay,
-  birthdaySeason,
-  inventory,
-  maxMinesLevel
-}) => {
-  return createStore((set) => ({
-    name,
-    farmName,
-    pronouns,
-    gold,
-    essence,
-    renown,
-    calendarTime,
-    year,
-    season,
-    day,
-    health,
-    stamina,
-    mana,
-    rewardInventory,
-    birthdayDay,
-    birthdaySeason,
-    inventory,
-    maxMinesLevel,
-    setName: (newName) => set(() => ({ name: newName })),
-    setFarmName: (newFarmName) => set(() => ({ farmName: newFarmName })),
-    setPronouns: (newPronouns) => set(() => ({ pronouns: newPronouns })),
-    setGold: (newGold) => set(() => ({ gold: newGold })),
-    setEssence: (newEssence) => set(() => ({ essence: newEssence })),
-    setRenown: (newRenown) => set(() => ({ renown: newRenown })),
-    setCalendarTime: (newCalendarTime) => set(() => ({ calendarTime: newCalendarTime })),
-    setYear: (newYear) => set(() => ({ year: newYear })),
-    setSeason: (newSeason) => set(() => ({ season: newSeason })),
-    setDay: (newDay) => set(() => ({ day: newDay })),
-    setHealth: (newHealth) => set(() => ({ health: newHealth })),
-    setStamina: (newStamina) => set(() => ({ stamina: newStamina })),
-    setRewardInventory: (newRewardInventory) =>
-      set(() => ({ rewardInventory: newRewardInventory })),
-    setMana: (newMana) => set(() => ({ mana: newMana })),
-    setBirthdayDay: (newBirthdayDay) => set(() => ({ birthdayDay: newBirthdayDay })),
-    setBirthdaySeason: (newBirthdaySeason) => set(() => ({ birthdaySeason: newBirthdaySeason })),
-    setInventory: (newInventory) => set(() => ({ inventory: newInventory })),
-    setMaxMinesLevel: (newMaxMinesLevel) => set(() => ({ maxMinesLevel: newMaxMinesLevel })),
-    discardEdits: (defaultState) => set(() => ({ ...defaultState }))
-  }))
-}
-
-const EditorContext = createContext(null)
-
-function EditorProvider({ children, ...props }) {
-  const storeRef = useRef()
-  if (!storeRef.current) {
-    storeRef.current = createEditorStore(props)
-  }
-
-  return <EditorContext.Provider value={storeRef.current}>{children}</EditorContext.Provider>
-}
-
-export function useEditorContext(selector) {
-  const store = useContext(EditorContext)
-  return useStore(store, selector)
-}
-
 function SaveEditor({ saveId }) {
+  const { setEdits, getEdits } = useEditSettings()
   const { mutate, isPending, isError, error } = useSaveMutation(saveId)
-  const store = useContext(EditorContext)
+  const { data } = useSaveData(saveId)
 
-  const handleDiscard = useEditorContext((s) => s.discardEdits)
-  const handleApply = () => mutate(store.getState())
+  const handleApplyEdits = () => mutate(getEdits())
+  const handleDiscardEdits = () => setEdits({ ...structuredClone(data) })
 
   return (
     <Fragment>
-      <Button
-        variant="subtle"
-        pos="absolute"
-        right="20"
-        onClick={handleDiscard}
-        disabled={isPending}
-      >
+      <Button variant="subtle" pos="absolute" right="20" onClick={handleDiscardEdits} disabled={isPending}>
         Discard
       </Button>
-      <Button pos="absolute" right="0" onClick={handleApply} disabled={isPending}>
+      <Button pos="absolute" right="0" onClick={handleApplyEdits} disabled={isPending}>
         Apply
       </Button>
       <Text textStyle="sm" pos="absolute" right="0" opacity="0.8" my="2">
@@ -196,11 +108,6 @@ function SaveEditor({ saveId }) {
       </Box>
     </Fragment>
   )
-}
-
-export const InventoryKeys = {
-  Player: "inventory",
-  Rewards: "rewardInventory"
 }
 
 function InventoryEdits() {

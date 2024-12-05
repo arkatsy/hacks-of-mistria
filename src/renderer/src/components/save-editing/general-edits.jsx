@@ -1,25 +1,10 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { Grid, GridItem, HStack, Stack, Text, createListCollection } from "@chakra-ui/react"
-import { useEditorContext } from "src/components/save-editing/index.jsx"
 import { TextInput } from "src/components/custom/text-input"
-import { FarmIcon, NameIcon, EditIcon } from "src/components/custom/icons"
+import { EditIcon, FarmIcon, NameIcon } from "src/components/custom/icons"
 import { SelectInput } from "src/components/custom/select-input"
-import { useShallow } from "zustand/react/shallow"
-
-const PronounsList = {
-  they_them: "they_them",
-  she_her: "she_her",
-  he_him: "he_him",
-  she_they: "she_they",
-  they_she: "they_she",
-  he_they: "he_they",
-  they_he: "they_he",
-  he_she: "he_she",
-  she_he: "she_he",
-  it_its: "it_its",
-  all: "all",
-  none: "none"
-}
+import { useGeneralEdits } from "src/components/save-editing/store"
+import { seasonsList, PronounsList } from "src/utils"
 
 function formatPronouns(pronouns, inverse = false) {
   const transformFn = inverse ? "toLowerCase" : "toUpperCase"
@@ -44,8 +29,6 @@ const pronounsCollection = createListCollection({
   }))
 })
 
-export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
-
 const seasonsCollection = createListCollection({
   items: seasonsList.map((season, index) => ({ label: season, value: index }))
 })
@@ -68,32 +51,11 @@ export default function GeneralEdits() {
     setBirthdayDay,
     birthdaySeason,
     setBirthdaySeason
-  } = useEditorContext(
-    useShallow((s) => ({
-      name: s.name,
-      setName: s.setName,
-      farmName: s.farmName,
-      setFarmName: s.setFarmName,
-      pronouns: s.pronouns,
-      setPronouns: s.setPronouns,
-      birthdayDay: s.birthdayDay,
-      setBirthdayDay: s.setBirthdayDay,
-      birthdaySeason: s.birthdaySeason,
-      setBirthdaySeason: s.setBirthdaySeason
-    }))
-  )
+  } = useGeneralEdits()
 
   const setPronounsWrapper = useCallback((newPronouns) => {
     setPronouns(formatPronouns(newPronouns, true))
   }, [])
-
-  const memoizedIcons = useMemo(
-    () => ({
-      farm: <FarmIcon />,
-      name: <NameIcon />
-    }),
-    []
-  )
 
   return (
     <Stack gap="4">
@@ -105,7 +67,7 @@ export default function GeneralEdits() {
       </HStack>
       <Grid templateColumns="repeat(3, 1fr)" gap="3">
         <GridItem>
-          <TextInput value={name} onChange={setName} textLabel="Name" icon={memoizedIcons.name} />
+          <TextInput value={name} onChange={setName} textLabel="Name" icon={<NameIcon />} />
         </GridItem>
         <GridItem>
           <SelectInput
@@ -117,29 +79,17 @@ export default function GeneralEdits() {
           />
         </GridItem>
         <GridItem>
-          <TextInput
-            value={farmName}
-            onChange={setFarmName}
-            textLabel="Farm Name"
-            icon={memoizedIcons.farm}
-          />
+          <TextInput value={farmName} onChange={setFarmName} textLabel="Farm Name" icon={<FarmIcon />} />
         </GridItem>
         <GridItem>
           <SelectInput
-            colorPalette="teal"
             collection={seasonsCollection}
             value={birthdaySeason}
             onValueChange={setBirthdaySeason}
             textLabel="Birthday"
             placeholder={seasonsList[birthdaySeason]}
           />
-          <SelectInput
-            collection={daysCollection}
-            colorPalette="teal"
-            value={birthdayDay}
-            onValueChange={setBirthdayDay}
-            placeholder={birthdayDay}
-          />
+          <SelectInput collection={daysCollection} value={birthdayDay} onValueChange={setBirthdayDay} placeholder={birthdayDay} />
         </GridItem>
       </Grid>
     </Stack>

@@ -4,18 +4,12 @@ import SaveSelection from "src/components/save-selection"
 import SaveEditing from "src/components/save-editing"
 import fomLogo from "src/assets/fom-logo.webp"
 import fomClouds from "src/assets/fom-clouds.png"
+import ErrorBoundary from "src/components/custom/error-boundary"
 
 function Layout({ children }) {
   return (
     <Box>
-      <Box
-        minH="100vh"
-        display="flex"
-        flexDir="column"
-        gap="30px"
-        alignItems="center"
-        pos="relative"
-      >
+      <Box minH="100vh" display="flex" flexDir="column" gap="30px" alignItems="center" pos="relative">
         <Image
           src={fomClouds}
           objectFit="cover"
@@ -28,7 +22,7 @@ function Layout({ children }) {
           pos="absolute"
         />
         <Image src={fomLogo} zIndex={1} draggable={false} />
-        {children}
+        <ErrorBoundary>{children}</ErrorBoundary>
       </Box>
     </Box>
   )
@@ -49,9 +43,7 @@ export default function App() {
 
   return (
     <Layout>
-      <SaveIdContext.Provider value={value}>
-        {editingSaveId ? <SaveEditing /> : <SaveSelection />}
-      </SaveIdContext.Provider>
+      <SaveIdContext.Provider value={value}>{editingSaveId ? <SaveEditing /> : <SaveSelection />}</SaveIdContext.Provider>
     </Layout>
   )
 }

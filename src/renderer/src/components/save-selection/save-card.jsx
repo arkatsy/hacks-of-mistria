@@ -1,51 +1,34 @@
 import { Box, Card, Flex, HStack, Image, Text } from "@chakra-ui/react"
-
+import iconBlizzard from "src/assets/weather-icons/spr_ui_hud_info_backplate_weather_icon_blizzard.png"
+import iconLeaves from "src/assets/weather-icons/spr_ui_hud_info_backplate_weather_icon_leaves.png"
+import iconPetals from "src/assets/weather-icons/spr_ui_hud_info_backplate_weather_icon_petals.png"
+import iconRain from "src/assets/weather-icons/spr_ui_hud_info_backplate_weather_icon_rain.png"
+import iconSnow from "src/assets/weather-icons/spr_ui_hud_info_backplate_weather_icon_snow.png"
+import iconStorm from "src/assets/weather-icons/spr_ui_hud_info_backplate_weather_icon_storm.png"
+import iconSunny from "src/assets/weather-icons/spr_ui_hud_info_backplate_weather_icon_sunny.png"
 import { displayCalendarTime, displayClockTime, displayPlaytime, displayWeather } from "src/utils"
-
-import iconBlizzard from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_blizzard.png"
-import iconLeaves from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_leaves.png"
-import iconPetals from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_petals.png"
-import iconRain from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_rain.png"
-// import iconRainy from '@/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_rainy.png'
-import iconSnow from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_snow.png"
-import iconStorm from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_storm.png"
-import iconSunny from "src/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_sunny.png"
-// import iconThunderstorm from '@/assets/sprites/weather-icons/spr_ui_hud_info_backplate_weather_icon_thunderstorm.png'
-
-import {
-  TesseraeIcon,
-  EssenceIcon,
-  RenownIcon,
-  NameIcon,
-  GenderIcon,
-  FarmIcon,
-  ClockIcon
-} from "src/components/custom/icons"
+import { TesseraeIcon, EssenceIcon, RenownIcon, NameIcon, FarmIcon, ClockIcon } from "src/components/custom/icons"
 
 const weatherIcons = [
   {
-    // 0: Spring
     calm: iconSunny,
     inclement: iconRain,
     heavy_inclement: iconStorm,
     special: iconPetals
   },
   {
-    // 1: Summer
     calm: iconSunny,
     inclement: iconRain,
     heavy_inclement: iconStorm,
     special: "summer_special"
   },
   {
-    // 2: Fall
     calm: iconSunny,
     inclement: iconRain,
     heavy_inclement: iconStorm,
     special: iconLeaves
   },
   {
-    // 3: Winter
     calm: iconSunny,
     inclement: iconSnow,
     heavy_inclement: iconBlizzard,

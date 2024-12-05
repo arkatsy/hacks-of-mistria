@@ -26,10 +26,7 @@ export function useSaveMutation(saveId) {
       await window.api.setStamina(saveId, edits.stamina)
       await window.api.setMana(saveId, edits.mana)
       await window.api.setRewardInventory(saveId, edits.rewardInventory)
-      await window.api.setBirthday(
-        saveId,
-        getCalendarTime(0, edits.birthdaySeason, edits.birthdayDay)
-      )
+      await window.api.setBirthday(saveId, getCalendarTime(0, edits.birthdaySeason, edits.birthdayDay))
       await window.api.setInventory(saveId, edits.inventory)
 
       await window.api.updateSave(saveId)

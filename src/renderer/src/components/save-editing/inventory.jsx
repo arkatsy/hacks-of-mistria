@@ -1,5 +1,4 @@
 import { memo, useCallback, useMemo, useState, useRef } from "react"
-import { InventoryKeys, useEditorContext } from "src/components/save-editing"
 import {
   Box,
   SimpleGrid,
@@ -37,7 +36,7 @@ import {
   PaginationRoot
 } from "src/components/primitives/pagination"
 import { LuTrash } from "react-icons/lu"
-import { useShallow } from "zustand/react/shallow"
+import { useInventory } from "src/components/save-editing/store"
 
 const infusions = [
   "none",
@@ -63,13 +62,7 @@ const infusionsCollection = createListCollection({
 })
 
 const InventoryEdits = memo(function InventoryEdits({ inventoryKey }) {
-  const { inventory, setInventory } = useEditorContext(
-    useShallow((s) => ({
-      inventory: s[inventoryKey],
-      setInventory: s[inventoryKey === InventoryKeys.Player ? "setInventory" : "setRewardInventory"]
-    }))
-  )
-
+  const { inventory, setInventory } = useInventory(inventoryKey)
   const inventoryApi = useRef(new Inventory(inventory)).current
   const slots = inventoryApi.getSlots()
 
@@ -139,12 +132,7 @@ function formatItemId(itemId, reverse = false) {
   return itemId.replaceAll(fromSymbol, toSymbol)
 }
 
-const InventorySlot = memo(function InventorySlot({
-  item,
-  setItemId,
-  setItemQuantity,
-  setItemInfusion
-}) {
+const InventorySlot = memo(function InventorySlot({ item, setItemId, setItemQuantity, setItemInfusion }) {
   const activeItemId = item.slot.getItemId()
   const activeItemInfusion = item.slot.getItemInfusion()
   const activeItemQuantity = item.slot.getItemQuantity()
@@ -167,12 +155,7 @@ const InventorySlot = memo(function InventorySlot({
           <Text w="full" textStyle="lg">
             Slot {item.id + 1}
           </Text>
-          <IconButton
-            size="sm"
-            colorPalette="red"
-            disabled={!activeItemId}
-            onClick={handleRemoveSlot}
-          >
+          <IconButton size="sm" colorPalette="red" disabled={!activeItemId} onClick={handleRemoveSlot}>
             <LuTrash />
           </IconButton>
         </Flex>
@@ -208,12 +191,7 @@ const InventorySlot = memo(function InventorySlot({
   )
 })
 
-const ItemDialogButton = memo(function ItemDialogButton({
-  activeItemId,
-  itemIdSelected,
-  setItemIdSelected,
-  onItemIdChange
-}) {
+const ItemDialogButton = memo(function ItemDialogButton({ activeItemId, itemIdSelected, setItemIdSelected, onItemIdChange }) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [query, setQuery] = useState("")
@@ -240,18 +218,10 @@ const ItemDialogButton = memo(function ItemDialogButton({
         .map((formattedItem) => formatItemId(formattedItem, true)),
     [query]
   )
-  const viewableItemIds = filteredItemIds.slice(
-    (page - 1) * itemIdsPageLimit,
-    page * itemIdsPageLimit
-  )
+  const viewableItemIds = filteredItemIds.slice((page - 1) * itemIdsPageLimit, page * itemIdsPageLimit)
 
   return (
-    <DialogRoot
-      open={dialogOpen}
-      onOpenChange={(e) => setDialogOpen(e.open)}
-      size="lg"
-      motionPreset="slide-in-bottom"
-    >
+    <DialogRoot open={dialogOpen} onOpenChange={(e) => setDialogOpen(e.open)} size="lg" motionPreset="slide-in-bottom">
       <DialogTrigger asChild>
         <Button variant="outline">{formatItemId(activeItemId) || "Empty"}</Button>
       </DialogTrigger>
@@ -260,12 +230,7 @@ const ItemDialogButton = memo(function ItemDialogButton({
           <DialogTitle>Choose an item id</DialogTitle>
         </DialogHeader>
         <DialogBody display="flex" flexDir="column" alignItems="center" gap={4}>
-          <TextInput
-            textLabel="Search"
-            placeholder="e.g moth"
-            value={query}
-            onChange={handleQueryChange}
-          />
+          <TextInput textLabel="Search" placeholder="e.g moth" value={query} onChange={handleQueryChange} />
           <RadioCardRoot value={itemIdSelected} onValueChange={handleItemIdSelectedChange}>
             <Flex flexWrap="wrap" gap="2">
               {viewableItemIds.map((itemId) => (

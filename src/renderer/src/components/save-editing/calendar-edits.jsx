@@ -1,11 +1,9 @@
 import { HStack, Stack, Text, Flex, createListCollection } from "@chakra-ui/react"
-import { useEditorContext } from "src/components/save-editing/index.jsx"
 import { NumberInput } from "src/components/custom/number-input"
 import { SelectInput } from "src/components/custom/select-input"
 import { EditIcon } from "src/components/custom/icons"
-import { useShallow } from "zustand/react/shallow"
-
-export const seasonsList = ["Spring", "Summer", "Fall", "Winter"]
+import { useCalendarEdits } from "src/components/save-editing/store"
+import { seasonsList } from "src/utils"
 
 const seasonsCollection = createListCollection({
   items: seasonsList.map((season, index) => ({ label: season, value: index }))
@@ -18,16 +16,7 @@ const days = createListCollection({
 })
 
 export default function CalendarEdits() {
-  const { day, setDay, season, setSeason, year, setYear } = useEditorContext(
-    useShallow((s) => ({
-      day: s.day,
-      setDay: s.setDay,
-      season: s.season,
-      setSeason: s.setSeason,
-      year: s.year,
-      setYear: s.setYear
-    }))
-  )
+  const { day, setDay, season, setSeason, year, setYear } = useCalendarEdits()
 
   return (
     <Stack gap="4">
@@ -46,13 +35,7 @@ export default function CalendarEdits() {
           textLabel="Season"
           placeholder={seasonsList[season]}
         />
-        <SelectInput
-          collection={days}
-          value={day}
-          onValueChange={setDay}
-          textLabel="Day"
-          placeholder={day}
-        />
+        <SelectInput collection={days} value={day} onValueChange={setDay} textLabel="Day" placeholder={day} />
       </Flex>
     </Stack>
   )

@@ -6,8 +6,6 @@
   "author": "arkatsy",
   "scripts": {
     "prepare": "husky || true",
-    "prettier:format": "prettier --write .",
-    "prettier:check": "prettier --format .",
     "dev": "set NODE_ENV=development && electron-vite dev",
     "measure-unpacking": "node ./scripts/measure-unpacking.js",
     "update-ids": "node ./scripts/update-ids.js",
@@ -15,13 +13,9 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build": "set NODE_ENV=production && electron-vite build && electron-builder --win"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npx lint-staged"
-    }
-  },
+  "husky": {},
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "npx prettier --check"
+    "*.{js,jsx,ts,tsx}": "npx prettier --write --config ./.prettierrc.yaml"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.2.1",

@@ -1,11 +1,4 @@
-import {
-  Button,
-  Pagination as ChakraPagination,
-  IconButton,
-  Text,
-  createContext,
-  usePaginationContext
-} from "@chakra-ui/react"
+import { Button, Pagination as ChakraPagination, IconButton, Text, createContext, usePaginationContext } from "@chakra-ui/react"
 import { forwardRef, useMemo } from "react"
 import { HiChevronLeft, HiChevronRight, HiMiniEllipsisHorizontal } from "react-icons/hi2"
 import { LinkButton } from "src/components/primitives/link-button"
@@ -70,11 +63,7 @@ export const PaginationPrevTrigger = forwardRef(function PaginationPrevTrigger(p
 
   if (getHref) {
     return (
-      <LinkButton
-        href={previousPage != null ? getHref(previousPage) : undefined}
-        variant={variantMap.default}
-        size={size}
-      >
+      <LinkButton href={previousPage != null ? getHref(previousPage) : undefined} variant={variantMap.default} size={size}>
         <HiChevronLeft />
       </LinkButton>
     )
@@ -95,11 +84,7 @@ export const PaginationNextTrigger = forwardRef(function PaginationNextTrigger(p
 
   if (getHref) {
     return (
-      <LinkButton
-        href={nextPage != null ? getHref(nextPage) : undefined}
-        variant={variantMap.default}
-        size={size}
-      >
+      <LinkButton href={nextPage != null ? getHref(nextPage) : undefined} variant={variantMap.default} size={size}>
         <HiChevronRight />
       </LinkButton>
     )

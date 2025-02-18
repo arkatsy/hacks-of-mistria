@@ -18,13 +18,7 @@ export const SelectTrigger = forwardRef(function SelectTrigger(props, ref) {
 const SelectClearTrigger = forwardRef(function SelectClearTrigger(props, ref) {
   return (
     <ChakraSelect.ClearTrigger asChild {...props} ref={ref}>
-      <CloseButton
-        size="xs"
-        variant="plain"
-        focusVisibleRing="inside"
-        focusRingWidth="2px"
-        pointerEvents="auto"
-      />
+      <CloseButton size="xs" variant="plain" focusVisibleRing="inside" focusRingWidth="2px" pointerEvents="auto" />
     </ChakraSelect.ClearTrigger>
   )
 })

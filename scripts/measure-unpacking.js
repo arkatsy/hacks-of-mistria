@@ -23,10 +23,7 @@ rl.question(`How many saves you want to measure? (enter a number) `, (answer) =>
   const testingDir = path.join(__dirname, `testing-${timestamp()}`)
   const fomSavesPath = path.join(os.homedir(), "AppData", "Local", "FieldsOfMistria", "saves")
 
-  const testSavePath = path.join(
-    fomSavesPath,
-    fs.readdirSync(fomSavesPath).filter((file) => file.endsWith(".sav"))[0]
-  )
+  const testSavePath = path.join(fomSavesPath, fs.readdirSync(fomSavesPath).filter((file) => file.endsWith(".sav"))[0])
   const saveBasename = path.basename(testSavePath).replace(".sav", "")
 
   fs.mkdirSync(testingDir)

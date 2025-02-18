@@ -23,22 +23,13 @@ const pageSize = 10
 export default function SaveSelection() {
   const { setEditingSaveId } = useContext(SaveIdContext)
   const { data } = useSaveMetadata()
-  const {
-    mutate: refreshSaves,
-    isPending: isRefreshPending,
-    isError: isRefreshError
-  } = useSavesRefresh()
+  const { mutate: refreshSaves, isPending: isRefreshPending, isError: isRefreshError } = useSavesRefresh()
 
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
 
   if (!data || isRefreshPending) {
-    return (
-      <Loading
-        text="Reloading saves..."
-        extra="It might take a moment, depending how many saves you have"
-      />
-    )
+    return <Loading text="Reloading saves..." extra="It might take a moment, depending how many saves you have" />
   }
 
   const filteredSaves = data.filter((save) => {
@@ -81,20 +72,9 @@ export default function SaveSelection() {
       <Flex flexDir="column" mx="auto" mt="5" gap={6} maxW="660px" w="full" justifyContent="center">
         <Flex gap="2">
           <InputGroup flex="1" startElement={<FarmIcon />}>
-            <Input
-              variant="outline"
-              w="full"
-              value={search}
-              onChange={handleSearchChange}
-              placeholder="Search your saves"
-            />
+            <Input variant="outline" w="full" value={search} onChange={handleSearchChange} placeholder="Search your saves" />
           </InputGroup>
-          <Button
-            variant="subtle"
-            onClick={handleRefreshClick}
-            isLoading={isRefreshPending}
-            isDisabled={isRefreshPending}
-          >
+          <Button variant="subtle" onClick={handleRefreshClick} isLoading={isRefreshPending} isDisabled={isRefreshPending}>
             <LuRefreshCw />
           </Button>
         </Flex>
@@ -126,15 +106,7 @@ export default function SaveSelection() {
         )}
       </Flex>
       <Box w="full" pos="relative" mb="2">
-        <Image
-          src={dozy}
-          zIndex={2}
-          draggable={false}
-          pos="absolute"
-          right="10"
-          bottom="8"
-          transform="scaleX(-1)"
-        />
+        <Image src={dozy} zIndex={2} draggable={false} pos="absolute" right="10" bottom="8" transform="scaleX(-1)" />
         <Image src={dozy} zIndex={2} draggable={false} pos="absolute" bottom="8" left="10" />
       </Box>
     </Stack>

@@ -33,12 +33,7 @@ export default function UnpackingMeasurement() {
       </Text>
       <HStack>
         <Box maxW="300px">
-          <InputNumber
-            value={unpackingAmount}
-            onValueChange={setUnpackingAmount}
-            step={1}
-            disabled={isLoading}
-          />
+          <InputNumber value={unpackingAmount} onValueChange={setUnpackingAmount} step={1} disabled={isLoading} />
         </Box>
         <Button variant="surface" onClick={handleClick} loading={isLoading}>
           Test!

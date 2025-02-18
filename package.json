@@ -5,13 +5,23 @@
   "main": "./out/main/index.js",
   "author": "arkatsy",
   "scripts": {
-    "format": "prettier --write .",
+    "prepare": "husky || true",
+    "prettier:format": "prettier --write .",
+    "prettier:check": "prettier --format .",
     "dev": "set NODE_ENV=development && electron-vite dev",
     "measure-unpacking": "node ./scripts/measure-unpacking.js",
     "update-ids": "node ./scripts/update-ids.js",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build": "set NODE_ENV=production && electron-vite build && electron-builder --win"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npx lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "npx prettier --check"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.2.1",
@@ -33,6 +43,8 @@
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
     "electron-vite": "^2.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "prettier": "^3.3.2",
     "vite": "^5.4.10"
   }
